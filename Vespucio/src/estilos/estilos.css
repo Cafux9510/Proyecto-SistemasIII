@@ -1,0 +1,22 @@
+:root{
+ --azul-oscuro : #334155;
+ --azul-clarito: #99c9ff;
+}
+.container_nav{
+    background-color: var(--azul-oscuro);
+
+}
+
+.link{
+    color: white;
+    font-weight: bold;
+}
+.link:hover{
+    text-decoration: underline;
+    color: white;
+}
+
+.active{
+    background-color: var(--azul-clarito);
+    color: white;
+}
