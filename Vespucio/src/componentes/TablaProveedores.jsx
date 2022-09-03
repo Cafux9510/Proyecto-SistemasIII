@@ -302,13 +302,6 @@ const TablaProveedores = () => {
     <div>
         <h1 align="center">Sistema</h1>
 
-        <div className="contenedor">
-          <br/>
-          <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700" onClick={()=>abrirCerrarModalInsertar()}>Insertar Proveedor</button>
-          <br/><br/>
-          
-        </div>
-        
         <MaterialTable
             title="Proveedores"
             columns={columnas}
@@ -344,7 +337,14 @@ const TablaProveedores = () => {
               }}
               
         />
-
+        
+        <div className="contenedor">
+          <br/>
+          <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Insertar Proveedor</button>
+          <br/><br/>
+          
+        </div>
+        
         <Modal
           open={modal}
           onClose={abrirCerrarModalInsertar}

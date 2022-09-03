@@ -371,7 +371,6 @@ const Insumos = () => {
           <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Insumo</button>
 
           <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Actualizar Stock</button>
-          {/*Yo diria que el actualizar stock lo veamos luego, que por el momento lo pueda actualizar editando el insumo jajaj */}
           <br/><br/>
         </div>
     </div>
