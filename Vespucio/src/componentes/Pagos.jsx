@@ -8,6 +8,27 @@ import { InputText } from 'primereact/inputtext';
 import {makeStyles} from "@material-ui/core/styles"
 import { amber } from "@material-ui/core/colors";
 import swal from "sweetalert";
+import styled from '@emotion/styled'
+
+const Label = styled.label`
+    flex: 0 0 100px;
+    text-align:center;
+
+`;
+
+const Select = styled.select`
+    display:block;
+    width:100%;
+    padding: 1rem;
+    border: 1px solid #e1e1e1;
+    -webkit-appearance:none;
+`
+
+const Campo= styled.div`
+    display:flex;
+    margin-bottom: 1rem;
+    align-items:center;
+`;
 
 
 
@@ -39,46 +60,65 @@ const Pagos = () => {
     const [data,setData]=useState([])
     const[modal,insertarModal]=useState(false)
     const [modalEditar, setModalEditar]= useState(false);
-    const[proveedor,proveedorAgregado]=useState({
-        categoria_proveedor:'',
-        nombre_proveedor:'',
-        cuit_proveedor:'',
-        direccion_proveedor:'',
-        localidad_proveedor:'',
-        telefono_proveedor:'',
-        email_proveedor:'',
+    const[pagos,setPagos]=useState({
+        numero_pago:'',
+        proveedor_pago:'',
+        fecha_emision:'',
+        total_pago:'',
+        id_comprobante:'',
+        link_archivo:'',
     })
     //Funciones que tienen datos desde una api
     const funcion = async()=>{
         try {
-           const result= await supabase.from('proveedores')
-           .select()
-           .eq("isHabilitado_proveedor",true)
+           const result= await supabase.from('pagos')
+           .select(`
+           *,
+            comprobantes(
+              numero_comprobante
+           ),
+            proveedores(
+              nombre_proveedor
+           )
+         `)
+           .eq("isHabilitado_pago",true)
            setData(result.data)
         } catch (error) {
             console.log(error)
         }
     }
-    const update = async(id_proveedor)=>{
+    const update = async(id_pago)=>{
       try {
-        const result= await supabase.from("proveedores")
-        .update({isHabilitado_proveedor:false})
-        .eq("id_proveedor",id_proveedor)
+        const result= await supabase.from("pagos")
+        .update({isHabilitado_pago:false})
+        .eq("id_pago",id_pago)
 
-
-       
+        console.log(result)
       } catch (error) {
         console.log(error)
       }
     }
 
-    const{categoria_proveedor,nombre_proveedor,cuit_proveedor,direccion_proveedor,localidad_proveedor,telefono_proveedor,email_proveedor}=proveedor;
 
-    const update2=async(id_proveedor)=>{
+    const{proveedor_pago,numero_pago,fecha_emision,total_pago,id_comprobante,link_archivo}=pagos;
+
+    const update2=async(id_pago)=>{
       try {
-        const result= await supabase.from("proveedores")
-        .update({categoria_proveedor,nombre_proveedor,cuit_proveedor,direccion_proveedor,localidad_proveedor,telefono_proveedor,email_proveedor})
-        .eq("id_proveedor",id_proveedor)
+        const avatarFile = document.getElementById('selectArchivo').files[0];
+        const  foto = await supabase.storage
+        .from('archivos-subidos')
+        .upload('archivos-pagos/'+parseInt(avatarFile.lastModified/avatarFile.size), avatarFile, {
+          cacheControl: '3600',
+          upsert: false,
+        })
+
+        const principio_cadena = 'https://nnlzmdwuqwxgdrnutujk.supabase.co/storage/v1/object/public/';
+        const final_cadena = foto.data.Key
+        const link_archivo= principio_cadena + final_cadena
+      
+        const result= await supabase.from("pagos")
+        .update({proveedor_pago,numero_pago,fecha_emision,total_pago,id_comprobante,link_archivo})
+        .eq("id_pago",id_pago)
         
         console.log(result)
         abrirCerrarModalEditar();
@@ -90,15 +130,25 @@ const Pagos = () => {
 
     const submit = async()=>{
       try {
-        const {error,result}= await supabase.from("proveedores").insert({
-          categoria_proveedor,
-          nombre_proveedor,
-          cuit_proveedor,
-          direccion_proveedor,
-          localidad_proveedor,
-          telefono_proveedor,
-          email_proveedor
-        });
+          const avatarFile = document.getElementById('selectArchivo').files[0];
+          const  foto = await supabase.storage
+          .from('archivos-subidos')
+          .upload('archivos-pagos/'+parseInt(avatarFile.lastModified/avatarFile.size), avatarFile, {
+            cacheControl: '3600',
+            upsert: false,
+          })
+
+          const principio_cadena = 'https://nnlzmdwuqwxgdrnutujk.supabase.co/storage/v1/object/public/';
+          const final_cadena = foto.data.Key
+          const link_archivo= principio_cadena + final_cadena
+            const {error,result}= await supabase.from("pagos").insert({
+                numero_pago,
+                proveedor_pago,
+                fecha_emision,
+                total_pago,
+                id_comprobante,
+                link_archivo
+            });
 
         abrirCerrarModalInsertar();
         setData({
@@ -111,7 +161,7 @@ const Pagos = () => {
       }
     }
 
-    const handleEliminar=(id_proveedor)=>{
+    const handleEliminar=(id_pago)=>{
       swal({
         title: "Estas seguro de eliminar este registro?",
         text: "Una vez eliminado, no podras recuperar el archivo de vuelta!",
@@ -124,7 +174,7 @@ const Pagos = () => {
           swal("Registro eliminado con exito!", {
             icon: "success",
           });
-          update(id_proveedor);
+          update(id_pago);
         }
         setTimeout(() => {
           window.location.reload()
@@ -134,12 +184,13 @@ const Pagos = () => {
 
     //Configuracion del {/*DEJO LOS PARAMETROS DEL VALUE, SINO ME CRASHEA */}
     const columnas=[ 
-        {title:"N°", field:"id_categoria_proveedor"},
-        {title:"N° de Pago", field:"nombre_proveedor"},
-        {title:"Proveedor", field:"cuit_proveedor"},
-        {title:"CUIT", field:"direccion_proveedor"},
-        {title:"Fecha Pago",field:"localidad_proveedor"},
-        {title:"Monto",field:"telefono_proveedor"},
+        {title:"N°", field:"id_pago"},
+        {title:"N° de Pago", field:"numero_pago"},
+        {title:"Proveedor", field:"proveedores.nombre_proveedor"},
+        {title:"Fecha Pago", field:"fecha_emision"},
+        {title:"Monto",field:"total_pago"},
+        {title:"Comprobante",field:"comprobantes.numero_comprobante"},
+
         
       ]
 
@@ -147,25 +198,69 @@ const Pagos = () => {
     //Estilos
     const styles=useStyles();
     const actualizarState = e =>{
-      proveedorAgregado({
-          ...proveedor,
+       setPagos({
+          ...pagos,
           [e.target.name]: e.target.value
       })
   }
+
+
+  const[comprobantes,setComprabantes]=useState({});
+  const compro= async()=>{
+    const result = await supabase.from('comprobantes').select();
+
+    setComprabantes(result.data)
+  }
+  
+  const[pro,setPro]=useState({}) 
+  const dato=async()=>{
+    const result = await supabase.from('proveedores').select();
+
+    setPro(result.data)
+  }
+
     const bodyInsertar= (
       <div className={styles.modal}>
-        <h3>Registrar Nuevo Pago</h3> {/*DEJO LOS PARAMETROS DEL VALUE, SINO ME CRASHEA */}
-        <TextField className={styles.inputMaterial} label="Numero de Pago" onChange={actualizarState} name="numero_Pago" value={categoria_proveedor}/> 
+        <h3>Registrar Nuevo Pago</h3>
         <br/>
-        <TextField className={styles.inputMaterial} label="Proveedor"  onChange={actualizarState} name="nombre_proveedor" value={nombre_proveedor} />
+        <TextField type="number" className={styles.inputMaterial} label="Numero de Pago" onChange={actualizarState} name="numero_pago" value={numero_pago}/>
+        <br/> 
         <br/>
-        <TextField className={styles.inputMaterial} label="CUIT" onChange={actualizarState} name="cuit_proveedor" value={cuit_proveedor}/>
+        <Campo>
+        <Label>Nombre Proveedor</Label>
+          <Select
+                    name='proveedor_pago'
+                    value={proveedor_pago}
+                    onChange={actualizarState}
+                >
+                    <option value="">--Seleccione--</option>
+                    {Object.values(pro).map(pr=>(
+                      <option key={pr.id_proveedor} value={pr.id_proveedor}>{pr.nombre_proveedor}</option>
+                    ))}
+            </Select>
+        </Campo>
         <br/>
-        <TextField type="date" className={styles.inputMaterial} label=""  onChange={actualizarState} name="fecha_Pago" value={direccion_proveedor}/>
+
+        <TextField type="date" className={styles.inputMaterial} label=""  onChange={actualizarState} name="fecha_emision" value={fecha_emision}/>
         <br/>
-        <TextField className={styles.inputMaterial} label="Monto" onChange={actualizarState} name="monto_Pago" value={localidad_proveedor} />
+        <TextField className={styles.inputMaterial} label="Monto" onChange={actualizarState} name="total_pago" value={total_pago} />
         <br/>
-<br/>
+        <Campo>
+        <Label>Comprobante</Label>
+          <Select
+                    name='id_comprobante'
+                    value={id_comprobante}
+                    onChange={actualizarState}
+                >
+                    <option value="">--Seleccione--</option>
+                    {Object.values(comprobantes).map(pr=>(
+                      <option key={pr.id_comprobante} value={pr.id_comprobante}>{pr.numero_comprobante}</option>
+                    ))}
+            </Select>
+        </Campo>
+        <br/>
+        <input name='input=file' id='selectArchivo' type='file' />
+        <br/>
         <div align="right">
           <Button color='primary' onClick={()=>submit()} >Insertar</Button>
           <Button onClick={()=>abrirCerrarModalInsertar()}>Cancelar</Button>
@@ -173,27 +268,51 @@ const Pagos = () => {
       </div>
     )
 
-    const{id_proveedor}=proveedor;
+    const{id_pago}=pagos;
 
     const bodyEditar= (
       <div className={styles.modal}>
         <h3>Editar Pago</h3>
-        <TextField className={styles.inputMaterial} label="Numero de Pago" onChange={actualizarState} name="numero_Pago" value={proveedor&&categoria_proveedor}/>
+        <TextField className={styles.inputMaterial} label="Numero de Pago" onChange={actualizarState} name="numero_Pago" value={pagos&&numero_pago}/> 
         <br/>
-        <TextField className={styles.inputMaterial} label="Proveedor"  onChange={actualizarState} name="nombre_proveedor" value={proveedor&&nombre_proveedor} />
+        <Campo>
+        <Label>Nombre Proveedor</Label>
+          <Select
+                    name='proveedor_pago'
+                    value={pagos&&proveedor_pago}
+                    onChange={actualizarState}
+                >
+                    <option value="">--Seleccione--</option>
+                    {Object.values(pro).map(pr=>(
+                      <option key={pr.id_proveedor} value={pr.id_proveedor}>{pr.nombre_proveedor}</option>
+                    ))}
+            </Select>
+        </Campo>
         <br/>
-        <TextField className={styles.inputMaterial} label="CUIT" onChange={actualizarState} name="cuit_proveedor" value={proveedor&&cuit_proveedor}/>
+
+        <TextField type="date" className={styles.inputMaterial} label=""  onChange={actualizarState} name="fecha_emision" value={pagos&&fecha_emision}/>
         <br/>
-        <TextField type="date" className={styles.inputMaterial} label="" onChange={actualizarState} name="fecha_Pago" value={proveedor&&direccion_proveedor}/>
+        <TextField className={styles.inputMaterial} label="Monto" onChange={actualizarState} name="total_pago" value={pagos&&total_pago} />
         <br/>
-        <TextField className={styles.inputMaterial} label="Monto" onChange={actualizarState} name="monto_Pago" value={proveedor&&localidad_proveedor} />
+        <Campo>
+        <Label>Comprobante</Label>
+          <Select
+                    name='id_comprobante'
+                    value={pagos&&id_comprobante}
+                    onChange={actualizarState}
+                >
+                    <option value="">--Seleccione--</option>
+                    {Object.values(comprobantes).map(pr=>(
+                      <option key={pr.id_comprobante} value={pr.id_comprobante}>{pr.numero_comprobante}</option>
+                    ))}
+            </Select>
+        </Campo>
         <br/>
-        <TextField type="file" className={styles.inputMaterial} /*BORRE A PATIR DE LABEL O CRASHEABA, PORQUE NO ACEPTABA ARCHIVOS QUE NO SEAN FILES */ />
+          <input type="file"  name='input=file' id='selectArchivo'/>
+          <a href={pagos&&link_archivo} target="_blank">Archivo</a>
         <br/>
-        <TextField type="email" className={styles.inputMaterial} label="Email" onChange={actualizarState} name="email_proveedor" value={proveedor&&email_proveedor} />
-        <br/><br/>
         <div align="right">
-          <Button onClick={()=>update2(id_proveedor)} color='primary'>Editar</Button>
+          <Button onClick={()=>update2(id_pago)} color='primary'>Editar</Button>
           <Button onClick={()=>abrirCerrarModalEditar()}>Cancelar</Button>
         </div>
       </div>
@@ -209,13 +328,15 @@ const Pagos = () => {
       setModalEditar(!modalEditar)
     }
 
-    const seleccionarProveedor = (proveedor,caso)=>{
-      proveedorAgregado(proveedor);
+    const seleccionarPagos = (pagos,caso)=>{
+      setPagos(pagos);
       (caso === "Editar")&&abrirCerrarModalEditar();
     }
 
     useEffect(()=>{
         funcion();
+        dato();
+        compro();
     },[])
    
 
@@ -230,12 +351,12 @@ const Pagos = () => {
                 {
                     icon:"edit",
                     tooltip:"Modificar",
-                    onClick: (event,rowData)=>seleccionarProveedor(rowData,"Editar")
+                    onClick: (event,rowData)=>seleccionarPagos(rowData,"Editar")
                 },
                 {
                     icon:"delete",
                     tooltip:"Eliminar",
-                    onClick: (event,rowData)=>handleEliminar(rowData.id_proveedor)
+                    onClick: (event,rowData)=>handleEliminar(rowData.id_pago)
                 },
                 //COMO AGREGAR OTRO ICONO BOTON?
 

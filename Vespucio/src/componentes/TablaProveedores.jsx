@@ -1,14 +1,32 @@
 import { useEffect, useState } from "react";
 import {supabase} from "../Backend/client";
 import MaterialTable from "@material-table/core";
-import { Dialog } from 'primereact/dialog';
 import { Button } from "@material-ui/core";
 import {Modal,TextField} from "@material-ui/core"
-import { InputText } from 'primereact/inputtext';
 import {makeStyles} from "@material-ui/core/styles"
-import { amber } from "@material-ui/core/colors";
 import swal from "sweetalert";
-import '../index.css'
+import styled from '@emotion/styled'
+
+const Label = styled.label`
+    flex: 0 0 100px;
+    text-align:center;
+
+`;
+
+const Select = styled.select`
+    display:block;
+    width:100%;
+    padding: 1rem;
+    border: 1px solid #e1e1e1;
+    -webkit-appearance:none;
+`
+
+const Campo= styled.div`
+    display:flex;
+    margin-bottom: 1rem;
+    align-items:center;
+`;
+
 
 const useStyles = makeStyles((theme)=>({
   modal:{
@@ -32,28 +50,41 @@ const useStyles = makeStyles((theme)=>({
 }))
 
 
-
 const TablaProveedores = () => {
     //Statest
     const [data,setData]=useState([])
     const[modal,insertarModal]=useState(false)
     const [modalEditar, setModalEditar]= useState(false);
     const[proveedor,proveedorAgregado]=useState({
-        categoria_proveedor:'',
         nombre_proveedor:'',
         cuit_proveedor:'',
         direccion_proveedor:'',
         localidad_proveedor:'',
         telefono_proveedor:'',
         email_proveedor:'',
+        id_categoria_proveedor:'',
     })
+
+
+   
     //Funciones que tienen datos desde una api
     const funcion = async()=>{
         try {
-           const result= await supabase.from('proveedores')
+           /* const result= await supabase.from('proveedores')
            .select()
            .eq("isHabilitado_proveedor",true)
-           setData(result.data)
+           setData(result.data) */
+           const { data: proveedores, error } = await supabase
+            .from('proveedores')
+            .select(`
+              *,
+              categoriasProveedores(
+                nombre_categoria
+              )
+            `)
+            .eq("isHabilitado_proveedor",true)
+        
+            setData(proveedores)
         } catch (error) {
             console.log(error)
         }
@@ -65,23 +96,23 @@ const TablaProveedores = () => {
         .eq("id_proveedor",id_proveedor)
 
 
-       
+       console.log(result)
       } catch (error) {
         console.log(error)
       }
     }
 
-    const{categoria_proveedor,nombre_proveedor,cuit_proveedor,direccion_proveedor,localidad_proveedor,telefono_proveedor,email_proveedor}=proveedor;
+    const{id_categoria_proveedor,nombre_proveedor,cuit_proveedor,direccion_proveedor,localidad_proveedor,telefono_proveedor,email_proveedor}=proveedor;
 
     const update2=async(id_proveedor)=>{
       try {
-        const result= await supabase.from("proveedores")
-        .update({categoria_proveedor,nombre_proveedor,cuit_proveedor,direccion_proveedor,localidad_proveedor,telefono_proveedor,email_proveedor})
+        const {result,error}= await supabase.from("proveedores")
+        .update({cuit_proveedor,nombre_proveedor,direccion_proveedor,localidad_proveedor,telefono_proveedor,email_proveedor,id_categoria_proveedor})
         .eq("id_proveedor",id_proveedor)
         
         console.log(result)
         abrirCerrarModalEditar();
-        window.location.reload()
+        window.location.reload();
        } catch (error) {
         console.log(error)
       }
@@ -90,21 +121,23 @@ const TablaProveedores = () => {
     const submit = async()=>{
       try {
         const {error,result}= await supabase.from("proveedores").insert({
-          categoria_proveedor,
-          nombre_proveedor,
           cuit_proveedor,
+          nombre_proveedor,
           direccion_proveedor,
           localidad_proveedor,
           telefono_proveedor,
-          email_proveedor
+          email_proveedor,
+          id_categoria_proveedor
         });
 
+        console.log(result)
         abrirCerrarModalInsertar();
+        window.location.reload()
         setData({
           ...data,
           result
         })
-        window.location.reload()
+       
       } catch (error) {
         console.log(error)
       }
@@ -125,15 +158,15 @@ const TablaProveedores = () => {
           });
           update(id_proveedor);
         }
-        setTimeout(() => {
+         setTimeout(() => {
           window.location.reload()
-        }, 2000);
+        }, 1000); 
       });
     }
 
     //Configuracion del 
     const columnas=[
-        {title:"Categoria", field:"id_categoria_proveedor"},
+        {title:"Categoria", field:"categoriasProveedores.nombre_categoria"},
         {title:"Nombre", field:"nombre_proveedor"},
         {title:"CUIT", field:"cuit_proveedor"},
         {title:"Direccion", field:"direccion_proveedor"},
@@ -141,6 +174,7 @@ const TablaProveedores = () => {
         {title:"Telefono",field:"telefono_proveedor"},
         {title:"Email", field:"email_proveedor"},
       ]
+
 
 
     //Estilos
@@ -151,10 +185,34 @@ const TablaProveedores = () => {
           [e.target.name]: e.target.value
       })
   }
+
+  const[categorias,setCategorias]=useState({}) 
+  const datos=async()=>{
+    const result = await supabase.from('categoriasProveedores').select();
+
+    setCategorias(result.data)
+  }
+
     const bodyInsertar= (
+      
       <div className={styles.modal}>
         <h3>Agregar Nuevo Proveedor</h3>
-        <TextField className={styles.inputMaterial} label="Categoria" onChange={actualizarState} name="categoria_proveedor" value={categoria_proveedor}/>
+        <Label>Categoria</Label>
+        <Campo>
+          <Select
+                    name='id_categoria_proveedor'
+                    value={id_categoria_proveedor}
+                    onChange={actualizarState}
+                >
+                    <option value="">--Seleccione--</option>
+                    {Object.values(categorias).map(pr=>(
+                      <option key={pr.id_categoria} value={pr.id_categoria}>{pr.nombre_categoria}</option>
+                    ))}
+                
+                    
+                  
+            </Select>
+        </Campo>
         <br/>
         <TextField className={styles.inputMaterial} label="Nombre"  onChange={actualizarState} name="nombre_proveedor" value={nombre_proveedor} />
         <br/>
@@ -175,12 +233,29 @@ const TablaProveedores = () => {
       </div>
     )
 
-    const{id_proveedor}=proveedor;
+
+    
+
+
+    const {id_proveedor}=proveedor;
 
     const bodyEditar= (
       <div className={styles.modal}>
         <h3>Editar Proveedor</h3>
-        <TextField className={styles.inputMaterial} label="Categoria" onChange={actualizarState} name="categoria_proveedor" value={proveedor&&categoria_proveedor}/>
+        {}
+        <Label>Categoria</Label>
+        <Campo>
+          <Select
+                    name='id_categoria_proveedor'
+                    value={proveedor&&id_categoria_proveedor}
+                    onChange={actualizarState}
+                >
+                    <option value="">--Seleccione--</option>
+                    {Object.values(categorias).map(pr=>(
+                      <option key={pr.id_categoria} value={pr.id_categoria}>{pr.nombre_categoria}</option>
+                    ))}     
+            </Select>
+        </Campo>
         <br/>
         <TextField className={styles.inputMaterial} label="Nombre"  onChange={actualizarState} name="nombre_proveedor" value={proveedor&&nombre_proveedor} />
         <br/>
@@ -218,12 +293,21 @@ const TablaProveedores = () => {
 
     useEffect(()=>{
         funcion();
+        datos();
+
     },[])
-   
+
 
   return (
     <div>
+        <h1 align="center">Sistema</h1>
 
+        <div className="contenedor">
+          <br/>
+          <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700" onClick={()=>abrirCerrarModalInsertar()}>Insertar Proveedor</button>
+          <br/><br/>
+          
+        </div>
         
         <MaterialTable
             title="Proveedores"
@@ -274,13 +358,6 @@ const TablaProveedores = () => {
         >
           {bodyEditar}
         </Modal>
-        <div className="contenedor">
-          <br/>
-          <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Insertar Proveedor</button>
-          
-
-          <br/><br/>
-        </div>
     </div>
   )
 }

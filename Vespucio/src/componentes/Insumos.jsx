@@ -8,8 +8,27 @@ import { InputText } from 'primereact/inputtext';
 import {makeStyles} from "@material-ui/core/styles"
 import { amber } from "@material-ui/core/colors";
 import swal from "sweetalert";
+import styled from '@emotion/styled'
 
+const Label = styled.label`
+    flex: 0 0 100px;
+    text-align:center;
 
+`;
+
+const Select = styled.select`
+    display:block;
+    width:100%;
+    padding: 1rem;
+    border: 1px solid #e1e1e1;
+    -webkit-appearance:none;
+`
+
+const Campo= styled.div`
+    display:flex;
+    margin-bottom: 1rem;
+    align-items:center;
+`;
 
 const useStyles = makeStyles((theme)=>({
   modal:{
@@ -39,31 +58,37 @@ const Insumos = () => {
     const [data,setData]=useState([])
     const[modal,insertarModal]=useState(false)
     const [modalEditar, setModalEditar]= useState(false);
-    const[proveedor,proveedorAgregado]=useState({
-        categoria_proveedor:'',
-        nombre_proveedor:'',
-        cuit_proveedor:'',
-        direccion_proveedor:'',
-        localidad_proveedor:'',
-        telefono_proveedor:'',
-        email_proveedor:'',
+    const[insumos,setInsumos]=useState({
+        nombre_producto:'',
+        categoria_producto:'',
+        descripcion_producto:'',
+        stock_producto:'',
+        id_proveedor:''
     })
     //Funciones que tienen datos desde una api
     const funcion = async()=>{
         try {
-           const result= await supabase.from('proveedores')
-           .select()
-           .eq("isHabilitado_proveedor",true)
+           const result= await supabase.from('articulos')
+           .select(`
+              *,
+              categoriasArticulos(
+                nombre_categoria
+              ),
+              proveedores(
+                nombre_proveedor
+              )
+          `)
+           .eq("isHabilitado_producto",true)
            setData(result.data)
         } catch (error) {
             console.log(error)
         }
     }
-    const update = async(id_proveedor)=>{
+    const update = async(id_producto)=>{
       try {
-        const result= await supabase.from("proveedores")
-        .update({isHabilitado_proveedor:false})
-        .eq("id_proveedor",id_proveedor)
+        const result= await supabase.from("articulos")
+        .update({isHabilitado_producto:false})
+        .eq("id_producto",id_producto)
 
 
        
@@ -72,13 +97,13 @@ const Insumos = () => {
       }
     }
 
-    const{categoria_proveedor,nombre_proveedor,cuit_proveedor,direccion_proveedor,localidad_proveedor,telefono_proveedor,email_proveedor}=proveedor;
+    const{nombre_producto,categoria_producto,descripcion_producto,stock_producto,id_proveedor}=insumos;
 
-    const update2=async(id_proveedor)=>{
+    const update2=async(id_producto)=>{
       try {
-        const result= await supabase.from("proveedores")
-        .update({categoria_proveedor,nombre_proveedor,cuit_proveedor,direccion_proveedor,localidad_proveedor,telefono_proveedor,email_proveedor})
-        .eq("id_proveedor",id_proveedor)
+        const result= await supabase.from("articulos")
+        .update({nombre_producto,categoria_producto,descripcion_producto,stock_producto,id_proveedor})
+        .eq("id_producto",id_producto)
         
         console.log(result)
         abrirCerrarModalEditar();
@@ -90,14 +115,12 @@ const Insumos = () => {
 
     const submit = async()=>{
       try {
-        const {error,result}= await supabase.from("proveedores").insert({
-          categoria_proveedor,
-          nombre_proveedor,
-          cuit_proveedor,
-          direccion_proveedor,
-          localidad_proveedor,
-          telefono_proveedor,
-          email_proveedor
+        const {error,result}= await supabase.from("articulos").insert({
+          nombre_producto,
+          categoria_producto,
+          descripcion_producto,
+          stock_producto,
+          id_proveedor
         });
 
         abrirCerrarModalInsertar();
@@ -111,7 +134,7 @@ const Insumos = () => {
       }
     }
 
-    const handleEliminar=(id_proveedor)=>{
+    const handleEliminar=(id_producto)=>{
       swal({
         title: "Estas seguro de eliminar este registro?",
         text: "Una vez eliminado, no podras recuperar el archivo de vuelta!",
@@ -124,7 +147,7 @@ const Insumos = () => {
           swal("Registro eliminado con exito!", {
             icon: "success",
           });
-          update(id_proveedor);
+          update(id_producto);
         }
         setTimeout(() => {
           window.location.reload()
@@ -134,32 +157,81 @@ const Insumos = () => {
 
     //Configuracion del {/*DEJO LOS PARAMETROS DEL VALUE, SINO ME CRASHEA */}
     const columnas=[ 
-        {title:"N°", field:"id_categoria_proveedor"},
-        {title:"Nombre", field:"nombre_proveedor"},
-        {title:"Categoria", field:"cuit_proveedor"},
-        {title:"Stock", field:"direccion_proveedor"},
-
+        {title:"N°", field:"id_producto"},
+        {title:"Nombre", field:"nombre_producto"},
+        {title:"Categoria", field:"categoriasArticulos.nombre_categoria"},
+        {title:"Stock", field:"stock_producto"},
+        {title:"Descripcion", field:"descripcion_producto"},
+        {title:"Proveedor", field:"proveedores.nombre_proveedor"},
       ]
 
 
     //Estilos
     const styles=useStyles();
     const actualizarState = e =>{
-      proveedorAgregado({
-          ...proveedor,
+      setInsumos({
+          ...insumos,
           [e.target.name]: e.target.value
       })
   }
+
+  //Funcion que me trae la lista de categorias y lo agrega a la lista desplegable
+  const[categorias,setCategorias]=useState({}) 
+  const datos=async()=>{
+    const result = await supabase.from('categoriasArticulos').select();
+
+    setCategorias(result.data)
+  }
+
+  const[proveedo,setProveedo]=useState({}) 
+  const prove=async()=>{
+    const result = await supabase.from('proveedores').select();
+
+    setProveedo(result.data)
+  }
+
+
     const bodyInsertar= (
       <div className={styles.modal}>
         <h3>Agregar Nuevo Insumo</h3> {/*DEJO LOS PARAMETROS DEL VALUE, SINO ME CRASHEA */}
-        <TextField className={styles.inputMaterial} label="Nombre Insumo" onChange={actualizarState} name="categoria_proveedor" value={categoria_proveedor}/> 
+        <TextField className={styles.inputMaterial} label="Nombre Insumo" onChange={actualizarState} name="nombre_producto" value={nombre_producto}/> 
         <br/>
-        <TextField className={styles.inputMaterial} label="Categoria"  onChange={actualizarState} name="nombre_proveedor" value={nombre_proveedor} />
+        <Campo>
+          <Select
+                    name='categoria_producto'
+                    value={categoria_producto}
+                    onChange={actualizarState}
+                >
+                    <option value="">--Seleccione--</option>
+                    {Object.values(categorias).map(pr=>(
+                      <option key={pr.id_categoria} value={pr.id_categoria}>{pr.nombre_categoria}</option>
+                    ))}
+                
+                    
+                  
+            </Select>
+        </Campo>
         <br/>
-        <TextField className={styles.inputMaterial} label="Stock" onChange={actualizarState} name="cuit_proveedor" value={cuit_proveedor}/>
+        <TextField className={styles.inputMaterial} label="Stock" onChange={actualizarState} name="stock_producto" value={stock_producto}/>
         <br/>
-        <TextField type="text" className={styles.inputMaterial} label="Descripcion" onChange={actualizarState} name="localidad_proveedor" value={localidad_proveedor} />
+        <TextField type="text" className={styles.inputMaterial} label="Descripcion" onChange={actualizarState} name="descripcion_producto" value={descripcion_producto} />
+        <br/>
+        <br/>
+        <Campo>
+          <Select
+                    name='id_proveedor'
+                    value={id_proveedor}
+                    onChange={actualizarState}
+                >
+                    <option value="">--Seleccione--</option>
+                    {Object.values(proveedo).map(prr=>(
+                      <option key={prr.id_proveedor} value={prr.id_proveedor}>{prr.nombre_proveedor}</option>
+                    ))}
+                
+                    
+                  
+            </Select>
+        </Campo>
         <br/>
         <br/>
         <div align="right">
@@ -169,21 +241,50 @@ const Insumos = () => {
       </div>
     )
 
-    const{id_proveedor}=proveedor;
+    const{id_producto}=insumos;
 
     const bodyEditar= (
       <div className={styles.modal}>
         <h3>Editar datos de Insumo</h3>
-        <TextField className={styles.inputMaterial} label="Nombre Insumo" onChange={actualizarState} name="categoria_proveedor" value={proveedor&&categoria_proveedor}/>
+        <TextField className={styles.inputMaterial} label="Nombre Insumo" onChange={actualizarState} name="nombre_producto" value={insumos&&nombre_producto}/>
         <br/>
-        <TextField className={styles.inputMaterial} label="Categoria"  onChange={actualizarState} name="nombre_proveedor" value={proveedor&&nombre_proveedor} />
+        <Campo>
+          <Select
+                    name='categoria_producto'
+                    value={insumos&&categoria_producto}
+                    onChange={actualizarState}
+                >
+                    <option value="">--Seleccione--</option>
+                    {Object.values(categorias).map(pr=>(
+                      <option key={pr.id_categoria} value={pr.id_categoria}>{pr.nombre_categoria}</option>
+                    ))}
+                
+                    
+                  
+            </Select>
+        </Campo>
         <br/>
-        <TextField className={styles.inputMaterial} label="Stock" onChange={actualizarState} name="cuit_proveedor" value={proveedor&&cuit_proveedor}/>
+        <TextField className={styles.inputMaterial} label="Stock" onChange={actualizarState} name="stock_producto" value={insumos&&stock_producto}/>
         <br/>
-        <TextField type="text" className={styles.inputMaterial} label="Descripcion" onChange={actualizarState} name="localidad_proveedor" value={proveedor&&localidad_proveedor} />
-                <br/><br/>
+        <Campo>
+          <Select
+                    name='id_proveedor'
+                    value={insumos&&id_proveedor}
+                    onChange={actualizarState}
+                >
+                    <option value="">--Seleccione--</option>
+                    {Object.values(proveedo).map(prr=>(
+                      <option key={prr.id_proveedor} value={prr.id_proveedor}>{prr.nombre_proveedor}</option>
+                    ))}
+                
+                    
+                  
+            </Select>
+        </Campo>
+        
+         <br/><br/>
         <div align="right">
-          <Button onClick={()=>update2(id_proveedor)} color='primary'>Editar</Button>
+          <Button onClick={()=>update2(id_producto)} color='primary'>Editar</Button>
           <Button onClick={()=>abrirCerrarModalEditar()}>Cancelar</Button>
         </div>
       </div>
@@ -199,13 +300,15 @@ const Insumos = () => {
       setModalEditar(!modalEditar)
     }
 
-    const seleccionarProveedor = (proveedor,caso)=>{
-      proveedorAgregado(proveedor);
+    const seleccionarInsumo = (insumos,caso)=>{
+      setInsumos(insumos);
       (caso === "Editar")&&abrirCerrarModalEditar();
     }
 
     useEffect(()=>{
         funcion();
+        datos();
+        prove();
     },[])
    
 
@@ -213,19 +316,19 @@ const Insumos = () => {
     <div>
        
         <MaterialTable
-            title="Comprobantes"
+            title="Insumos"
             columns={columnas}
             data={data}
             actions={[
                 {
                     icon:"edit",
                     tooltip:"Modificar",
-                    onClick: (event,rowData)=>seleccionarProveedor(rowData,"Editar")
+                    onClick: (event,rowData)=>seleccionarInsumo(rowData,"Editar")
                 },
                 {
                     icon:"delete",
                     tooltip:"Eliminar",
-                    onClick: (event,rowData)=>handleEliminar(rowData.id_proveedor)
+                    onClick: (event,rowData)=>handleEliminar(rowData.id_producto)
                 },
                 //COMO AGREGAR OTRO ICONO BOTON?
 
