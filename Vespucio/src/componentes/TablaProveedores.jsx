@@ -280,6 +280,7 @@ const TablaProveedores = () => {
     //Funciones
     const abrirCerrarModalInsertar= ()=>{
       insertarModal(!modal)
+      proveedorAgregado({})
     }
 
     const abrirCerrarModalEditar= ()=>{

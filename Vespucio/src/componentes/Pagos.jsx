@@ -322,6 +322,7 @@ const Pagos = () => {
     //Funciones
     const abrirCerrarModalInsertar= ()=>{
       insertarModal(!modal)
+      setPagos({})
     }
 
     const abrirCerrarModalEditar= ()=>{

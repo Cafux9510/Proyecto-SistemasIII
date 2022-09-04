@@ -294,6 +294,7 @@ const Insumos = () => {
     //Funciones
     const abrirCerrarModalInsertar= ()=>{
       insertarModal(!modal)
+      setInsumos({})
     }
 
     const abrirCerrarModalEditar= ()=>{

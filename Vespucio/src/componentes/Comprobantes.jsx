@@ -373,6 +373,7 @@ const Comprobantes = () => {
     //Funciones
     const abrirCerrarModalInsertar= ()=>{
       insertarModal(!modal)
+      setComprobante({})
     }
 
     const abrirCerrarModalEditar= ()=>{
