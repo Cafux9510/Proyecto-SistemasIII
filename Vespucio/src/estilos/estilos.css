@@ -20,3 +20,79 @@
     background-color: var(--azul-clarito);
     color: white;
 }
+
+/*ESTILO MOMENTANEO DESPUES SE BORRA TODO LO QUE APARECE ACÁ ABAJO*/
+
+.titulo{
+    text-align: center;
+    margin-top: 20px;
+    font-family: 'Courier New', Courier, monospace; 
+    font-weight:bold; 
+    font-size: 30px; 
+    color: #0361e6; 
+    text-shadow: -1px 0 #414D68, 0 1px #414D68, 1px 0 #414D68, 0 -1px #414D68, -2px 2px 0 #414D68, 2px 2px 0 #414D68, 1px 1px #414D68, 2px 2px #414D68, 3px 3px #414D68, 4px 4px #414D68, 5px 5px #414D68 6px 6px #414D68, 7px 7px #414D68, 8px 8px #414D68, 9px 9px #414D68;
+}
+
+
+.login-container{
+    margin-top: 5%;
+    margin-bottom: 5%;
+    }
+    .login-form-1{
+    padding: 5%;
+    box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 9px 26px 0 rgba(0, 0, 0, 0.19);
+    border-style: dotted;
+    border-radius: 25px;
+    border-color: cadetblue;
+    border-width: 5px;
+    }
+    .login-form-1 h3{
+    text-align: center;
+    color: #333;
+    }
+    .login-form-2{
+    padding: 5%;
+    background: #0062cc;
+    box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 9px 26px 0 rgba(0, 0, 0, 0.19);
+    border-style: dotted;
+    border-radius: 25px;
+    border-color: rgb(190, 195, 195);
+    border-width: 5px;
+    }
+    .login-form-2 h3{
+    text-align: center;
+    color: #fff;
+    }
+    .login-container form{
+    padding: 10%;
+    }
+    .btnSubmit
+    {
+    width: 50%;
+    border-radius: 1rem;
+    padding: 1.5%;
+    border: none;
+    cursor: pointer;
+    }
+    .login-form-1 .btnSubmit{
+    font-weight: 600;
+    color: #fff;
+    background-color: #0062cc;
+    }
+    .login-form-2 .btnSubmit{
+    font-weight: 600;
+    color: #0062cc;
+    background-color: #fff;
+    }
+    .login-form-2 .ForgetPwd{
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    }
+    .login-form-1 .ForgetPwd{
+    color: #0062cc;
+    font-weight: 600;
+    text-decoration: none;
+    }
+
+/*HASTA ACA*/

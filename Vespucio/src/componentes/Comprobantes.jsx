@@ -9,6 +9,8 @@ import {makeStyles} from "@material-ui/core/styles"
 import { amber } from "@material-ui/core/colors";
 import swal from "sweetalert";
 import styled from '@emotion/styled'
+import { Link } from "react-router-dom";
+
 
 const Label = styled.label`
     flex: 0 0 100px;
@@ -214,14 +216,18 @@ const Comprobantes = () => {
   //Funciones de extraccion de proveedores y tipo comprobante
   const[tipo,setTipo]=useState({}) 
   const datos=async()=>{
-    const result = await supabase.from('tipoComprobante').select();
+    const result = await supabase.from('tipoComprobante')
+    .select()
+    .eq("isHabilitado_comprobante",true);
 
     setTipo(result.data)
   }
 
   const[pro,setPro]=useState({}) 
   const dato=async()=>{
-    const result = await supabase.from('proveedores').select();
+    const result = await supabase.from('proveedores')
+    .select()
+    .eq("isHabilitado_proveedor",true);;
 
     setPro(result.data)
   }
@@ -251,7 +257,8 @@ const Comprobantes = () => {
 
     const bodyInsertar= (
       <div className={styles.modal}>
-        <h3>Agregar Nuevo Comprobante</h3>
+        <h4>Agregar Nuevo Comprobante</h4>
+        <br/>
         <Campo>
         <Label>Tipo Comprobante</Label>
           <Select
@@ -285,7 +292,11 @@ const Comprobantes = () => {
         <br/>
         <TextField type="number" className={styles.inputMaterial} label="N° Comprobante" onChange={actualizarState} name="numero_comprobante" value={numero_comprobante}/>
         <br/>
+        <br/>
+        <br/>
         <TextField type="date" className={styles.inputMaterial}   onChange={actualizarState} name="fecha_emision" value={fecha_emision}/>
+        <br/>
+        <br/>
         <br/>
         <Label>Tipo Movimiento</Label>
         <Select name="tipo_movimiento" value={tipo_movimiento} onChange={actualizarState}>
@@ -295,7 +306,12 @@ const Comprobantes = () => {
 
         </Select>
         <br/>
+        <br/>
+        <label><b>Documento Digital o Foto del Comprobante</b></label>
+        <br/>
+        <br/>
         <input name='input=file' id='selectArchivo' type='file' />
+        <br/>
         <br/>
         <TextField type="number" className={styles.inputMaterial} label="Monto Total" onChange={actualizarState} name="total_comprobante" value={total_comprobante} />
         <br/><br/>
@@ -310,7 +326,8 @@ const Comprobantes = () => {
 
     const bodyEditar= (
       <div className={styles.modal}>
-        <h3>Editar Comprobante</h3>
+        <h4>Editar Comprobante</h4>
+        <br/>
         <Campo>
         <Label>Tipo Comprobante</Label>
           <Select
@@ -347,7 +364,11 @@ const Comprobantes = () => {
         <br/>
         <TextField type="number" className={styles.inputMaterial} label="N° Comprobante" onChange={actualizarState} name="numero_comprobante" value={comprobante&&numero_comprobante}/>
         <br/>
+        <br/>
+        <br/>
         <TextField type="date" className={styles.inputMaterial} label="Fecha Emision"  onChange={actualizarState} name="fecha_emision" value={comprobante&&fecha_emision}/>
+        <br/>
+        <br/>
         <br/>
         <Label>Tipo Movimiento</Label>
         <Select name="tipo_movimiento" value={comprobante&&tipo_movimiento} onChange={actualizarState}>
@@ -357,8 +378,12 @@ const Comprobantes = () => {
 
         </Select>
         <br/>
+        <br/>
         <input type="file"  name='input=file' id='selectArchivo'/>
-        <a href={comprobante&&link_archivo} target="_blank">Archivo</a>
+        <br/>
+        <br/>
+        <a href={comprobante&&link_archivo} target="_blank"><b>Previsualización del Archivo Subido</b></a>
+        <br/>
         <br/>
         <TextField type="number" className={styles.inputMaterial} label="Monto Total" onChange={actualizarState} name="total_comprobante" value={comprobante&&total_comprobante} />
         <br/><br/>
@@ -449,6 +474,9 @@ const Comprobantes = () => {
         <div className="contenedor">
           <br/>
           <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Comprobante</button>
+          <Link to='/CategoriasComprobantes'>
+            <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton">Ver Tipos de Comprobantes</button>          
+          </Link>
           <br/><br/>
         </div>
     </div>

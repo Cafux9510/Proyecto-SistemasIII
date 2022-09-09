@@ -5,6 +5,13 @@ import Insumos from "./componentes/Insumos"
 import Comprobantes from "./componentes/Comprobantes"
 import Navbar from './componentes/Navbar'
 import TablaProveedores from "./componentes/TablaProveedores";
+
+/*ACA MODIFICO FACUNDO-C2*/
+import CategoriasInsumos from "./componentes/CategoriasInsumos";
+import CategoriasProveedores from "./componentes/CategoriasProveedores";
+import CategoriasComprobantes from "./componentes/CategoriasComprobantes";
+/*HASTA ACA*/
+
 function App() {
 
 
@@ -18,6 +25,11 @@ function App() {
         <Route exact path="/insumos" element={<Insumos/>}/>
         <Route exact path="/TablaProveedores" element={<TablaProveedores/>}/>
         <Route exact path="/pagos" element={<Pagos/>}/>
+        {/*ACA MODIFICO FACUNDO-C2*/}
+        <Route exact path="/CategoriasInsumos" element={<CategoriasInsumos/>}/>
+        <Route exact path="/CategoriasProveedores" element={<CategoriasProveedores/>}/>
+        <Route exact path="/CategoriasComprobantes" element={<CategoriasComprobantes/>}/>
+        {/*HASTA ACA*/}
       </Routes>
     </BrowserRouter>
   )

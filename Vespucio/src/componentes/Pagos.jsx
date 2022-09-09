@@ -207,24 +207,30 @@ const Pagos = () => {
 
   const[comprobantes,setComprabantes]=useState({});
   const compro= async()=>{
-    const result = await supabase.from('comprobantes').select();
+    const result = await supabase.from('comprobantes')
+    .select()
+    .eq("isHabilitado_comprobante",true);;
 
     setComprabantes(result.data)
   }
   
   const[pro,setPro]=useState({}) 
   const dato=async()=>{
-    const result = await supabase.from('proveedores').select();
+    const result = await supabase.from('proveedores')
+    .select()
+    .eq("isHabilitado_proveedor",true);;
 
     setPro(result.data)
   }
 
     const bodyInsertar= (
       <div className={styles.modal}>
-        <h3>Registrar Nuevo Pago</h3>
+        <h4>Registrar Nuevo Pago</h4>
         <br/>
+        
         <TextField type="number" className={styles.inputMaterial} label="Numero de Pago" onChange={actualizarState} name="numero_pago" value={numero_pago}/>
         <br/> 
+        <br/>
         <br/>
         <Campo>
         <Label>Nombre Proveedor</Label>
@@ -243,10 +249,12 @@ const Pagos = () => {
 
         <TextField type="date" className={styles.inputMaterial} label=""  onChange={actualizarState} name="fecha_emision" value={fecha_emision}/>
         <br/>
+        <br/>
         <TextField className={styles.inputMaterial} label="Monto" onChange={actualizarState} name="total_pago" value={total_pago} />
         <br/>
+        <br/>
         <Campo>
-        <Label>Comprobante</Label>
+        <Label>Comprobante:</Label>
           <Select
                     name='id_comprobante'
                     value={id_comprobante}
@@ -261,6 +269,7 @@ const Pagos = () => {
         <br/>
         <input name='input=file' id='selectArchivo' type='file' />
         <br/>
+        <br/>
         <div align="right">
           <Button color='primary' onClick={()=>submit()} >Insertar</Button>
           <Button onClick={()=>abrirCerrarModalInsertar()}>Cancelar</Button>
@@ -272,8 +281,10 @@ const Pagos = () => {
 
     const bodyEditar= (
       <div className={styles.modal}>
-        <h3>Editar Pago</h3>
+        <h4>Editar Pago</h4>
+        <br/>
         <TextField className={styles.inputMaterial} label="Numero de Pago" onChange={actualizarState} name="numero_Pago" value={pagos&&numero_pago}/> 
+        <br/>
         <br/>
         <Campo>
         <Label>Nombre Proveedor</Label>
@@ -289,13 +300,14 @@ const Pagos = () => {
             </Select>
         </Campo>
         <br/>
-
         <TextField type="date" className={styles.inputMaterial} label=""  onChange={actualizarState} name="fecha_emision" value={pagos&&fecha_emision}/>
+        <br/>
         <br/>
         <TextField className={styles.inputMaterial} label="Monto" onChange={actualizarState} name="total_pago" value={pagos&&total_pago} />
         <br/>
+        <br/>
         <Campo>
-        <Label>Comprobante</Label>
+        <Label>Comprobante:</Label>
           <Select
                     name='id_comprobante'
                     value={pagos&&id_comprobante}
@@ -309,7 +321,10 @@ const Pagos = () => {
         </Campo>
         <br/>
           <input type="file"  name='input=file' id='selectArchivo'/>
-          <a href={pagos&&link_archivo} target="_blank">Archivo</a>
+          <br/>
+          <br/>
+          <a href={pagos&&link_archivo} target="_blank"><b>Previsualización del Archivo Subido</b></a>
+        <br/>
         <br/>
         <div align="right">
           <Button onClick={()=>update2(id_pago)} color='primary'>Editar</Button>

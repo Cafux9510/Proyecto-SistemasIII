@@ -6,6 +6,7 @@ import {Modal,TextField} from "@material-ui/core"
 import {makeStyles} from "@material-ui/core/styles"
 import swal from "sweetalert";
 import styled from '@emotion/styled'
+import { Link } from "react-router-dom";
 
 const Label = styled.label`
     flex: 0 0 100px;
@@ -188,7 +189,9 @@ const TablaProveedores = () => {
 
   const[categorias,setCategorias]=useState({}) 
   const datos=async()=>{
-    const result = await supabase.from('categoriasProveedores').select();
+    const result = await supabase.from('categoriasProveedores')
+    .select()
+    .eq("isHabilitado_categoria",true);
 
     setCategorias(result.data)
   }
@@ -196,7 +199,8 @@ const TablaProveedores = () => {
     const bodyInsertar= (
       
       <div className={styles.modal}>
-        <h3>Agregar Nuevo Proveedor</h3>
+        <h4>Agregar Nuevo Proveedor</h4>
+        <br/>
         <Label>Categoria</Label>
         <Campo>
           <Select
@@ -213,19 +217,23 @@ const TablaProveedores = () => {
                   
             </Select>
         </Campo>
-        <br/>
         <TextField className={styles.inputMaterial} label="Nombre"  onChange={actualizarState} name="nombre_proveedor" value={nombre_proveedor} />
+        <br/>
         <br/>
         <TextField className={styles.inputMaterial} label="CUIT" onChange={actualizarState} name="cuit_proveedor" value={cuit_proveedor}/>
         <br/>
+        <br/>
         <TextField className={styles.inputMaterial} label="Direccion" onChange={actualizarState} name="direccion_proveedor" value={direccion_proveedor}/>
+        <br/>
         <br/>
         <TextField className={styles.inputMaterial} label="Localidad" onChange={actualizarState} name="localidad_proveedor" value={localidad_proveedor} />
         <br/>
+        <br/>
         <TextField type="number" className={styles.inputMaterial} label="Telefono" onChange={actualizarState} name="telefono_proveedor" value={telefono_proveedor} />
         <br/>
+        <br/>
         <TextField type="email" className={styles.inputMaterial} label="Email" onChange={actualizarState} name="email_proveedor" value={email_proveedor} />
-        <br/><br/>
+        <br/><br/><br/>
         <div align="right">
           <Button color='primary' onClick={()=>submit()} >Insertar</Button>
           <Button onClick={()=>abrirCerrarModalInsertar()}>Cancelar</Button>
@@ -241,9 +249,10 @@ const TablaProveedores = () => {
 
     const bodyEditar= (
       <div className={styles.modal}>
-        <h3>Editar Proveedor</h3>
-        {}
+        <h4>Editar Proveedor</h4>
+        <br/>
         <Label>Categoria</Label>
+        <br/>
         <Campo>
           <Select
                     name='id_categoria_proveedor'
@@ -256,16 +265,20 @@ const TablaProveedores = () => {
                     ))}     
             </Select>
         </Campo>
-        <br/>
         <TextField className={styles.inputMaterial} label="Nombre"  onChange={actualizarState} name="nombre_proveedor" value={proveedor&&nombre_proveedor} />
+        <br/>
         <br/>
         <TextField className={styles.inputMaterial} label="CUIT" onChange={actualizarState} name="cuit_proveedor" value={proveedor&&cuit_proveedor}/>
         <br/>
+        <br/>
         <TextField className={styles.inputMaterial} label="Direccion" onChange={actualizarState} name="direccion_proveedor" value={proveedor&&direccion_proveedor}/>
+        <br/>
         <br/>
         <TextField className={styles.inputMaterial} label="Localidad" onChange={actualizarState} name="localidad_proveedor" value={proveedor&&localidad_proveedor} />
         <br/>
+        <br/>
         <TextField type="number" className={styles.inputMaterial} label="Telefono" onChange={actualizarState} name="telefono_proveedor" value={proveedor&&telefono_proveedor} />
+        <br/>
         <br/>
         <TextField type="email" className={styles.inputMaterial} label="Email" onChange={actualizarState} name="email_proveedor" value={proveedor&&email_proveedor} />
         <br/><br/>
@@ -342,7 +355,11 @@ const TablaProveedores = () => {
         <div className="contenedor">
           <br/>
           <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Insertar Proveedor</button>
-          <br/><br/>
+          <br/>
+          <Link to='/CategoriasProveedores'>
+            <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton">Ver Categorias de Proveedores</button>
+          </Link>
+          <br/>
           
         </div>
         

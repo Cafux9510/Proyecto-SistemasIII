@@ -9,6 +9,8 @@ import {makeStyles} from "@material-ui/core/styles"
 import { amber } from "@material-ui/core/colors";
 import swal from "sweetalert";
 import styled from '@emotion/styled'
+import { Link } from "react-router-dom";
+
 
 const Label = styled.label`
     flex: 0 0 100px;
@@ -64,7 +66,15 @@ const Insumos = () => {
         descripcion_producto:'',
         stock_producto:'',
         id_proveedor:''
-    })
+    });
+
+    /*ACA TAMBIEN MODIFICO FACUNDO-C1 */
+
+    const [modalEditarStock, stockModal]= useState(false);
+
+    /*HASTA ACA*/
+
+
     //Funciones que tienen datos desde una api
     const funcion = async()=>{
         try {
@@ -105,7 +115,6 @@ const Insumos = () => {
         .update({nombre_producto,categoria_producto,descripcion_producto,stock_producto,id_proveedor})
         .eq("id_producto",id_producto)
         
-        console.log(result)
         abrirCerrarModalEditar();
         window.location.reload()
        } catch (error) {
@@ -169,33 +178,57 @@ const Insumos = () => {
     //Estilos
     const styles=useStyles();
     const actualizarState = e =>{
-      setInsumos({
+        
+           setInsumos({
           ...insumos,
           [e.target.name]: e.target.value
       })
-  }
+    }
+  
 
   //Funcion que me trae la lista de categorias y lo agrega a la lista desplegable
   const[categorias,setCategorias]=useState({}) 
   const datos=async()=>{
-    const result = await supabase.from('categoriasArticulos').select();
+    const result = await supabase.from('categoriasArticulos')
+    .select()
+    .eq("isHabilitado_categoria",true);
 
     setCategorias(result.data)
   }
 
+  //Funcion que me trae la lista de proveedores y lo agrega a la lista desplegable
   const[proveedo,setProveedo]=useState({}) 
   const prove=async()=>{
-    const result = await supabase.from('proveedores').select();
+    const result = await supabase.from('proveedores')
+    .select()
+    .eq("isHabilitado_proveedor",true);
 
     setProveedo(result.data)
   }
 
+  /*ACA MODIFICO FACUNDO-C1*/
+
+  //Funcion que me trae la lista de productos y lo agrega a la lista desplegable
+  const[nombres_prod,setNombresProd]=useState({})
+  const nombresProd=async()=>{
+    const result = await supabase.from('articulos')
+    .select()
+    .eq("isHabilitado_producto",true);
+
+    setNombresProd(result.data)
+  }
+
+
+  /*HASTA ACA*/
 
     const bodyInsertar= (
       <div className={styles.modal}>
         <h3>Agregar Nuevo Insumo</h3> {/*DEJO LOS PARAMETROS DEL VALUE, SINO ME CRASHEA */}
         <TextField className={styles.inputMaterial} label="Nombre Insumo" onChange={actualizarState} name="nombre_producto" value={nombre_producto}/> 
         <br/>
+        <br/>
+        <label>Seleccione una Categoría</label>
+         <br/>
         <Campo>
           <Select
                     name='categoria_producto'
@@ -211,11 +244,14 @@ const Insumos = () => {
                   
             </Select>
         </Campo>
-        <br/>
         <TextField className={styles.inputMaterial} label="Stock" onChange={actualizarState} name="stock_producto" value={stock_producto}/>
+        <br/>
         <br/>
         <TextField type="text" className={styles.inputMaterial} label="Descripcion" onChange={actualizarState} name="descripcion_producto" value={descripcion_producto} />
         <br/>
+        <br/>
+        <br/>
+        <label>Seleccione un Proveedor</label>
         <br/>
         <Campo>
           <Select
@@ -245,8 +281,12 @@ const Insumos = () => {
 
     const bodyEditar= (
       <div className={styles.modal}>
-        <h3>Editar datos de Insumo</h3>
+        <h4>Editar datos de Insumo</h4>
+        <br/>
         <TextField className={styles.inputMaterial} label="Nombre Insumo" onChange={actualizarState} name="nombre_producto" value={insumos&&nombre_producto}/>
+        <br/>
+        <br/>
+        <label>Categoría</label>
         <br/>
         <Campo>
           <Select
@@ -266,6 +306,9 @@ const Insumos = () => {
         <br/>
         <TextField className={styles.inputMaterial} label="Stock" onChange={actualizarState} name="stock_producto" value={insumos&&stock_producto}/>
         <br/>
+        <br/>
+        <br/>
+        <label>Proveedor</label>
         <Campo>
           <Select
                     name='id_proveedor'
@@ -290,12 +333,65 @@ const Insumos = () => {
       </div>
     )
 
+    /*ACA TAMBIEN MODIFICO FACUNDO-C1*/
+
+    const bodyEditarStock= (
+      <div className={styles.modal}>
+        <h3>Registrar nuevo ingreso de un Insumo</h3>
+        <br/>
+        <Label>Insumo que ingresó</Label>
+        <br/>
+        <br/>
+        <Campo>
+          <Select
+                    name='nombre_producto'
+                    value={id_producto}
+                    onChange={actualizarState}
+                >
+                    <option value="">--Seleccione--</option>
+                    {Object.values(nombres_prod).map(pr=>(
+                      <option key={pr.id_producto} value={pr.id_producto}>{pr.nombre_producto}</option>
+                    ))}
+                
+                    
+                  
+            </Select>
+        </Campo>
+        <br/>
+        <Label>Cantidad del Insumo que ingresó</Label>
+        <br/>
+        <TextField type="number" className={styles.inputMaterial} label="Nuevo Ingreso" onChange={actualizarState} name="stock_nuevo_producto" value={insumos&&stock_producto}/>
+        <br/>
+        <br/>
+        <br/>{/*AYUDA DE FRANCO, FACUNDO-C1, PARA SUMAR EL STOCK QUE YA HABIA CON EL QUE ESTA INGRESANDO EL USUARIO*/}
+        <Label>En su depósito habrá la siguiente cantidad:</Label>
+        <br/>
+        <br/>  
+        <TextField type="number" className={styles.inputMaterial} disabled onChange={actualizarState} name="stock_total_producto" value={insumos&&stock_producto}/>
+        <br/>  
+        <br/>
+        <br/>
+        <div align="right">
+          <Button onClick={()=>update2(id_producto)} color='primary'>Editar</Button>
+          <Button onClick={()=>abrirCerrarModalActualizarStock()}>Cancelar</Button>
+        </div>
+      </div>
+    )
+
+    /*HASTA ACA*/
 
     //Funciones
     const abrirCerrarModalInsertar= ()=>{
       insertarModal(!modal)
       setInsumos({})
     }
+
+    /*agregado por FACUNDO-C1*/
+    const abrirCerrarModalActualizarStock= ()=>{
+      stockModal(!modalEditarStock)
+      setInsumos({})
+    }
+    /*HASTA ACA*/
 
     const abrirCerrarModalEditar= ()=>{
       setModalEditar(!modalEditar)
@@ -310,6 +406,7 @@ const Insumos = () => {
         funcion();
         datos();
         prove();
+        nombresProd();
     },[])
    
 
@@ -367,11 +464,33 @@ const Insumos = () => {
         >
           {bodyEditar}
         </Modal>
+
+        {/*ACA MODIFICO FACUNDO-C1*/}
+
+        <Modal
+          open={modalEditarStock}
+          onClose={abrirCerrarModalActualizarStock}
+        >
+          {bodyEditarStock}
+        </Modal>
+
+        {/*HASTA ACA*/}
+
+
         <div className="contenedor">
           <br/>
           <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Insumo</button>
 
-          <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Actualizar Stock</button>
+          <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalActualizarStock()}>Actualizar Stock</button>
+          
+          {/*CAMBIO DE FACUNDO-C2*/}
+
+          <Link to='/CategoriasInsumos'>
+          <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton">Ver Categorias de Insumos</button>
+          </Link>
+
+          {/*HASTA ACA*/}       
+
           <br/><br/>
         </div>
     </div>
