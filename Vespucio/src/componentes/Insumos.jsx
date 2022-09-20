@@ -350,7 +350,7 @@ const Insumos = () => {
                 >
                     <option value="">--Seleccione--</option>
                     {Object.values(nombres_prod).map(pr=>(
-                      <option key={pr.id_producto} value={pr.id_producto}>{pr.nombre_producto}</option>
+                      <option key={pr.id_producto} value={pr.id_producto}>{pr.nombre_producto}</option> 
                     ))}
                 
                     
