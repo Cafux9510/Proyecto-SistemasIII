@@ -270,6 +270,10 @@ const Comprobantes = () => {
     setDialog(true);
   }
 
+  const abrirCerrarDialog2=()=>{
+    abrirCerrarModalEditar();
+    setDialog(true);
+  }
   const eliminarDialog=()=>{
     setDialog(false)
   }
@@ -409,7 +413,7 @@ const Comprobantes = () => {
         <TextField type="number" className={styles.inputMaterial} label="Monto Total" onChange={actualizarState} name="total_comprobante" value={comprobante&&total_comprobante} />
         <br/><br/>
         <div  align="right">
-          <Button className="p" onClick={()=>update2(id_comprobante)} >Editar</Button>
+          <Button className="p" onClick={()=>abrirCerrarDialog2()} >Cargar Detalle</Button>
           <Button onClick={()=>abrirCerrarModalEditar()}>Cancelar</Button>
         </div>
       </div>
