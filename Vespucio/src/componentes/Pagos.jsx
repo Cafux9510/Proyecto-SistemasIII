@@ -391,6 +391,9 @@ const Pagos = () => {
                 header:{
                   actions:"Acciones",
                   
+                },
+                toolbar:{
+                  searchPlaceholder:"Buscar"
                 }
                 
               }}
@@ -412,7 +415,7 @@ const Pagos = () => {
         </Modal>
         <div className="contenedor">
           <br/>
-          <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Comprobante</button>
+          <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Pago</button>
           <br/><br/>
         </div>
     </div>

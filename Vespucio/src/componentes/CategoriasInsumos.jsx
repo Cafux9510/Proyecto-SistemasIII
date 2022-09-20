@@ -262,6 +262,9 @@ const CategoriasInsumos = () => {
                 header:{
                   actions:"Acciones",
                   
+                },
+                toolbar:{
+                  searchPlaceholder:"Buscar"
                 }
                 
               }}

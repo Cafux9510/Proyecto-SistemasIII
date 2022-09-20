@@ -96,8 +96,9 @@ const TablaProveedores = () => {
         .update({isHabilitado_proveedor:false})
         .eq("id_proveedor",id_proveedor)
 
+        const arrayProveedores = data.filter(provee=>provee.id_proveedor !==id_proveedor)
+        setData(arrayProveedores)
 
-       console.log(result)
       } catch (error) {
         console.log(error)
       }
@@ -110,10 +111,27 @@ const TablaProveedores = () => {
         const {result,error}= await supabase.from("proveedores")
         .update({cuit_proveedor,nombre_proveedor,direccion_proveedor,localidad_proveedor,telefono_proveedor,email_proveedor,id_categoria_proveedor})
         .eq("id_proveedor",id_proveedor)
-        
-        console.log(result)
-        abrirCerrarModalEditar();
-        window.location.reload();
+
+
+        const arrayProveedores = data.map((prove)=>{
+          if(prove.id_proveedor === id_proveedor ){
+            return{
+              ...prove,
+              cuit_proveedor,
+              nombre_proveedor,
+              direccion_proveedor,
+              localidad_proveedor,
+              telefono_proveedor,
+              email_proveedor,
+              id_categoria_proveedor
+            }
+          }
+          return prove
+        })
+
+        setData(arrayProveedores)
+
+        abrirCerrarModalEditar();    
        } catch (error) {
         console.log(error)
       }
@@ -121,23 +139,24 @@ const TablaProveedores = () => {
 
     const submit = async()=>{
       try {
-        const {error,result}= await supabase.from("proveedores").insert({
+        const result= await supabase.from("proveedores").insert({
           cuit_proveedor,
           nombre_proveedor,
           direccion_proveedor,
           localidad_proveedor,
           telefono_proveedor,
           email_proveedor,
-          id_categoria_proveedor
+          id_categoria_proveedor,
         });
 
-        console.log(result)
+
+      //Aca quede
+        const resultado=result.data[0]
+        const arrayProveedores= [...data,proveedor]
+        setData([...data,resultado])
         abrirCerrarModalInsertar();
-        window.location.reload()
-        setData({
-          ...data,
-          result
-        })
+        //setData([...data,result.data])
+        //location.reload()
        
       } catch (error) {
         console.log(error)
@@ -159,9 +178,9 @@ const TablaProveedores = () => {
           });
           update(id_proveedor);
         }
-         setTimeout(() => {
+     /*     setTimeout(() => {
           window.location.reload()
-        }, 1000); 
+        }, 1000);  */
       });
     }
 
@@ -205,7 +224,7 @@ const TablaProveedores = () => {
         <Campo>
           <Select
                     name='id_categoria_proveedor'
-                    value={id_categoria_proveedor}
+                    value={id_categoria_proveedor || ''}
                     onChange={actualizarState}
                 >
                     <option value="">--Seleccione--</option>
@@ -214,28 +233,28 @@ const TablaProveedores = () => {
                     ))}
                 
                     
-                  
+                ''
             </Select>
         </Campo>
-        <TextField className={styles.inputMaterial} label="Nombre"  onChange={actualizarState} name="nombre_proveedor" value={nombre_proveedor} />
+        <TextField className={styles.inputMaterial} label="Nombre"  onChange={actualizarState} name="nombre_proveedor" value={nombre_proveedor || ''} />
         <br/>
         <br/>
-        <TextField className={styles.inputMaterial} label="CUIT" onChange={actualizarState} name="cuit_proveedor" value={cuit_proveedor}/>
+        <TextField className={styles.inputMaterial} label="CUIT" onChange={actualizarState} name="cuit_proveedor" value={cuit_proveedor || ''}/>
         <br/>
         <br/>
-        <TextField className={styles.inputMaterial} label="Direccion" onChange={actualizarState} name="direccion_proveedor" value={direccion_proveedor}/>
+        <TextField className={styles.inputMaterial} label="Direccion" onChange={actualizarState} name="direccion_proveedor" value={direccion_proveedor || ''}/>
         <br/>
         <br/>
-        <TextField className={styles.inputMaterial} label="Localidad" onChange={actualizarState} name="localidad_proveedor" value={localidad_proveedor} />
+        <TextField className={styles.inputMaterial} label="Localidad" onChange={actualizarState} name="localidad_proveedor" value={localidad_proveedor || ''} />
         <br/>
         <br/>
-        <TextField type="number" className={styles.inputMaterial} label="Telefono" onChange={actualizarState} name="telefono_proveedor" value={telefono_proveedor} />
+        <TextField type="number" className={styles.inputMaterial} label="Telefono" onChange={actualizarState} name="telefono_proveedor" value={telefono_proveedor || ''} />
         <br/>
         <br/>
-        <TextField type="email" className={styles.inputMaterial} label="Email" onChange={actualizarState} name="email_proveedor" value={email_proveedor} />
+        <TextField type="email" className={styles.inputMaterial} label="Email" onChange={actualizarState} name="email_proveedor" value={email_proveedor || ''} />
         <br/><br/><br/>
         <div align="right">
-          <Button color='primary' onClick={()=>submit()} >Insertar</Button>
+          <Button color='primary' onClick={submit} >Insertar</Button>
           <Button onClick={()=>abrirCerrarModalInsertar()}>Cancelar</Button>
         </div>
       </div>
@@ -246,6 +265,7 @@ const TablaProveedores = () => {
 
 
     const {id_proveedor}=proveedor;
+
 
     const bodyEditar= (
       <div className={styles.modal}>
@@ -258,6 +278,7 @@ const TablaProveedores = () => {
                     name='id_categoria_proveedor'
                     value={proveedor&&id_categoria_proveedor}
                     onChange={actualizarState}
+                    
                 >
                     <option value="">--Seleccione--</option>
                     {Object.values(categorias).map(pr=>(
@@ -284,7 +305,7 @@ const TablaProveedores = () => {
         <br/><br/>
         <div align="right">
           <Button onClick={()=>update2(id_proveedor)} color='primary'>Editar</Button>
-          <Button onClick={()=>abrirCerrarModalEditar()}>Cancelar</Button>
+          <Button onClick={()=>abrirCerrarModalEditar2()}>Cancelar</Button>
         </div>
       </div>
     )
@@ -292,12 +313,17 @@ const TablaProveedores = () => {
 
     //Funciones
     const abrirCerrarModalInsertar= ()=>{
-      insertarModal(!modal)
       proveedorAgregado({})
+      insertarModal(!modal)
     }
 
+    const abrirCerrarModalEditar2= ()=>{
+      setModalEditar(!modalEditar)
+      proveedorAgregado({})
+    }
     const abrirCerrarModalEditar= ()=>{
       setModalEditar(!modalEditar)
+      
     }
 
     const seleccionarProveedor = (proveedor,caso)=>{
@@ -337,15 +363,16 @@ const TablaProveedores = () => {
 
             options={{
                   actionsColumnIndex: -1,
-                  searchFieldStyle:{
-                    placeContent:"Buscar"
-                  }
+                  
               }}
             
               localization={{
                 header:{
                   actions:"Acciones",
                   
+                },
+                toolbar:{
+                  searchPlaceholder:"Buscar"
                 }
                 
               }}

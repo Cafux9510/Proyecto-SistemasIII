@@ -12,43 +12,43 @@ const Inicio=() => {
       <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
       <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
       {/*Include the above in your HEAD tag */}
-      <div class="container login-container">
-        <div class="row justify-content-between">
-          <div class="col-sm-6 pr-4 pl-1">
-            <div class="login-form-1" >
+      <div className="container login-container">
+        <div className="row justify-content-between">
+          <div className="col-sm-6 pr-4 pl-1">
+            <div className="login-form-1" >
                 <h3 >Personal Educativo</h3>
                 <form>
-                  <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Usuario *" value="" />
+                  <div className="form-group">
+                    <input type="text" className="form-control" placeholder="Usuario *" />
                   </div>
-                  <div class="form-group">
-                    <input type="password" class="form-control" placeholder="Contraseña *" value="" />
+                  <div className="form-group">
+                    <input type="password" className="form-control" placeholder="Contraseña *" />
                   </div>
-                  <div class="form-group">
-                    <input type="submit" class="btnSubmit" value="Ingresar" />
+                  <div className="form-group">
+                    <input type="submit" className="btnSubmit" value="Ingresar" />
                   </div>
-                  <div class="form-group">
-                    <a href="#" class="ForgetPwd">¿Olvidaste tu contraseña?</a>
+                  <div className="form-group">
+                    <a href="#" className="ForgetPwd">¿Olvidaste tu contraseña?</a>
                   </div>
                 </form>
             </div>
           </div>
 
-          <div class="col-sm-6 pr-1 pl-4">
-            <div class="login-form-2" >
+          <div className="col-sm-6 pr-1 pl-4">
+            <div className="login-form-2" >
                 <h3>Alumnado</h3>
                 <form>
-                  <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Usuario *" value="" />
+                  <div className="form-group">
+                    <input type="text" className="form-control" placeholder="Usuario *" />
                   </div>
-                  <div class="form-group">
-                    <input type="password" class="form-control" placeholder="Contraseña *" value="" />
+                  <div className="form-group">
+                    <input type="password" className="form-control" placeholder="Contraseña *"  />
                   </div>
-                  <div class="form-group">
-                    <input type="submit" class="btnSubmit" value="Ingresar" />
+                  <div className="form-group">
+                    <input type="submit" className="btnSubmit" value="Ingresar" />
                   </div>
-                  <div class="form-group">
-                    <a href="#" class="ForgetPwd" value="Login">¿Olvidaste tu contraseña?</a>
+                  <div className="form-group">
+                    <a href="#" className="ForgetPwd" value="Login">¿Olvidaste tu contraseña?</a>
                   </div>
                 </form>
             </div>

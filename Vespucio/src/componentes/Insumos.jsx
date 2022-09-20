@@ -335,6 +335,24 @@ const Insumos = () => {
 
     /*ACA TAMBIEN MODIFICO FACUNDO-C1*/
 
+    const selectProduct=(event)=>{
+      
+      const product= nombres_prod.find(producto=>producto.id_producto == event.target.value);
+      console.log(product)
+      setInsumos(product)
+    }
+
+  
+    const sumar = e=>{
+      setInsumos({
+        ...insumos,
+        [e.target.name]: e.target.value
+    })
+      
+    }
+
+  
+    let stock_nuevo_producto
     const bodyEditarStock= (
       <div className={styles.modal}>
         <h3>Registrar nuevo ingreso de un Insumo</h3>
@@ -344,9 +362,9 @@ const Insumos = () => {
         <br/>
         <Campo>
           <Select
-                    name='nombre_producto'
+                    name='id_producto'
                     value={id_producto}
-                    onChange={actualizarState}
+                    onChange={selectProduct}
                 >
                     <option value="">--Seleccione--</option>
                     {Object.values(nombres_prod).map(pr=>(
@@ -360,14 +378,14 @@ const Insumos = () => {
         <br/>
         <Label>Cantidad del Insumo que ingresó</Label>
         <br/>
-        <TextField type="number" className={styles.inputMaterial} label="Nuevo Ingreso" onChange={actualizarState} name="stock_nuevo_producto" value={insumos&&stock_producto}/>
+        <TextField type="number" className={styles.inputMaterial} label="Nuevo Ingreso" onChange={sumar} name="stock_producto" value={stock_nuevo_producto}/>
         <br/>
         <br/>
         <br/>{/*AYUDA DE FRANCO, FACUNDO-C1, PARA SUMAR EL STOCK QUE YA HABIA CON EL QUE ESTA INGRESANDO EL USUARIO*/}
         <Label>En su depósito habrá la siguiente cantidad:</Label>
         <br/>
         <br/>  
-        <TextField type="number" className={styles.inputMaterial} disabled onChange={actualizarState} name="stock_total_producto" value={insumos&&stock_producto}/>
+        <TextField type="number" className={styles.inputMaterial} disabled onChange={actualizarState} name="stock_producto" value={insumos&&stock_producto}/>
         <br/>  
         <br/>
         <br/>
@@ -445,6 +463,9 @@ const Insumos = () => {
                 header:{
                   actions:"Acciones",
                   
+                },
+                toolbar:{
+                  searchPlaceholder:"Buscar"
                 }
                 
               }}

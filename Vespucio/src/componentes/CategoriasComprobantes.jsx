@@ -3,7 +3,7 @@ import {supabase} from "../Backend/client";
 import MaterialTable from "@material-table/core";
 import { Dialog } from 'primereact/dialog';
 import { Button } from "@material-ui/core";
-import {Modal,TextField} from "@material-ui/core"
+import {Modal,TextField,TextareaAutosize} from "@material-ui/core"
 import { InputText } from 'primereact/inputtext';
 import {makeStyles} from "@material-ui/core/styles"
 import { amber } from "@material-ui/core/colors";
@@ -58,7 +58,7 @@ const CategoriasComprobantes = () => {
     const [data,setData]=useState([])
     const[modal,insertarModal]=useState(false)
     const [modalEditar, setModalEditar]= useState(false);
-    const[CategoriasComprobantes,setInsumos]=useState({
+    const[categoriasComprobantes,setInsumos]=useState({
         nombre_tipo:'',
         descripcion_tipo:''
     });
@@ -71,7 +71,6 @@ const CategoriasComprobantes = () => {
            .select('*')
            .eq("isHabilitado_comprobante",true)
            setData(result.data)
-           console.log(result.data)
 
         } catch (error) {
             console.log(error)
@@ -90,7 +89,7 @@ const CategoriasComprobantes = () => {
       }
     }
 
-    const{nombre_tipo,descripcion_tipo}=CategoriasComprobantes;
+    const{nombre_tipo,descripcion_tipo}=categoriasComprobantes;
 
     const update2=async(id_tipo)=>{
       try {
@@ -157,7 +156,7 @@ const CategoriasComprobantes = () => {
     const styles=useStyles();
     const actualizarState = e =>{
       setInsumos({
-          ...CategoriasComprobantes,
+          ...categoriasComprobantes,
           [e.target.name]: e.target.value
       })
   }
@@ -167,11 +166,11 @@ const CategoriasComprobantes = () => {
       <div className={styles.modal}>
         <h3>Agregar Nuevo Tipo</h3>
         <br/>
-        <TextField className={styles.inputMaterial} label="Nombre de Tipo de Comprobante" onChange={actualizarState} name="nombre_tipo" value={nombre_tipo}/> 
+        <TextField className={styles.inputMaterial} label="Nombre de Tipo de Comprobante" onChange={actualizarState} name="nombre_tipo" value={nombre_tipo ||''}/> 
         <br/>
         <br/>
         <br/>
-        <textarea className={styles.inputMaterial} placeholder="Descripción del Tipo de Comprobante" onChange={actualizarState} name="descripcion_tipo" value={descripcion_tipo}/>
+        <textarea className={styles.inputMaterial} placeholder="Descripción del Tipo de Comprobante" onChange={actualizarState} name="descripcion_tipo" value={descripcion_tipo || ''}/>
         <br/>
         <br/>
         <div align="right">
@@ -263,6 +262,9 @@ const CategoriasComprobantes = () => {
                 header:{
                   actions:"Acciones",
                   
+                },
+                toolbar:{
+                  searchPlaceholder:"Buscar"
                 }
                 
               }}
