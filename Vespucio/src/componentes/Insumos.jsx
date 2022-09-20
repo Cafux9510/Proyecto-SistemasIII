@@ -64,15 +64,8 @@ const Insumos = () => {
         nombre_producto:'',
         categoria_producto:'',
         descripcion_producto:'',
-        stock_producto:'',
-        id_proveedor:''
     });
 
-    /*ACA TAMBIEN MODIFICO FACUNDO-C1 */
-
-    const [modalEditarStock, stockModal]= useState(false);
-
-    /*HASTA ACA*/
 
 
     //Funciones que tienen datos desde una api
@@ -83,9 +76,6 @@ const Insumos = () => {
               *,
               categoriasArticulos(
                 nombre_categoria
-              ),
-              proveedores(
-                nombre_proveedor
               )
           `)
            .eq("isHabilitado_producto",true)
@@ -107,12 +97,12 @@ const Insumos = () => {
       }
     }
 
-    const{nombre_producto,categoria_producto,descripcion_producto,stock_producto,id_proveedor}=insumos;
+    const{nombre_producto,categoria_producto,descripcion_producto}=insumos;
 
     const update2=async(id_producto)=>{
       try {
         const result= await supabase.from("articulos")
-        .update({nombre_producto,categoria_producto,descripcion_producto,stock_producto,id_proveedor})
+        .update({nombre_producto,categoria_producto,descripcion_producto})
         .eq("id_producto",id_producto)
         
         abrirCerrarModalEditar();
@@ -127,9 +117,7 @@ const Insumos = () => {
         const {error,result}= await supabase.from("articulos").insert({
           nombre_producto,
           categoria_producto,
-          descripcion_producto,
-          stock_producto,
-          id_proveedor
+          descripcion_producto
         });
 
         abrirCerrarModalInsertar();
@@ -169,9 +157,7 @@ const Insumos = () => {
         {title:"N°", field:"id_producto"},
         {title:"Nombre", field:"nombre_producto"},
         {title:"Categoria", field:"categoriasArticulos.nombre_categoria"},
-        {title:"Stock", field:"stock_producto"},
-        {title:"Descripcion", field:"descripcion_producto"},
-        {title:"Proveedor", field:"proveedores.nombre_proveedor"},
+        {title:"Descripcion", field:"descripcion_producto"}
       ]
 
 
@@ -244,30 +230,13 @@ const Insumos = () => {
                   
             </Select>
         </Campo>
-        <TextField className={styles.inputMaterial} label="Stock" onChange={actualizarState} name="stock_producto" value={stock_producto}/>
+        <br/>
+        <label>Descripcion del Insumo</label>
         <br/>
         <br/>
-        <TextField type="text" className={styles.inputMaterial} label="Descripcion" onChange={actualizarState} name="descripcion_producto" value={descripcion_producto} />
+        <textarea type="text" className={styles.inputMaterial} label="Descripcion" onChange={actualizarState} name="descripcion_producto" value={descripcion_producto} />
         <br/>
         <br/>
-        <br/>
-        <label>Seleccione un Proveedor</label>
-        <br/>
-        <Campo>
-          <Select
-                    name='id_proveedor'
-                    value={id_proveedor}
-                    onChange={actualizarState}
-                >
-                    <option value="">--Seleccione--</option>
-                    {Object.values(proveedo).map(prr=>(
-                      <option key={prr.id_proveedor} value={prr.id_proveedor}>{prr.nombre_proveedor}</option>
-                    ))}
-                
-                    
-                  
-            </Select>
-        </Campo>
         <br/>
         <br/>
         <div align="right">
@@ -304,26 +273,12 @@ const Insumos = () => {
             </Select>
         </Campo>
         <br/>
-        <TextField className={styles.inputMaterial} label="Stock" onChange={actualizarState} name="stock_producto" value={insumos&&stock_producto}/>
+
+        <br/>
+        <label>Descripcion del Insumo</label>
         <br/>
         <br/>
-        <br/>
-        <label>Proveedor</label>
-        <Campo>
-          <Select
-                    name='id_proveedor'
-                    value={insumos&&id_proveedor}
-                    onChange={actualizarState}
-                >
-                    <option value="">--Seleccione--</option>
-                    {Object.values(proveedo).map(prr=>(
-                      <option key={prr.id_proveedor} value={prr.id_proveedor}>{prr.nombre_proveedor}</option>
-                    ))}
-                
-                    
-                  
-            </Select>
-        </Campo>
+        <textarea type="text" className={styles.inputMaterial} label="Descripcion" onChange={actualizarState} name="descripcion_producto" value={descripcion_producto} />
         
          <br/><br/>
         <div align="right">
@@ -332,6 +287,7 @@ const Insumos = () => {
         </div>
       </div>
     )
+
 
     /*ACA TAMBIEN MODIFICO FACUNDO-C1*/
 
@@ -397,6 +353,7 @@ const Insumos = () => {
     )
 
     /*HASTA ACA*/
+
 
     //Funciones
     const abrirCerrarModalInsertar= ()=>{
@@ -486,23 +443,10 @@ const Insumos = () => {
           {bodyEditar}
         </Modal>
 
-        {/*ACA MODIFICO FACUNDO-C1*/}
-
-        <Modal
-          open={modalEditarStock}
-          onClose={abrirCerrarModalActualizarStock}
-        >
-          {bodyEditarStock}
-        </Modal>
-
-        {/*HASTA ACA*/}
-
 
         <div className="contenedor">
           <br/>
           <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Insumo</button>
-
-          <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalActualizarStock()}>Actualizar Stock</button>
           
           {/*CAMBIO DE FACUNDO-C2*/}
 
