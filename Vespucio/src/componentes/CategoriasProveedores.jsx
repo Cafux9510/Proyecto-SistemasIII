@@ -167,11 +167,11 @@ const CategoriasProveedores = () => {
       <div className={styles.modal}>
         <h3>Agregar Nueva Categoría</h3>
         <br/>
-        <TextField className={styles.inputMaterial} label="Nombre Categoría" onChange={actualizarState} name="nombre_categoria" value={nombre_categoria}/> 
+        <TextField className={styles.inputMaterial} label="Nombre Categoría" onChange={actualizarState} name="nombre_categoria" value={nombre_categoria || ''}/> 
         <br/>
         <br/>
         <br/>
-        <textarea className={styles.inputMaterial} placeholder="Descripción de la categoría" onChange={actualizarState} name="descripcion_categoria" value={descripcion_categoria}/>
+        <textarea className={styles.inputMaterial} placeholder="Descripción de la categoría" onChange={actualizarState} name="descripcion_categoria" value={descripcion_categoria || ''}/>
         <br/>
         <br/>
         <div align="right">
@@ -263,6 +263,9 @@ const CategoriasProveedores = () => {
                 header:{
                   actions:"Acciones",
                   
+                },
+                toolbar:{
+                  searchPlaceholder:"Buscar"
                 }
                 
               }}

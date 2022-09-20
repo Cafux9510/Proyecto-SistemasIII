@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import {supabase} from "../Backend/client";
 import MaterialTable from "@material-table/core";
 import { Dialog } from 'primereact/dialog';
-import { Button } from "@material-ui/core";
+import {Button} from "primereact/button";
 import {Modal,TextField} from "@material-ui/core"
 import { InputText } from 'primereact/inputtext';
 import {makeStyles} from "@material-ui/core/styles"
@@ -10,7 +10,9 @@ import { amber } from "@material-ui/core/colors";
 import swal from "sweetalert";
 import styled from '@emotion/styled'
 import { Link } from "react-router-dom";
-
+import {DataTable} from "primereact/datatable";
+import { Column } from 'primereact/column';
+import {Dropdown} from "primereact/dropdown"
 
 const Label = styled.label`
     flex: 0 0 100px;
@@ -62,6 +64,7 @@ const Comprobantes = () => {
     const [data,setData]=useState([])
     const[modal,insertarModal]=useState(false)
     const [modalEditar, setModalEditar]= useState(false);
+    const[dialog,setDialog]=useState(false) 
     const[comprobante,setComprobante]=useState({
         tipo_comprobante:'',
         proveedor_comprobante:'',
@@ -71,6 +74,14 @@ const Comprobantes = () => {
         total_comprobante:'',
         link_archivo:''
     })
+    const[detalles,setDetalles]=useState([])
+    const[detalle,setDetalle]=useState({
+      nombre_articulo:'',
+      cantidad:'',
+      precio_unitario:''
+    })
+
+    const{nombre_articulo,cantidad,precio_unitario}=detalle;
     //Funciones que tienen datos desde una api
     const funcion = async()=>{
         try {
@@ -254,6 +265,23 @@ const Comprobantes = () => {
     }
   }
 
+  const abrirCerrarDialog=()=>{
+    abrirCerrarModalInsertar();
+    setDialog(true);
+  }
+
+  const abrirCerrarDialog2=()=>{
+    abrirCerrarModalEditar();
+    setDialog(true);
+  }
+  const eliminarDialog=()=>{
+    setDialog(false)
+  }
+
+  const volverAnterior=()=>{
+    eliminarDialog()
+    insertarModal(true)
+  }
 
     const bodyInsertar= (
       <div className={styles.modal}>
@@ -316,7 +344,7 @@ const Comprobantes = () => {
         <TextField type="number" className={styles.inputMaterial} label="Monto Total" onChange={actualizarState} name="total_comprobante" value={total_comprobante} />
         <br/><br/>
         <div align="right">
-          <Button color='primary' onClick={()=>submit()} >Insertar</Button>
+          <Button className="p" onClick={()=>abrirCerrarDialog()} >Cargar Detalle</Button>
           <Button onClick={()=>abrirCerrarModalInsertar()}>Cancelar</Button>
         </div>
       </div>
@@ -356,9 +384,6 @@ const Comprobantes = () => {
                     {Object.values(pro).map(pr=>(
                       <option key={pr.id_proveedor} value={pr.id_proveedor}>{pr.nombre_proveedor}</option>
                     ))}
-                
-                    
-                  
             </Select>
         </Campo>
         <br/>
@@ -387,8 +412,8 @@ const Comprobantes = () => {
         <br/>
         <TextField type="number" className={styles.inputMaterial} label="Monto Total" onChange={actualizarState} name="total_comprobante" value={comprobante&&total_comprobante} />
         <br/><br/>
-        <div align="right">
-          <Button onClick={()=>update2(id_comprobante)} color='primary'>Editar</Button>
+        <div  align="right">
+          <Button className="p" onClick={()=>abrirCerrarDialog2()} >Cargar Detalle</Button>
           <Button onClick={()=>abrirCerrarModalEditar()}>Cancelar</Button>
         </div>
       </div>
@@ -398,7 +423,6 @@ const Comprobantes = () => {
     //Funciones
     const abrirCerrarModalInsertar= ()=>{
       insertarModal(!modal)
-      setComprobante({})
     }
 
     const abrirCerrarModalEditar= ()=>{
@@ -416,10 +440,32 @@ const Comprobantes = () => {
         dato()
     },[])
    
+    const productDialogFooter = (
+      <React.Fragment>
+          <Button label="Volver" icon="pi pi-times" className="p-button-text" onClick={volverAnterior} />
+          <Button label="Registrar Comprobante" icon="pi pi-check" className="p-button-text"/>
+      </React.Fragment>
+    );
+
+    //Funciones para agregar datos a la tabla de detalles fiumba
+
+    const crearDetalle=(de)=>{
+      setDetalles([...detalles,de]);
+    }
+    const actualizarStateDetalle = e =>{
+      setDetalle({
+          ...detalle,
+          [e.target.name]: e.target.value
+      })
+  }
+  const agregarDatos=()=>{
+    crearDetalle(detalle)
+  }
+
 
   return (
-    <div>
-       
+
+    <div>       
         <MaterialTable
             title="Comprobantes"
             columns={columnas}
@@ -452,10 +498,12 @@ const Comprobantes = () => {
                 header:{
                   actions:"Acciones",
                   
+                },
+                toolbar:{
+                  searchPlaceholder:"Buscar"
                 }
                 
-              }}
-              
+              }}      
         />
 
         <Modal
@@ -471,6 +519,29 @@ const Comprobantes = () => {
         >
           {bodyEditar}
         </Modal>
+
+        {/*MODAL DEL DETALLE AGREGADO ESTO ES NUEVO FRANCO PAAAA*/}
+        <Dialog visible={dialog} header="Detalle" style={{ width: '450px' }} modal className="p-fluid" onHide={eliminarDialog} footer={productDialogFooter}>
+          <div className="field mb-4">
+              <label>Articulo</label>
+              <Dropdown onChange={actualizarStateDetalle} placeholder="seleccione articulo"/>
+          </div>
+          <div className="field mb-4">
+                <InputText name="cantidad" type="number" onChange={actualizarStateDetalle} placeholder="Cantidad"  />  
+          </div>
+
+            <div className="field mb-4">
+                <InputText name="precio_unitario" type="number" onChange={actualizarStateDetalle} placeholder="precio unitario"  />  
+            </div>
+            <div className="field w-min mb-4">
+                <Button onClick={agregarDatos} className="w-6">Agregar</Button> 
+            </div>
+          <DataTable value={detalles} showGridlines >
+              <Column field="nombre_articulo" header="Nombre Articulo"></Column>
+              <Column field="cantidad" header="Cantidad"></Column>
+              <Column field="precio_unitario" header="Precio Unitario"></Column>
+          </DataTable>
+        </Dialog>
         <div className="contenedor">
           <br/>
           <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Comprobante</button>

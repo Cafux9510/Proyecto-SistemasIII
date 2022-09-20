@@ -2,13 +2,16 @@ import { useEffect, useState } from "react";
 import {supabase} from "../Backend/client";
 import MaterialTable from "@material-table/core";
 import { Dialog } from 'primereact/dialog';
-import { Button } from "@material-ui/core";
+import {Button} from "primereact/button";
 import {Modal,TextField} from "@material-ui/core"
 import { InputText } from 'primereact/inputtext';
 import {makeStyles} from "@material-ui/core/styles"
 import { amber } from "@material-ui/core/colors";
 import swal from "sweetalert";
 import styled from '@emotion/styled'
+import {DataTable} from "primereact/datatable";
+import { Column } from 'primereact/column';
+import {Dropdown} from "primereact/dropdown"
 
 const Label = styled.label`
     flex: 0 0 100px;
@@ -60,6 +63,7 @@ const Pagos = () => {
     const [data,setData]=useState([])
     const[modal,insertarModal]=useState(false)
     const [modalEditar, setModalEditar]= useState(false);
+    const[dialog,setDialog]=useState(false) 
     const[pagos,setPagos]=useState({
         numero_pago:'',
         proveedor_pago:'',
@@ -271,7 +275,7 @@ const Pagos = () => {
         <br/>
         <br/>
         <div align="right">
-          <Button color='primary' onClick={()=>submit()} >Insertar</Button>
+          <Button className="p" onClick={()=>abrirCerrarDialog()} >Cargar Detalle</Button>
           <Button onClick={()=>abrirCerrarModalInsertar()}>Cancelar</Button>
         </div>
       </div>
@@ -327,7 +331,7 @@ const Pagos = () => {
         <br/>
         <br/>
         <div align="right">
-          <Button onClick={()=>update2(id_pago)} color='primary'>Editar</Button>
+          <Button className="p" onClick={()=>abrirCerrarDialog2()} >Cargar Detalle</Button>
           <Button onClick={()=>abrirCerrarModalEditar()}>Cancelar</Button>
         </div>
       </div>
@@ -354,7 +358,32 @@ const Pagos = () => {
         dato();
         compro();
     },[])
-   
+
+    //Nuevo
+    const volverAnterior=()=>{
+      eliminarDialog()
+      insertarModal(true)
+    }
+    const productDialogFooter = (
+      <React.Fragment>
+          <Button label="Volver" icon="pi pi-times" className="p-button-text" onClick={volverAnterior} />
+          <Button label="Registrar Pago" icon="pi pi-check" className="p-button-text"/>
+      </React.Fragment>
+    );
+    const abrirCerrarDialog=()=>{
+      abrirCerrarModalInsertar();
+      setDialog(true);
+    }
+
+    const eliminarDialog=()=>{
+      setDialog(false)
+    }
+
+    
+  const abrirCerrarDialog2=()=>{
+    abrirCerrarModalEditar();
+    setDialog(true);
+  }
 
   return (
     <div>
@@ -391,6 +420,9 @@ const Pagos = () => {
                 header:{
                   actions:"Acciones",
                   
+                },
+                toolbar:{
+                  searchPlaceholder:"Buscar"
                 }
                 
               }}
@@ -410,9 +442,27 @@ const Pagos = () => {
         >
           {bodyEditar}
         </Modal>
+
+        <Dialog visible={dialog}  header="Detalle" style={{ width: '450px' }} modal className="p-fluid"  footer={productDialogFooter} onHide={eliminarDialog}>
+            <div className="field mb-4">
+                <Dropdown placeholder="Comprobantes"/>
+            </div>
+            <div className="field mb-4">
+              <Dropdown  placeholder="Modo de pago"/>
+            </div>
+            <Button>Agregar</Button>
+            <DataTable>
+              <Column field="nombre_articulo" header="Comprobantes"></Column>
+              <Column field="cantidad" header="Modo de pago"></Column>
+            </DataTable>
+        </Dialog>
+
+
+
+
         <div className="contenedor">
           <br/>
-          <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Comprobante</button>
+          <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Pago</button>
           <br/><br/>
         </div>
     </div>
