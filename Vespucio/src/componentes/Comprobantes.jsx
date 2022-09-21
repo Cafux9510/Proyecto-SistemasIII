@@ -12,7 +12,7 @@ import styled from '@emotion/styled'
 import { Link } from "react-router-dom";
 import {DataTable} from "primereact/datatable";
 import { Column } from 'primereact/column';
-import {Dropdown} from "primereact/dropdown"
+import {Dropdown} from "primereact/dropdown";
 
 const Label = styled.label`
     flex: 0 0 100px;
@@ -72,16 +72,17 @@ const Comprobantes = () => {
         numero_comprobante:'',
         fecha_emision:'',
         total_comprobante:'',
-        link_archivo:''
+        link_archivo:'',
     })
     const[detalles,setDetalles]=useState([])
     const[detalle,setDetalle]=useState({
-      nombre_articulo:'',
-      cantidad:'',
-      precio_unitario:''
+      id_articulo:"",
+      cantidad_articulo:"",
+      precio_unitario:"",
     })
 
-    const{nombre_articulo,cantidad,precio_unitario}=detalle;
+    const{cantidad_articulo}=detalle;
+  
     //Funciones que tienen datos desde una api
     const funcion = async()=>{
         try {
@@ -143,12 +144,18 @@ const Comprobantes = () => {
       }
     }
 
+    const generarId = () => {
+      const random = Math.random().toString(36).substr(2);
+      const fecha = Date.now().toString(36)
+      return random + fecha
+  }
+  
     const submit = async()=>{
       try {
         const avatarFile = document.getElementById('selectArchivo').files[0];
         const  foto = await supabase.storage
         .from('archivos-subidos')
-        .upload('archivos-comprobantes/'+parseInt(avatarFile.lastModified/avatarFile.size), avatarFile, {
+        .upload('archivos-comprobantes/'+(generarId()), avatarFile, {
           cacheControl: '3600',
           upsert: false,
         })
@@ -156,7 +163,7 @@ const Comprobantes = () => {
         const principio_cadena = 'https://nnlzmdwuqwxgdrnutujk.supabase.co/storage/v1/object/public/';
         const final_cadena = foto.data.Key
         const link_archivo= principio_cadena + final_cadena
-        
+
         const {error,result}= await supabase.from("comprobantes").insert({
           tipo_comprobante,
           proveedor_comprobante,
@@ -167,18 +174,32 @@ const Comprobantes = () => {
           link_archivo
         });
 
-        console.log(final_cadena)
-       
-        abrirCerrarModalInsertar();
-        setData({
-          ...data,
-          result
-        })
-       window.location.reload() 
+        const resultado = await supabase.from("comprobantes")
+        .select('id_comprobante')
+        .eq("numero_comprobante",numero_comprobante)
+
+        const valor=resultado.data[0].id_comprobante
+
+
+        detalles.map( async(deta)=>{
+            const dato = await supabase.from("lineasComprobantes").insert({
+              id_comprobante:valor,
+              id_articulo:deta.id_articulo,
+              cantidad_articulo:deta.cantidad_articulo,
+              precio_unitario:deta.precio_unitario
+            })
+          })
+         
+
+          setDialog(false)
+          location.reload();
+          
+         
       } catch (error) {
         console.log(error)
       }
     }
+
 
     const handleEliminar=(id_comprobante)=>{
       swal({
@@ -224,6 +245,7 @@ const Comprobantes = () => {
   }
 
 
+
   //Funciones de extraccion de proveedores y tipo comprobante
   const[tipo,setTipo]=useState({}) 
   const datos=async()=>{
@@ -265,11 +287,11 @@ const Comprobantes = () => {
     }
   }
 
+
   const abrirCerrarDialog=()=>{
     abrirCerrarModalInsertar();
     setDialog(true);
   }
-
   const abrirCerrarDialog2=()=>{
     abrirCerrarModalEditar();
     setDialog(true);
@@ -333,12 +355,6 @@ const Comprobantes = () => {
           <option value="Egreso">Egreso</option>
 
         </Select>
-        <br/>
-        <br/>
-        <label><b>Documento Digital o Foto del Comprobante</b></label>
-        <br/>
-        <br/>
-        <input name='input=file' id='selectArchivo' type='file' />
         <br/>
         <br/>
         <TextField type="number" className={styles.inputMaterial} label="Monto Total" onChange={actualizarState} name="total_comprobante" value={total_comprobante} />
@@ -419,7 +435,8 @@ const Comprobantes = () => {
       </div>
     )
 
-
+    //Nuevos states
+  
     //Funciones
     const abrirCerrarModalInsertar= ()=>{
       insertarModal(!modal)
@@ -443,7 +460,7 @@ const Comprobantes = () => {
     const productDialogFooter = (
       <React.Fragment>
           <Button label="Volver" icon="pi pi-times" className="p-button-text" onClick={volverAnterior} />
-          <Button label="Registrar Comprobante" icon="pi pi-check" className="p-button-text"/>
+          <Button label="Registrar Comprobante" icon="pi pi-check" className="p-button-text" onClick={submit}/>
       </React.Fragment>
     );
 
@@ -460,7 +477,34 @@ const Comprobantes = () => {
   }
   const agregarDatos=()=>{
     crearDetalle(detalle)
+    setDetalle({
+      id_articulo:"",
+      cantidad_articulo:"",
+      precio_unitario:"",
+    })
   }
+
+  const[articulos,setArticulos]=useState([]);
+
+  const articulosBD= async()=>{
+    try {
+       const result= await supabase.from('articulos')
+       .select(`
+          id_producto,
+          nombre_producto
+      `)
+       .eq("isHabilitado_producto",true)
+       setArticulos(result.data)
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+useEffect(()=>{
+  articulosBD();
+},[])
+
+
 
 
   return (
@@ -523,22 +567,26 @@ const Comprobantes = () => {
         {/*MODAL DEL DETALLE AGREGADO ESTO ES NUEVO FRANCO PAAAA*/}
         <Dialog visible={dialog} header="Detalle" style={{ width: '450px' }} modal className="p-fluid" onHide={eliminarDialog} footer={productDialogFooter}>
           <div className="field mb-4">
-              <label>Articulo</label>
-              <Dropdown onChange={actualizarStateDetalle} placeholder="seleccione articulo"/>
+             
+              <Dropdown name="id_articulo" optionLabel="nombre_producto" optionValue="id_producto" value={detalle.id_articulo || ""} options={articulos} onChange={actualizarStateDetalle} placeholder="Seleccione articulo"/>
           </div>
           <div className="field mb-4">
-                <InputText name="cantidad" type="number" onChange={actualizarStateDetalle} placeholder="Cantidad"  />  
+                <InputText name="cantidad_articulo" type="number"  value={detalle&&cantidad_articulo || ""} onChange={actualizarStateDetalle} placeholder="Cantidad" required autoFocus />  
           </div>
 
             <div className="field mb-4">
-                <InputText name="precio_unitario" type="number" onChange={actualizarStateDetalle} placeholder="precio unitario"  />  
+                <InputText name="precio_unitario" value={detalle.precio_unitario || ""} type="number" onChange={actualizarStateDetalle} placeholder="precio unitario"  />  
+            </div>
+
+            <div className="field mb-4">
+              <InputText   name='input=file' id='selectArchivo'  type='file' />
             </div>
             <div className="field w-min mb-4">
                 <Button onClick={agregarDatos} className="w-6">Agregar</Button> 
             </div>
           <DataTable value={detalles} showGridlines >
-              <Column field="nombre_articulo" header="Nombre Articulo"></Column>
-              <Column field="cantidad" header="Cantidad"></Column>
+              <Column field="id_articulo" header="Nombre Articulo"></Column>
+              <Column field="cantidad_articulo" header="Cantidad"></Column>
               <Column field="precio_unitario" header="Precio Unitario"></Column>
           </DataTable>
         </Dialog>

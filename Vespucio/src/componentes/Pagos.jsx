@@ -275,7 +275,7 @@ const Pagos = () => {
         <br/>
         <br/>
         <div align="right">
-          <Button className="p" onClick={()=>abrirCerrarDialog()} >Cargar Detalle</Button>
+          <Button className="p" onClick={()=>submit()} >Cargar Detalle</Button>
           <Button onClick={()=>abrirCerrarModalInsertar()}>Cancelar</Button>
         </div>
       </div>
