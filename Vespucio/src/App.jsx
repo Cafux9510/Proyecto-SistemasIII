@@ -11,6 +11,7 @@ import CategoriasInsumos from "./componentes/CategoriasInsumos";
 import CategoriasProveedores from "./componentes/CategoriasProveedores";
 import CategoriasComprobantes from "./componentes/CategoriasComprobantes";
 import Profesores from "./componentes/Profesores";
+import Alumnos from "./componentes/Alumnos";
 /*HASTA ACA*/
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
         <Route exact path="/CategoriasProveedores" element={<CategoriasProveedores/>}/>
         <Route exact path="/CategoriasComprobantes" element={<CategoriasComprobantes/>}/>
         <Route exact path="/Profesores" element={<Profesores/>}/>
+        <Route exact path="/Alumnos" element={<Alumnos/>}/>
         {/*HASTA ACA*/}
       </Routes>
     </BrowserRouter>
