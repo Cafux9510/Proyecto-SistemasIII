@@ -10,6 +10,7 @@ import TablaProveedores from "./componentes/TablaProveedores";
 import CategoriasInsumos from "./componentes/CategoriasInsumos";
 import CategoriasProveedores from "./componentes/CategoriasProveedores";
 import CategoriasComprobantes from "./componentes/CategoriasComprobantes";
+import Profesores from "./componentes/Profesores";
 /*HASTA ACA*/
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
         <Route exact path="/CategoriasInsumos" element={<CategoriasInsumos/>}/>
         <Route exact path="/CategoriasProveedores" element={<CategoriasProveedores/>}/>
         <Route exact path="/CategoriasComprobantes" element={<CategoriasComprobantes/>}/>
+        <Route exact path="/Profesores" element={<Profesores/>}/>
         {/*HASTA ACA*/}
       </Routes>
     </BrowserRouter>
