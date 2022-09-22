@@ -56,14 +56,15 @@ const Alumnos = () => {
     const [data,setData]=useState([])
     const[modal,insertarModal]=useState(false)
     const [modalEditar, setModalEditar]= useState(false);
-    const[alumno,alumnoAgregado]=useState({
+    const[alumnos,alumnoAgregado]=useState({
         id_anioEduc:'',
         nombre_alumno:'',
         telefono_alumno:'',
         mail_alumno:'',
         domicilio_alumno:'',
         dni_alumno:'',
-        apellido_alumno:''
+        apellido_alumno:'',
+        id_nivel:''
     })
 
 
@@ -73,9 +74,16 @@ const Alumnos = () => {
         try {
            const { data: alumnos, error } = await supabase
             .from('alumnos')
-            .select(`*,anioEducativo(nombre_anioEduc)`)
-            .eq("isHabilitado_alumno",true)
-        
+            .select(`
+            *,
+            anioEducativo(
+              nombre_anioEduc,
+              id_nivel(
+                nombre_nivel
+              )
+            )
+          `)
+          .eq("isHabilitado_alumno",true)
             setData(alumnos)
         } catch (error) {
             console.log(error)
@@ -84,7 +92,7 @@ const Alumnos = () => {
     const update = async(id_alumno)=>{
       try {
         const result= await supabase.from("alumnos")
-        .update({isHabilitado_anio:false})
+        .update({isHabilitado_alumno:false})
         .eq("id_alumno",id_alumno)
 
 
@@ -94,7 +102,7 @@ const Alumnos = () => {
       }
     }
 
-    const{id_anioEduc,nombre_alumno,telefono_alumno,mail_alumno,domicilio_alumno,dni_alumno,apellido_alumno}=alumno;
+    const{id_anioEduc,nombre_alumno,telefono_alumno,mail_alumno,domicilio_alumno,dni_alumno,apellido_alumno,id_nivel}=alumnos;
 
     const update2=async(id_alumno)=>{
       try {
@@ -158,7 +166,8 @@ const Alumnos = () => {
 
     //Configuracion del 
     const columnas=[
-        {title:"Año Educativo", field:"id_anioEduc"},
+        {title:"Nivel Educativo", field:"anioEducativo.id_nivel.nombre_nivel"},
+        {title:"Año Educativo", field:"anioEducativo.nombre_anioEduc"},
         {title:"Nombre", field:"nombre_alumno"},
         {title:"Apellido", field:"apellido_alumno"},
         {title:"DNI", field:"dni_alumno"},
@@ -172,19 +181,69 @@ const Alumnos = () => {
     const styles=useStyles();
     const actualizarState = e =>{
       alumnoAgregado({
-          ...alumno,
+          ...alumnos,
           [e.target.name]: e.target.value
       })
-  }
+    }
 
-  /*const[categorias,setCategorias]=useState({}) 
-  const datos=async()=>{
-    const result = await supabase.from('tipoPersonal')
-    .select()
-    .eq("isHabilitado_tipoPerso",true);
+    const[niveles,setNiveles]=useState({}) 
+    const nivs=async()=>{
+      const result = await supabase.from('nivelesEducativos')
+      .select();
+  
+      setNiveles(result.data)
+      return result.data
+    }
+    const[categorias,setCategorias]=useState({}) 
 
-    setCategorias(result.data)
-  }*/
+    const filtrarAnios = e =>{
+
+      alumnoAgregado({
+        ...alumnos,
+        [e.target.name]: e.target.value
+      })
+
+      var selection = document.getElementById("id_nivel");
+      var valor = selection.options[selection.selectedIndex].value
+
+      if (valor == 1) {
+        const datos=async()=>{
+          const result = await supabase.from('anioEducativo')
+          .select()
+          .eq("isHabilitado_anio",true)
+          .eq("id_nivel",1);
+      
+          setCategorias(result.data)
+        }
+        datos();
+
+      }else if(valor == 2){
+        const datos=async()=>{
+          const result = await supabase.from('anioEducativo')
+          .select()
+          .eq("isHabilitado_anio",true)
+          .eq("id_nivel",2);
+      
+          setCategorias(result.data)
+        }
+        datos();
+      }else{
+        const datos=async()=>{
+          const result = await supabase.from('anioEducativo')
+          .select()
+          .eq("isHabilitado_anio",true)
+          .eq("id_nivel",3);
+      
+          setCategorias(result.data)
+        }
+        datos();
+      }
+        
+      
+
+        
+    }
+
 
     const bodyInsertar= (
       
@@ -199,6 +258,42 @@ const Alumnos = () => {
         <br/>
         <TextField className={styles.inputMaterial} label="DNI" onChange={actualizarState} name="dni_alumno" value={dni_alumno} />
         <br/>
+        <br/>
+        <Label>Nivel Educativo</Label>
+        <Campo>
+          <Select
+                    name='id_nivel'
+                    id='id_nivel'
+                    value={id_nivel}
+                    onChange={filtrarAnios}
+                >
+                    <option value="">--Seleccione--</option>
+                    {Object.values(niveles).map(pr=>(
+                      <option key={pr.id_nivel} value={pr.id_nivel}>{pr.nombre_nivel}</option>
+                    ))}
+                
+                    
+                  
+            </Select>
+        </Campo>
+        <br/>
+        <Label>Año a Cursar</Label>
+        <br/>
+        <Campo>
+          <Select
+                    name='id_anioEduc'
+                    value={id_anioEduc}
+                    onChange={actualizarState}
+                >
+                    <option value="">--Seleccione--</option>
+                    {Object.values(categorias).map(pr=>(
+                      <option key={pr.id_anioEduc} value={pr.id_anioEduc}>{pr.nombre_anioEduc}</option>
+                    ))}
+                
+                    
+                  
+            </Select>
+        </Campo>
         <br/>
         <TextField type="number" className={styles.inputMaterial} label="Telefono" onChange={actualizarState} name="telefono_alumno" value={telefono_alumno} />
         <br/>
@@ -220,32 +315,32 @@ const Alumnos = () => {
     
 
 
-    const {id_alumno}=alumno;
+    const {id_alumno}=alumnos;
 
     const bodyEditar= (
       <div className={styles.modal}>
         <h4>Editar Alumno</h4>        
-        <TextField className={styles.inputMaterial} label="Nombre" onChange={actualizarState} name="nombre_alumno" value={alumno&&nombre_alumno} />
+        <TextField className={styles.inputMaterial} label="Nombre" onChange={actualizarState} name="nombre_alumno" value={alumnos&&nombre_alumno} />
         <br/>
         <br/>
-        <TextField className={styles.inputMaterial} label="Apellido" onChange={actualizarState} name="apellido_alumno" value={alumno&&apellido_alumno} />
+        <TextField className={styles.inputMaterial} label="Apellido" onChange={actualizarState} name="apellido_alumno" value={alumnos&&apellido_alumno} />
         <br/>
         <br/>
-        <TextField className={styles.inputMaterial} label="DNI" onChange={actualizarState} name="dni_alumno" value={alumno&&dni_alumno} />
+        <TextField className={styles.inputMaterial} label="DNI" onChange={actualizarState} name="dni_alumno" value={alumnos&&dni_alumno} />
         <br/>
         <br/>
-        <TextField type="number" className={styles.inputMaterial} label="Telefono" onChange={actualizarState} name="telefono_alumno" value={alumno&&telefono_alumno} />
+        <TextField type="number" className={styles.inputMaterial} label="Telefono" onChange={actualizarState} name="telefono_alumno" value={alumnos&&telefono_alumno} />
         <br/>
         <br/>
-        <TextField type="email" className={styles.inputMaterial} label="Email" onChange={actualizarState} name="mail_alumno" value={alumno&&mail_alumno} />
+        <TextField type="email" className={styles.inputMaterial} label="Email" onChange={actualizarState} name="mail_alumno" value={alumnos&&mail_alumno} />
         <br/>
         <br/>
-        <TextField className={styles.inputMaterial} label="Direccion" onChange={actualizarState} name="domicilio_alumno" value={alumno&&domicilio_alumno}/>
+        <TextField className={styles.inputMaterial} label="Direccion" onChange={actualizarState} name="domicilio_alumno" value={alumnos&&domicilio_alumno}/>
         <br/>
         <br/><br/>
         <div align="right">
           <Button onClick={()=>update2(id_alumno)} color='primary'>Editar</Button>
-          <Button onClick={()=>abrirCerrarModalEditar()}>Cancelar</Button>
+          <Button onClick={()=>abrirCerrarModalEditar2()}>Cancelar</Button>
         </div>
       </div>
     )
@@ -254,10 +349,17 @@ const Alumnos = () => {
     //Funciones
     const abrirCerrarModalInsertar= ()=>{
       insertarModal(!modal)
+      console.log(data)
     }
 
     const abrirCerrarModalEditar= ()=>{
       setModalEditar(!modalEditar)
+    }
+
+    const abrirCerrarModalEditar2= ()=>{
+      setModalEditar(!modalEditar)
+      alumnoAgregado({})
+      console.log(alumnos.anioEducativo.id_nivel.nombre_nivel)
     }
 
     const seleccionarAlumno = (alumno,caso)=>{
@@ -265,9 +367,10 @@ const Alumnos = () => {
       (caso === "Editar")&&abrirCerrarModalEditar();
     }
 
+
     useEffect(()=>{
         funcion();
-        /*datos();*/
+        nivs();
 
     },[])
 
@@ -315,12 +418,7 @@ const Alumnos = () => {
         <div className="contenedor">
           <br/>
           <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Alumno</button>
-          <br/>
-          <Link to='/CategoriasProveedores'>
-            <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton">Ver Categorias de Proveedores</button>
-          </Link>
-          <br/>
-          
+          <br/>          
         </div>
         
         <Modal

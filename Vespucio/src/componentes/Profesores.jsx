@@ -245,7 +245,7 @@ const Profesores = () => {
         <TextField type="number" className={styles.inputMaterial} label="Telefono" onChange={actualizarState} name="telefono_personal" value={profesor&&telefono_personal} />
         <br/>
         <br/>
-        <TextField type="email" className={styles.inputMaterial} label="Email" onChange={actualizarState} name="email_personal" value={profesor&&mail_personal} />
+        <TextField type="email" className={styles.inputMaterial} label="Email" onChange={actualizarState} name="mail_personal" value={profesor&&mail_personal} />
         <br/>
         <br/>
         <TextField className={styles.inputMaterial} label="Direccion" onChange={actualizarState} name="domicilio_personal" value={profesor&&domicilio_personal}/>
@@ -253,7 +253,7 @@ const Profesores = () => {
         <br/><br/>
         <div align="right">
           <Button onClick={()=>update2(id_personal)} color='primary'>Editar</Button>
-          <Button onClick={()=>abrirCerrarModalEditar()}>Cancelar</Button>
+          <Button onClick={()=>abrirCerrarModalEditar2()}>Cancelar</Button>
         </div>
       </div>
     )
@@ -266,6 +266,11 @@ const Profesores = () => {
 
     const abrirCerrarModalEditar= ()=>{
       setModalEditar(!modalEditar)
+    }
+
+    const abrirCerrarModalEditar2= ()=>{
+      setModalEditar(!modalEditar)
+      profesorAgregado({})
     }
 
     const seleccionarProfesor = (profesor,caso)=>{
@@ -323,12 +328,7 @@ const Profesores = () => {
         <div className="contenedor">
           <br/>
           <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Profesor</button>
-          <br/>
-          <Link to='/CategoriasProveedores'>
-            <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton">Ver Categorias de Proveedores</button>
-          </Link>
-          <br/>
-          
+          <br/>       
         </div>
         
         <Modal
