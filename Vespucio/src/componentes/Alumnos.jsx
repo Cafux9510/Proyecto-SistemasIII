@@ -14,6 +14,10 @@ const Label = styled.label`
 
 `;
 
+const Main = styled.div `
+  margin-top: 7%
+`;
+
 const Select = styled.select`
     display:block;
     width:100%;
@@ -376,65 +380,65 @@ const Alumnos = () => {
 
 
   return (
-    <div>
-        <h1 align="center">Sistema</h1>
-
-        <MaterialTable
-            title="Alumnos"
-            columns={columnas}
-            data={data}
-            actions={[
-                {
-                    icon:"edit",
-                    tooltip:"Modificar",
-                    onClick: (event,rowData)=>seleccionarAlumno(rowData,"Editar")
-                },
-                {
-                    icon:"delete",
-                    tooltip:"Eliminar",
-                    onClick: (event,rowData)=>handleEliminar(rowData.id_alumno)
-                }
-                
-            ]}
-            
-
-            options={{
-                  actionsColumnIndex: -1,
-                  searchFieldStyle:{
-                    placeContent:"Buscar"
+    <Main>
+      <div>
+          <MaterialTable
+              title="Alumnos"
+              columns={columnas}
+              data={data}
+              actions={[
+                  {
+                      icon:"edit",
+                      tooltip:"Modificar",
+                      onClick: (event,rowData)=>seleccionarAlumno(rowData,"Editar")
+                  },
+                  {
+                      icon:"delete",
+                      tooltip:"Eliminar",
+                      onClick: (event,rowData)=>handleEliminar(rowData.id_alumno)
                   }
-              }}
-            
-              localization={{
-                header:{
-                  actions:"Acciones",
                   
-                }
-                
-              }}
+              ]}
               
-        />
-        
-        <div className="contenedor">
-          <br/>
-          <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Alumno</button>
-          <br/>          
-        </div>
-        
-        <Modal
-          open={modal}
-          onClose={abrirCerrarModalInsertar}
-        >
-          {bodyInsertar}
-        </Modal>
-            
-        <Modal
-          open={modalEditar}
-          onClose={abrirCerrarModalEditar}
-        >
-          {bodyEditar}
-        </Modal>
-    </div>
+
+              options={{
+                    actionsColumnIndex: -1,
+                    searchFieldStyle:{
+                      placeContent:"Buscar"
+                    }
+                }}
+              
+                localization={{
+                  header:{
+                    actions:"Acciones",
+                    
+                  }
+                  
+                }}
+                
+          />
+          
+          <div className="contenedor">
+            <br/>
+            <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Alumno</button>
+            <br/>          
+          </div>
+          
+          <Modal
+            open={modal}
+            onClose={abrirCerrarModalInsertar}
+          >
+            {bodyInsertar}
+          </Modal>
+              
+          <Modal
+            open={modalEditar}
+            onClose={abrirCerrarModalEditar}
+          >
+            {bodyEditar}
+          </Modal>
+      </div>
+    </Main>
   )
 }
 

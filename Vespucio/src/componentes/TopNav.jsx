@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import profileImg from '../assets/imagenes/profile.jpg'
+import profileImg from '../assets/imagenes/perfil1.jpg'
 import "../estilos/top-nav.css"
 const TopNav = () => {
   return (

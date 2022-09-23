@@ -25,20 +25,15 @@ const navLinks = [
         display:"Pagos",
     },
     {
-        path:"/CategoriaInsumos" ,
+        path:"/Profesores" ,
         icon:"ri-filter-line",
-        display:"Categoria Insumos",
+        display:"Profesores",
     },
     {
-        path:"/CategoriasProveedores" ,
+        path:"/Alumnos" ,
         icon:"ri-filter-line",
-        display:"Categorias Proveedores",
-    },
-    {
-        path:"/CategoriasComprobantes" ,
-        icon:"ri-filter-line",
-        display:"CategoriasComprobantes",
-    },
+        display:"Alumnos",
+    }
 ]
 
 export default navLinks;
