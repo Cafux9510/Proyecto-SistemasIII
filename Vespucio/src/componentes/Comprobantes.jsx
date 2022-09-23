@@ -19,6 +19,9 @@ const Label = styled.label`
     text-align:center;
 
 `;
+const Main = styled.div `
+  margin-top: 7%
+`;
 
 const Select = styled.select`
     display:block;
@@ -465,7 +468,7 @@ const Comprobantes = () => {
 
   return (
 
-    <div>       
+    <Main>       
         <MaterialTable
             title="Comprobantes"
             columns={columnas}
@@ -550,7 +553,7 @@ const Comprobantes = () => {
           </Link>
           <br/><br/>
         </div>
-    </div>
+    </Main>
   )
 }
 
