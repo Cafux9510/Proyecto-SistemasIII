@@ -312,7 +312,6 @@ const Insumos = () => {
     }
 
   
-    let stock_nuevo_producto
     const bodyEditarStock= (
       <div className={styles.modal}>
         <h3>Registrar nuevo ingreso de un Insumo</h3>
@@ -328,7 +327,7 @@ const Insumos = () => {
                 >
                     <option value="">--Seleccione--</option>
                     {Object.values(nombres_prod).map(pr=>(
-                      <option key={pr.id_producto} value={pr.id_producto}>{pr.nombre_producto}</option>
+                      <option key={pr.id_producto} value={pr.id_producto}>{pr.nombre_producto}</option> 
                     ))}
                 
                     
@@ -338,14 +337,14 @@ const Insumos = () => {
         <br/>
         <Label>Cantidad del Insumo que ingresó</Label>
         <br/>
-        <TextField type="number" className={styles.inputMaterial} label="Nuevo Ingreso" onChange={sumar} name="stock_producto" value={stock_nuevo_producto}/>
+        <TextField type="number" className={styles.inputMaterial} label="Nuevo Ingreso" onChange={sumar} name="stock_producto" />
         <br/>
         <br/>
         <br/>{/*AYUDA DE FRANCO, FACUNDO-C1, PARA SUMAR EL STOCK QUE YA HABIA CON EL QUE ESTA INGRESANDO EL USUARIO*/}
         <Label>En su depósito habrá la siguiente cantidad:</Label>
         <br/>
         <br/>  
-        <TextField type="number" className={styles.inputMaterial} disabled onChange={actualizarState} name="stock_producto" value={insumos&&stock_producto}/>
+        <TextField type="number" className={styles.inputMaterial} disabled onChange={actualizarState} name="stock_producto" />
         <br/>  
         <br/>
         <br/>
