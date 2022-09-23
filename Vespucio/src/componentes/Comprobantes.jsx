@@ -265,29 +265,6 @@ const Comprobantes = () => {
     setPro(result.data)
   }
 
-  const subirImagen = async()=>{
-    try {
-      const avatarFile = document.getElementById('selectArchivo').files[0];
-      const { data, error } = await supabase.storage
-        .from('archivos-subidos')
-        .upload('archivos-comprobantes/'+parseInt(avatarFile.lastModified/avatarFile.size), avatarFile, {
-          cacheControl: '3600',
-          upsert: false,
-        })
-        console.log()
-
-        const principio_cadena = 'https://nnlzmdwuqwxgdrnutujk.supabase.co/storage/v1/object/public/';
-        const final_cadena = data.Key
-        const url_archivo= principio_cadena + final_cadena
-        
-        return url_archivo
-      
-    } catch (error) {
-      
-    }
-  }
-
-
   const abrirCerrarDialog=()=>{
     abrirCerrarModalInsertar();
     setDialog(true);
@@ -430,12 +407,16 @@ const Comprobantes = () => {
         <br/><br/>
         <div  align="right">
           <Button className="p" onClick={()=>abrirCerrarDialog2()} >Cargar Detalle</Button>
-          <Button onClick={()=>abrirCerrarModalEditar()}>Cancelar</Button>
+          <Button onClick={()=>vaciarState()}>Cancelar</Button>
         </div>
       </div>
     )
 
     //Nuevos states
+    const vaciarState=()=>{
+      setComprobante({})
+      setModalEditar(!modalEditar)
+    }
   
     //Funciones
     const abrirCerrarModalInsertar= ()=>{
@@ -504,7 +485,18 @@ useEffect(()=>{
   articulosBD();
 },[])
 
+const eliminarDetalle=id=>{
+  const actualizacion=detalles.filter(detalle=>detalle.id_articulo!== id )
+  setDetalles(actualizacion)
+}
 
+const actionBodyTemplate = (rowData) => {
+  return (
+      <React.Fragment>
+          <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" onClick={()=>eliminarDetalle(rowData.id_articulo)} />
+      </React.Fragment>
+  );
+}
 
 
   return (
@@ -571,7 +563,7 @@ useEffect(()=>{
               <Dropdown name="id_articulo" optionLabel="nombre_producto" optionValue="id_producto" value={detalle.id_articulo || ""} options={articulos} onChange={actualizarStateDetalle} placeholder="Seleccione articulo"/>
           </div>
           <div className="field mb-4">
-                <InputText name="cantidad_articulo" type="number"  value={detalle&&cantidad_articulo || ""} onChange={actualizarStateDetalle} placeholder="Cantidad" required autoFocus />  
+                <InputText name="cantidad_articulo" type="number"  value={detalle.cantidad_articulo || ""} onChange={actualizarStateDetalle} placeholder="Cantidad" required autoFocus />  
           </div>
 
             <div className="field mb-4">
@@ -588,6 +580,7 @@ useEffect(()=>{
               <Column field="id_articulo" header="Nombre Articulo"></Column>
               <Column field="cantidad_articulo" header="Cantidad"></Column>
               <Column field="precio_unitario" header="Precio Unitario"></Column>
+              <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
           </DataTable>
         </Dialog>
         <div className="contenedor">
