@@ -18,6 +18,10 @@ const Label = styled.label`
 
 `;
 
+const Main = styled.div `
+  margin-top: 7%
+`;
+
 const Select = styled.select`
     display:block;
     width:100%;
@@ -385,7 +389,7 @@ const Insumos = () => {
    
 
   return (
-    <div>
+    <Main>
        
         <MaterialTable
             title="Insumos"
@@ -457,7 +461,7 @@ const Insumos = () => {
 
           <br/><br/>
         </div>
-    </div>
+    </Main>
   )
 }
 

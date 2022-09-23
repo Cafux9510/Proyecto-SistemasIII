@@ -19,6 +19,9 @@ const Label = styled.label`
     text-align:center;
 
 `;
+const Main = styled.div `
+  margin-top: 7%
+`;
 
 const Select = styled.select`
     display:block;
@@ -501,7 +504,7 @@ const actionBodyTemplate = (rowData) => {
 
   return (
 
-    <div>       
+    <Main>       
         <MaterialTable
             title="Comprobantes"
             columns={columnas}
@@ -591,7 +594,7 @@ const actionBodyTemplate = (rowData) => {
           </Link>
           <br/><br/>
         </div>
-    </div>
+    </Main>
   )
 }
 

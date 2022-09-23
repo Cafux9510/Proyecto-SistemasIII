@@ -15,6 +15,9 @@ const Label = styled.label`
     text-align:center;
 
 `;
+const Main = styled.div `
+  margin-top: 7%
+`;
 
 const Select = styled.select`
     display:block;
@@ -228,7 +231,7 @@ const CategoriasInsumos = () => {
    
 
     return (
-    <div>
+    <Main>
        
         <MaterialTable
             title="Categorías de Insumos"
@@ -294,7 +297,7 @@ const CategoriasInsumos = () => {
       
           <br/><br/>
         </div>
-    </div>
+    </Main>
   )
 }
 
