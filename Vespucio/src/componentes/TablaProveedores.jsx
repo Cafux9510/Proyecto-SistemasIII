@@ -342,14 +342,9 @@ const TablaProveedores = () => {
 
 
   return (
-<<<<<<< HEAD
-    <div>
-        <h1 align="center">Sistema</h1>
-        <Toast ref={toast} />
-=======
     <Main>
 
->>>>>>> 2c14484f6fc96a8960e31ff9ab8c03544660be60
+
         <MaterialTable
             title="Proveedores"
             columns={columnas}
