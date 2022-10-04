@@ -48,9 +48,14 @@ body {
 }
 
 .boton{
-  background-color: gray;
+  background-color: var(--buttom-color);
+  color: var(--small-text-color);
   border-radius: 10px;
   width: 260px;
+  height: 65px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   min-width: 100px;
   margin-top: 50px;
   font-family: "Roboto", "Helvetica", "Arial", sans-serif;

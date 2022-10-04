@@ -19,6 +19,10 @@ const Label = styled.label`
 
 `;
 
+const Main = styled.div `
+  margin-top: 7%
+`;
+
 const Select = styled.select`
     display:block;
     width:100%;
@@ -443,7 +447,7 @@ const Pagos = () => {
   }
 
   return (
-    <div>
+    <Main>
        
         <MaterialTable
             title="Pagos"
@@ -524,7 +528,7 @@ const Pagos = () => {
           <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Pago</button>
           <br/><br/>
         </div>
-    </div>
+    </Main>
   )
 }
 

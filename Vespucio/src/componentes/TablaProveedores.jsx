@@ -14,7 +14,9 @@ const Label = styled.label`
     text-align:center;
 
 `;
-
+const Main = styled.div `
+  margin-top: 7%
+`;
 const Select = styled.select`
     display:block;
     width:100%;
@@ -340,9 +342,14 @@ const TablaProveedores = () => {
 
 
   return (
+<<<<<<< HEAD
     <div>
         <h1 align="center">Sistema</h1>
         <Toast ref={toast} />
+=======
+    <Main>
+
+>>>>>>> 2c14484f6fc96a8960e31ff9ab8c03544660be60
         <MaterialTable
             title="Proveedores"
             columns={columnas}
@@ -404,7 +411,7 @@ const TablaProveedores = () => {
         >
           {bodyEditar}
         </Modal>
-    </div>
+    </Main>
   )
 }
 
