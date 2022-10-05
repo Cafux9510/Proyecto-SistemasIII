@@ -37,6 +37,15 @@ const Campo= styled.div`
     align-items:center;
 `;
 
+const Error = styled.div`
+    background-color: red;
+    color: white;
+    padding: 1rem;
+    width:100%;
+    text-align: center;
+    margin-bottom: 2rem;
+`;
+
 
 
 const useStyles = makeStyles((theme)=>({
@@ -82,9 +91,11 @@ const Comprobantes = () => {
       id_articulo:"",
       cantidad_articulo:"",
       precio_unitario:"",
+      total:""
     })
-
-    const{cantidad_articulo}=detalle;
+    const [ error, guardarError ] = useState(false);
+    const[totales,setTotales]=useState(0)
+    let{cantidad_articulo,precio_unitario,total}=detalle;
   
     //Funciones que tienen datos desde una api
     const funcion = async()=>{
@@ -154,6 +165,7 @@ const Comprobantes = () => {
   }
   
     const submit = async()=>{
+
       try {
         const avatarFile = document.getElementById('selectArchivo').files[0];
         const  foto = await supabase.storage
@@ -278,7 +290,17 @@ const Comprobantes = () => {
   }
 
   const abrirCerrarDialog=()=>{
+    if(tipo_comprobante.trim() ==="" || proveedor_comprobante.trim() ==="" || tipo_movimiento.trim()==="" || numero_comprobante.trim() ==="" || fecha_emision.trim() ==="" || total_comprobante.trim() ===""){
+        guardarError(true)
+
+        setTimeout(()=>{
+          guardarError(false)
+        },3000)
+        return;
+      }
+    guardarError(false);
     abrirCerrarModalInsertar();
+    
     setDialog(true);
   }
   const abrirCerrarDialog2=(id)=>{
@@ -299,6 +321,7 @@ const Comprobantes = () => {
     const bodyInsertar= (
       <div className={styles.modal}>
         <h4>Agregar Nuevo Comprobante</h4>
+        {error ? <Error>Todos los campos son obligatorios</Error>:null}
         <br/>
         <Campo>
         <Label>Tipo Comprobante</Label>
@@ -311,9 +334,6 @@ const Comprobantes = () => {
                     {Object.values(tipo).map(pr=>(
                       <option key={pr.id_tipo} value={pr.id_tipo}>{pr.nombre_tipo}</option>
                     ))}
-                
-                    
-                  
             </Select>
         </Campo>
         <br/>
@@ -462,7 +482,17 @@ const Comprobantes = () => {
 
     //Funciones para agregar datos a la tabla de detalles fiumba
 
+    useEffect(()=>{
+      const variable=detalles.reduce((total,detalle)=>detalle.total+total,0)
+      console.log(variable)
+      setTotales(variable)
+
+    },[detalles])
+
     const crearDetalle=(de)=>{
+      total= Number(cantidad_articulo)*Number(precio_unitario);
+      console.log(total)
+      de.total=total
       setDetalles([...detalles,de]);
     }
     const actualizarStateDetalle = e =>{
@@ -477,6 +507,7 @@ const Comprobantes = () => {
       id_articulo:"",
       cantidad_articulo:"",
       precio_unitario:"",
+      total:""
     })
   }
 
@@ -511,6 +542,14 @@ const actionBodyTemplate = (rowData) => {
           <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" onClick={()=>eliminarDetalle(rowData.id_articulo)} />
       </React.Fragment>
   );
+}
+
+const seleccionArticulo=(e)=>{
+  let seleccionado= articulos.find(articulo=>articulo.id_producto == e.target.value)
+  setDetalle({
+    id_articulo:seleccionado.id_producto,
+    nombre_producto:seleccionado.nombre_producto
+  })
 }
 
 
@@ -572,10 +611,10 @@ const actionBodyTemplate = (rowData) => {
         </Modal>
 
         {/*MODAL DEL DETALLE AGREGADO ESTO ES NUEVO FRANCO PAAAA*/}
-        <Dialog visible={dialog} header="Detalle" style={{ width: '450px' }} modal className="p-fluid" onHide={eliminarDialog} footer={productDialogFooter}>
+        <Dialog visible={dialog} header="Detalle" style={{ width: '600px' }} modal className="p-fluid" onHide={eliminarDialog} footer={productDialogFooter}>
           <div className="field mb-4">
              
-              <Dropdown name="id_articulo" optionLabel="nombre_producto" optionValue="id_producto" value={detalle.id_articulo || ""} options={articulos} onChange={actualizarStateDetalle} placeholder="Seleccione articulo"/>
+              <Dropdown name="id_articulo" optionLabel="nombre_producto" optionValue="id_producto" value={detalle.id_articulo || ""} options={articulos} onChange={seleccionArticulo} placeholder="Seleccione articulo"/>
           </div>
           <div className="field mb-4">
                 <InputText name="cantidad_articulo" type="number"  value={detalle.cantidad_articulo || ""} onChange={actualizarStateDetalle} placeholder="Cantidad" required autoFocus />  
@@ -592,11 +631,15 @@ const actionBodyTemplate = (rowData) => {
                 <Button onClick={agregarDatos} className="w-6">Agregar</Button> 
             </div>
           <DataTable value={detalles} showGridlines >
-              <Column field="id_articulo" header="Nombre Articulo"></Column>
+              <Column field="nombre_producto" header="Nombre Articulo"></Column>
               <Column field="cantidad_articulo" header="Cantidad"></Column>
               <Column field="precio_unitario" header="Precio Unitario"></Column>
-              <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
+              <Column field="total" header="Subtotal"></Column>
+              <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }} header="Acciones"></Column>
           </DataTable>
+          <p>
+              <span>Total</span> {totales}
+          </p>
         </Dialog>
         <div className="contenedor">
           <br/>

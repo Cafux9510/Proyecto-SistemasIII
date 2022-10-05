@@ -36,6 +36,14 @@ const Campo= styled.div`
     margin-bottom: 1rem;
     align-items:center;
 `;
+const Error = styled.div`
+    background-color: red;
+    color: white;
+    padding: 1rem;
+    width:100%;
+    text-align: center;
+    margin-bottom: 2rem;
+`;
 
 
 
@@ -67,7 +75,8 @@ const Pagos = () => {
     const [data,setData]=useState([])
     const[modal,insertarModal]=useState(false)
     const [modalEditar, setModalEditar]= useState(false);
-    const[dialog,setDialog]=useState(false) 
+    const[dialog,setDialog]=useState(false)
+    const [ error, guardarError ] = useState(false); 
     const[pagos,setPagos]=useState({
         numero_pago:'',
         proveedor_pago:'',
@@ -80,6 +89,11 @@ const Pagos = () => {
     const[cobro,setCobro]=useState({
       id_comprobante:'',
       modo_pago:''
+    })
+
+    const[comprobantes2,setComprobantes2]=useState({
+      fecha_emision:"",
+      total_comprobante:""
     })
     //Funciones que tienen datos desde una api
     const funcion = async()=>{
@@ -247,6 +261,11 @@ const Pagos = () => {
   const agregarDatos=()=>{
     crearDetalle(cobro)
     setCobro({})
+    setComprobantes2({
+      fecha_emision:"",
+      total_comprobante:""
+    })
+    
   }
 
 
@@ -282,6 +301,7 @@ const Pagos = () => {
     const bodyInsertar= (
       <div className={styles.modal}>
         <h4>Registrar Nuevo Pago</h4>
+        {error ? <Error>Todos los campos son obligatorios</Error>:null}
         <br/>
         
         <TextField type="number" className={styles.inputMaterial} label="Numero de Pago" onChange={actualizarState} name="numero_pago" value={numero_pago}/>
@@ -419,8 +439,16 @@ const Pagos = () => {
       </React.Fragment>
     );
     const abrirCerrarDialog=()=>{
-      abrirCerrarModalInsertar();
+      if(numero_pago.trim()===""|| proveedor_pago.trim()===""||fecha_emision.trim()===""|| total_pago.trim()===""){
+        guardarError(true)
 
+        setTimeout(()=>{
+          guardarError(false)
+        },3000)
+        return;
+      }
+      guardarError(false);
+      abrirCerrarModalInsertar();
       setDialog(true);
     }
 
@@ -446,6 +474,17 @@ const Pagos = () => {
     setDialog(true);
   }
 
+
+  const seleccionaComprobante= (e)=>{
+    let seleccionado=comprobantes.find(comprobante =>comprobante.id_comprobante===e.target.value );
+    setCobro({
+      id_comprobante:seleccionado.id_comprobante
+    })
+    setComprobantes2({
+      fecha_emision:seleccionado.fecha_emision,
+      total_comprobante:seleccionado.total_comprobante
+    })
+  }
   return (
     <Main>
        
@@ -504,7 +543,15 @@ const Pagos = () => {
 
         <Dialog visible={dialog}  header="Detalle" style={{ width: '450px' }} modal className="p-fluid"  footer={productDialogFooter} onHide={eliminarDialog}>
             <div className="field mb-4">
-                <Dropdown name="id_comprobante" placeholder="Comprobantes" optionValue="id_comprobante" optionLabel="numero_comprobante" value={cobro.id_comprobante} onChange={actualizarStateDetalle} options={comprobantes}/>
+                <Dropdown name="id_comprobante" placeholder="Numero del Comprobante" optionValue="id_comprobante" optionLabel="numero_comprobante" value={cobro.id_comprobante} onChange={seleccionaComprobante} options={comprobantes}/>
+            </div>
+            <div className="field mb-4">
+              <label>Fecha del Comprobante</label>
+              <InputText  placeholder="Fecha del Comprobante" value={comprobantes2.fecha_emision} disabled type="text"/>
+            </div>
+            <div className="field mb-4">
+             <label>Monto Comprobante</label>
+              <InputText  placeholder="Monto del Comprobante" value={comprobantes2.total_comprobante} disabled type="text"/>
             </div>
             <div className="field mb-4">
               <Dropdown name="modo_pago" placeholder="Modo de pago" onChange={actualizarStateDetalle} value={cobro.modo_pago}  options={modosPago}/>
