@@ -61,3 +61,19 @@ body {
   font-family: "Roboto", "Helvetica", "Arial", sans-serif;
   margin-right: 10px;
 }
+
+.boton2{
+  background-color: var(--buttom-color);
+  color: var(--small-text-color);
+  border-radius: 10px;
+  width: 260px;
+  height: 46px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 100px;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  margin-right: 10px;
+  padding: 0;
+  
+}

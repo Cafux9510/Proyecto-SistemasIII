@@ -33,7 +33,12 @@ const navLinks = [
         path:"/Alumnos" ,
         icon:"ri-filter-line",
         display:"Alumnos",
-    }
+    },
+    {
+        path:"/EstructuraEscolar" ,
+        icon:"ri-user-2-line",
+        display:"Estructura Escolar",
+    },
 ]
 
 export default navLinks;

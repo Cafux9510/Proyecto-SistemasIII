@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {supabase} from "../Backend/client";
 import MaterialTable from "@material-table/core";
-import { Button } from "@material-ui/core";
+import { Button,Select,MenuItem } from "@material-ui/core";
 import {Modal,TextField} from "@material-ui/core"
 import {makeStyles} from "@material-ui/core/styles"
 import swal from "sweetalert";
@@ -18,20 +18,19 @@ const Main = styled.div `
   margin-top: 7%
 `;
 
-const Select = styled.select`
+/* const Select = styled.select`
     display:block;
     width:100%;
     padding: 1rem;
     border: 1px solid #e1e1e1;
     -webkit-appearance:none;
-`
+` */
 
 const Campo= styled.div`
     display:flex;
     margin-bottom: 1rem;
     align-items:center;
 `;
-
 
 const useStyles = makeStyles((theme)=>({
   modal:{
@@ -169,13 +168,13 @@ const Profesores = () => {
 
     //Configuracion del 
     const columnas=[
-        {title:"Tipo de Personal", field:"tipoPersonal.nombre_tipo_personal"},
-        {title:"Nombre", field:"nombre_personal"},
-        {title:"Apellido", field:"apellido_personal"},
-        {title:"DNI", field:"dni_personal"},
-        {title:"Telefono",field:"telefono_personal"},
-        {title:"Email", field:"mail_personal"},
-        {title:"Domicilio", field:"domicilio_personal"}
+        {title:"Tipo de Personal", field:"tipoPersonal.nombre_tipo_personal",lookup: { 1: 'Profesor', 2: 'Secretaria',3:'Directivo',4:'Prostituto' }},
+        {title:"Nombre", field:"nombre_personal",filtering:false},
+        {title:"Apellido", field:"apellido_personal",filtering:false},
+        {title:"DNI", field:"dni_personal",filtering:false},
+        {title:"Telefono",field:"telefono_personal",filtering:false},
+        {title:"Email", field:"mail_personal",filtering:false},
+        {title:"Domicilio", field:"domicilio_personal",filtering:false}
       ]
 
       
@@ -292,11 +291,13 @@ const Profesores = () => {
   return (
     <Main>  
       <div>
+     
           <MaterialTable
               title="Profesores"
               columns={columnas}
               data={data}
               actions={[
+                
                   {
                       icon:"edit",
                       tooltip:"Modificar",
@@ -312,10 +313,9 @@ const Profesores = () => {
               
 
               options={{
-                    actionsColumnIndex: -1,
-                    searchFieldStyle:{
-                      placeContent:"Buscar"
-                    }
+                    search:false,
+                    filtering:true,
+                    
                 }}
               
                 localization={{
