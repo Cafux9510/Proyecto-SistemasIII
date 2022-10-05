@@ -5,6 +5,7 @@ import Pagos from "../componentes/Pagos"
 import Insumos from "../componentes/Insumos"
 import Comprobantes from "../componentes/Comprobantes"
 import TablaProveedores from "../componentes/TablaProveedores";
+import EstructuraEscolar from "../componentes/EstructuraEscolar";
 
 /*ACA MODIFICO FACUNDO-C2*/
 import CategoriasInsumos from "../componentes/CategoriasInsumos";
@@ -30,6 +31,9 @@ const Router = () => {
     <Route exact path="/CategoriasComprobantes" element={<CategoriasComprobantes/>}/>
     <Route exact path="/Profesores" element={<Profesores/>}/>
     <Route exact path="/Alumnos" element={<Alumnos/>}/>
+    <Route exact path="/EstructuraEscolar" element={<EstructuraEscolar/>}/>
+
+
     {/*HASTA ACA*/}
   </Routes>
     )
