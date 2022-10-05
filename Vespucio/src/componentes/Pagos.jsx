@@ -178,11 +178,12 @@ const Pagos = () => {
               id_comprobante:cobr.id_comprobante,
               modo_pago:cobr.modo_pago
             })
+
+            console.log(dato.data)
           })
          
   
           setDialog(false)
-          location.reload();
           
          
       } catch (error) {

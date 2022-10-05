@@ -192,7 +192,6 @@ const Comprobantes = () => {
               precio_unitario:deta.precio_unitario
             })
           })
-         
 
           setDialog(false)
           location.reload();
@@ -223,6 +222,16 @@ const Comprobantes = () => {
           window.location.reload()
         }, 2000);
       });
+    }
+
+    const[lineaComprobantes, setLineaComprobante]=useState([])
+
+    const lineaComprobante= async()=>{
+      const result= await supabase.from("lineasComprobantes")
+      .select()
+      .eq("isHabilitado_linea",true)
+
+      setLineaComprobante(result.data)
     }
 
     //Configuracion del {/*DEJO LOS PARAMETROS DEL VALUE, SINO ME CRASHEA */}
@@ -272,7 +281,9 @@ const Comprobantes = () => {
     abrirCerrarModalInsertar();
     setDialog(true);
   }
-  const abrirCerrarDialog2=()=>{
+  const abrirCerrarDialog2=(id)=>{
+    const array= lineaComprobantes.filter(comprobante=>comprobante.id_comprobante !==id )
+    setDetalles(array)
     abrirCerrarModalEditar();
     setDialog(true);
   }
@@ -409,7 +420,7 @@ const Comprobantes = () => {
         <TextField type="number" className={styles.inputMaterial} label="Monto Total" onChange={actualizarState} name="total_comprobante" value={comprobante&&total_comprobante} />
         <br/><br/>
         <div  align="right">
-          <Button className="p" onClick={()=>abrirCerrarDialog2()} >Cargar Detalle</Button>
+          <Button className="p" onClick={()=>abrirCerrarDialog2(id_comprobante)} >Cargar Detalle</Button>
           <Button onClick={()=>vaciarState()}>Cancelar</Button>
         </div>
       </div>
@@ -438,7 +449,8 @@ const Comprobantes = () => {
     useEffect(()=>{
         funcion();
         datos();
-        dato()
+        dato();
+        lineaComprobante();
     },[])
    
     const productDialogFooter = (

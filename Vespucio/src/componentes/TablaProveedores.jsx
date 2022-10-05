@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState,useRef } from "react";
 import {supabase} from "../Backend/client";
 import MaterialTable from "@material-table/core";
 import { Button } from "@material-ui/core";
@@ -7,6 +7,7 @@ import {makeStyles} from "@material-ui/core/styles"
 import swal from "sweetalert";
 import styled from '@emotion/styled'
 import { Link } from "react-router-dom";
+import { Toast } from 'primereact/toast';
 
 const Label = styled.label`
     flex: 0 0 100px;
@@ -67,6 +68,7 @@ const TablaProveedores = () => {
         email_proveedor:'',
         id_categoria_proveedor:'',
     })
+    const toast = useRef(null);
 
 
    
@@ -86,6 +88,7 @@ const TablaProveedores = () => {
               )
             `)
             .eq("isHabilitado_proveedor",true)
+            .order("id_proveedor",{ascending:true})
         
             setData(proveedores)
         } catch (error) {
@@ -113,6 +116,7 @@ const TablaProveedores = () => {
         const {result,error}= await supabase.from("proveedores")
         .update({cuit_proveedor,nombre_proveedor,direccion_proveedor,localidad_proveedor,telefono_proveedor,email_proveedor,id_categoria_proveedor})
         .eq("id_proveedor",id_proveedor)
+        funcion()
 
 
         const arrayProveedores = data.map((prove)=>{
@@ -132,8 +136,8 @@ const TablaProveedores = () => {
         })
 
         setData(arrayProveedores)
-
-        abrirCerrarModalEditar();    
+        abrirCerrarModalEditar();
+        toast.current.show({ severity: 'success', summary: 'Exito!', detail: 'Registro Modificado', life: 3000 });    
        } catch (error) {
         console.log(error)
       }
@@ -150,15 +154,12 @@ const TablaProveedores = () => {
           email_proveedor,
           id_categoria_proveedor,
         });
+        funcion()
 
-
-      //Aca quede
         const resultado=result.data[0]
-        const arrayProveedores= [...data,proveedor]
+        console.log(resultado)
         setData([...data,resultado])
         abrirCerrarModalInsertar();
-        //setData([...data,result.data])
-        //location.reload()
        
       } catch (error) {
         console.log(error)
@@ -342,6 +343,7 @@ const TablaProveedores = () => {
 
   return (
     <Main>
+
 
         <MaterialTable
             title="Proveedores"
