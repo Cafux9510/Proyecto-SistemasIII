@@ -25,9 +25,9 @@ const navLinks = [
         display:"Pagos",
     },
     {
-        path:"/Profesores" ,
+        path:"/AsignacionPersonal" ,
         icon:"ri-filter-line",
-        display:"Profesores",
+        display:"Asignación del Personal",
     },
     {
         path:"/Alumnos" ,
@@ -35,10 +35,16 @@ const navLinks = [
         display:"Alumnos",
     },
     {
-        path:"/EstructuraEscolar" ,
-        icon:"ri-user-2-line",
-        display:"Estructura Escolar",
+        path:"/PersonalEducativo" ,
+        icon:"ri-filter-line",
+        display:"Personal Educativo",
     },
+    {
+        path:"/Materias" ,
+        icon:"ri-filter-line",
+        display:"Materias",
+    }
+
 ]
 
 export default navLinks;

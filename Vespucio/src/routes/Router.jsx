@@ -5,14 +5,15 @@ import Pagos from "../componentes/Pagos"
 import Insumos from "../componentes/Insumos"
 import Comprobantes from "../componentes/Comprobantes"
 import TablaProveedores from "../componentes/TablaProveedores";
-import EstructuraEscolar from "../componentes/EstructuraEscolar";
 
 /*ACA MODIFICO FACUNDO-C2*/
 import CategoriasInsumos from "../componentes/CategoriasInsumos";
 import CategoriasProveedores from "../componentes/CategoriasProveedores";
 import CategoriasComprobantes from "../componentes/CategoriasComprobantes";
-import Profesores from "../componentes/Profesores";
 import Alumnos from "../componentes/Alumnos";
+import AsignacionPersonal from '../componentes/AsignacionPersonal';
+import PersonalEducativo from '../componentes/PersonalEducativo';
+import Materias from '../componentes/Materias';
 /*HASTA ACA*/
 
 
@@ -29,11 +30,10 @@ const Router = () => {
     <Route exact path="/CategoriasInsumos" element={<CategoriasInsumos/>}/>
     <Route exact path="/CategoriasProveedores" element={<CategoriasProveedores/>}/>
     <Route exact path="/CategoriasComprobantes" element={<CategoriasComprobantes/>}/>
-    <Route exact path="/Profesores" element={<Profesores/>}/>
+    <Route exact path="/AsignacionPersonal" element={<AsignacionPersonal/>}/>
     <Route exact path="/Alumnos" element={<Alumnos/>}/>
-    <Route exact path="/EstructuraEscolar" element={<EstructuraEscolar/>}/>
-
-
+    <Route exact path="/PersonalEducativo" element={<PersonalEducativo/>}/>
+    <Route exact path="/Materias" element={<Materias/>}/>
     {/*HASTA ACA*/}
   </Routes>
     )
