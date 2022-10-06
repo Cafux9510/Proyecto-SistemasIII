@@ -80,36 +80,48 @@ const useStyles = makeStyles((theme)=>({
 
 const EstructuraEscolar = () => {
     //Statest
-    const [data,setData]=useState([])
+    const [data,setDataA]=useState([])
+    const [dataP,setDataP]=useState([])
     const[modal,insertarModal]=useState(false)
     const [modalEditar, setModalEditar]= useState(false);
     const[datos,alumnoAgregado]=useState({
         id_nivel:'',
         id_anioEduc:'',
-        id_division:'',
         id_tipo:'',
         
         
     })
 
+    
 
+    const llenarTabla = async()=>{
+      try {
+         if(id_tipo == 1){
+          funcionA();
+         }else if(id_tipo ==2){
+          funcionP();
+         }
+      } catch (error) {
+          console.log(error)
+      }
+  }
    
     //Funciones que tienen datos desde una api
     const funcionA = async()=>{
         try {
            const { data: alumnos, error } = await supabase
-            .from('alumnos')
+            .from('alumnosPorAnio')
             .select(`
-            *,
-            anioEducativo(
-              nombre_anioEduc,
-              id_nivel(
-                nombre_nivel
+              alumnos(
+                nombre_alumno,
+                apellido_alumno,
+                telefono_alumno,
+                dni_alumno
               )
-            )
-          `)
-          .eq("isHabilitado_alumno",true)
-            setData(alumnos)
+            `)
+          .eq("isHabilitado_asignacion",true)
+          .eq("id_anioEduc",id_anioEduc)
+            setDataA(alumnos)
         } catch (error) {
             console.log(error)
         }
@@ -117,19 +129,20 @@ const EstructuraEscolar = () => {
 
     const funcionP = async()=>{
       try {
-         const { data: alumnos, error } = await supabase
-          .from('alumnos')
+         const { data: profes, error } = await supabase
+          .from('personalPorAnio')
           .select(`
-          *,
-          anioEducativo(
-            nombre_anioEduc,
-            id_nivel(
-              nombre_nivel
+            id_anio,
+            personalEducativo(
+              nombre_personal,
+              telefono_personal,
+              apellido_personal,
+              dni_personal
             )
-          )
-        `)
-        .eq("isHabilitado_alumno",true)
-          setData(alumnos)
+          `)
+        .eq("isHabilitado_asignacion",true)
+        .eq("id_anio",id_anioEduc)
+          setDataP(profes)
       } catch (error) {
           console.log(error)
       }
@@ -142,12 +155,20 @@ const EstructuraEscolar = () => {
     //Nombre Columnas
     //MODIFICAR EL FIELD
     const columnas=[
-        {title:"Nombre", field:"anioEducativo.id_nivel.nombre_nivel"},
-        {title:"Apellido", field:"anioEducativo.nombre_anioEduc"},
-        {title:"DNI", field:"nombre_alumno"},
-        {title:"Telefono", field:"apellido_alumno"},
+        {title:"Nombre", field:"alumnos.nombre_alumno"},
+        {title:"Apellido", field:"alumnos.apellido_alumno"},
+        {title:"DNI", field:"alumnos.dni_alumno"},
+        {title:"Telefono", field:"alumnos.telefono_alumno"},
 
-      ]
+    ]
+
+    const columnasP=[
+      {title:"Nombre", field:"personalEducativo.nombre_personal"},
+      {title:"Apellido", field:"personalEducativo.apellido_personal"},
+      {title:"DNI", field:"personalEducativo.dni_personal"},
+      {title:"Telefono", field:"personalEducativo.telefono_personal"}
+
+  ]
 
 
     //Estilos
@@ -167,12 +188,22 @@ const EstructuraEscolar = () => {
       setNiveles(result.data)
       return result.data
     }
+
+    const[anios,setAnios]=useState({}) 
+    const anis=async()=>{
+      const result = await supabase.from('nivelesEducativos')
+      .select();
+  
+      setAnios(result.data)
+      return result.data
+    }
+
     const[categorias,setCategorias]=useState({}) 
 
     const filtrarAnios = e =>{
 
       alumnoAgregado({
-        ...alumnos,
+        ...datos,
         [e.target.name]: e.target.value
       })
 
@@ -184,9 +215,11 @@ const EstructuraEscolar = () => {
           const result = await supabase.from('anioEducativo')
           .select()
           .eq("isHabilitado_anio",true)
-          .eq("id_nivel",1);
+          .eq("id_nivel",1)
+          .gte('id_anioEduc', 1)
+          .lte('id_anioEduc', 42);
       
-          setCategorias(result.data)
+          setAnios(result.data)
         }
         datos();
 
@@ -195,9 +228,11 @@ const EstructuraEscolar = () => {
           const result = await supabase.from('anioEducativo')
           .select()
           .eq("isHabilitado_anio",true)
-          .eq("id_nivel",2);
+          .eq("id_nivel",2)
+          .gte('id_anioEduc', 1)
+          .lte('id_anioEduc', 42);
       
-          setCategorias(result.data)
+          setAnios(result.data)
         }
         datos();
       }else{
@@ -205,9 +240,11 @@ const EstructuraEscolar = () => {
           const result = await supabase.from('anioEducativo')
           .select()
           .eq("isHabilitado_anio",true)
-          .eq("id_nivel",3);
+          .eq("id_nivel",3)
+          .gte('id_anioEduc', 1)
+          .lte('id_anioEduc', 42);
       
-          setCategorias(result.data)
+          setAnios(result.data)
         }
         datos();
       }
@@ -243,7 +280,8 @@ const EstructuraEscolar = () => {
 
     useEffect(()=>{
         //funcion();
-        //nivs();
+        nivs();
+        anis();
 
     },[])
 
@@ -252,7 +290,7 @@ const EstructuraEscolar = () => {
     <Main>
       <div>
         <div>
-            <Titulo>Categorias</Titulo>
+            <Titulo>Consulta de la Estructura Escolar</Titulo>
                 <Campo>
                 <SelectCat
                             name='id_nivel'
@@ -261,7 +299,7 @@ const EstructuraEscolar = () => {
                             onChange={filtrarAnios}
                         >
                             <option value="">--Nivel Educativo--</option>
-                            {Object.values(nivs).map(pr=>(
+                            {Object.values(niveles).map(pr=>(
                             <option key={pr.id_nivel} value={pr.id_nivel}>{pr.nombre_nivel}</option>
                             ))}
                         
@@ -269,56 +307,69 @@ const EstructuraEscolar = () => {
                         
                     </SelectCat>
                     <SelectCat
-                            name='id_nivel'
-                            id='id_nivel'
-                            value={id_nivel}
-                            onChange={filtrarAnios}
+                            name='id_anioEduc'
+                            id='id_anioEduc'
+                            value={id_anioEduc}
+                            onChange={actualizarState}
                         >
                             <option value="">--Año--</option>
-                            {Object.values(niveles).map(pr=>(
-                            <option key={pr.id_nivel} value={pr.id_nivel}>{pr.nombre_nivel}</option>
+                            {Object.values(anios).map(pr=>(
+                            <option key={pr.id_anioEduc} value={pr.id_anioEduc}>{pr.nombre_anioEduc}</option>
                             ))}
                         
                             
                         
                     </SelectCat>
                     <SelectCat
-                            name='id_nivel'
-                            id='id_nivel'
-                            value={id_nivel}
-                            onChange={filtrarAnios}
-                        >
-                            <option value="">--Division--</option>
-                            {Object.values(niveles).map(pr=>(
-                            <option key={pr.id_nivel} value={pr.id_nivel}>{pr.nombre_nivel}</option>
-                            ))}
-                        
-                            
-                        
-                    </SelectCat>
-                    <SelectCat
-                            name='id_nivel'
-                            id='id_nivel'
-                            value={id_nivel}
-                            onChange={filtrarAnios}
+                            name='id_tipo'
+                            id='id_tipo'
+                            value={id_tipo}
+                            onChange={actualizarState}
                         >
                             <option value="">--Alumno o Profesor--</option>
-                            {Object.values(niveles).map(pr=>(
-                            <option key={pr.id_nivel} value={pr.id_nivel}>{pr.nombre_nivel}</option>
-                            ))}
+                            <option key={1} value={1}>Alumno</option>
+                            <option key={2} value={2}>Profesor</option>
                         
                             
                         
                     </SelectCat>
 
                     {/* /*La tabla tendria que estar invisible, y se hace visible en el momento en que le hariamos click a buscar  */}
-                    <button  className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-500 boton2" onClick={()=>abrirCerrarModalInsertar()}>Buscar</button>
+                    <button  className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-500 boton2" onClick={llenarTabla}>Buscar</button>
 
 
                 </Campo>
             </div>
           <MaterialTable
-              title="Consulta Estructura Escolar"
+              title="Tabla de Profesores"
+              
+              columns={columnasP}
+              data={dataP}
+
+              
+
+              options={{
+                    search:false,
+                    actionsColumnIndex: -1,
+                    searchFieldStyle:{
+                      placeContent:"Buscar"
+                    }
+                }}
+              
+                localization={{
+                  header:{
+                    actions:"Acciones",
+                    
+                  }
+                  
+                }}
+                
+            />
+
+            <br />
+
+            <MaterialTable
+              title="Tabla de Alumnos"
               
               columns={columnas}
               data={data}

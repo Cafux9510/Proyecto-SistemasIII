@@ -216,7 +216,8 @@ const AsignacionPersonal = () => {
         const result= await supabase.from("personalPorAnio").insert([{
           id_cargo:valor,
           id_personal:selectedCountry.id_personal,
-          periodo_lectivo
+          periodo_lectivo,
+          id_anio:id_anioEduc
         
         }]);
 
