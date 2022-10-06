@@ -1,18 +1,18 @@
 const navLinks = [
     {
+        path: "",
+        icon:"",
+        display:"",
+    },
+    {
         path: "/inicio",
         icon:"ri-home-3-line",
         display:"Inicio",
     },
     {
-        path:"/comprobantes" ,
-        icon:"ri-file-list-3-line",
-        display:"Comprobantes",
-    },
-    {
-        path:"/insumos" ,
-        icon:"ri-pencil-ruler-2-line",
-        display:"Insumos",
+        path: "",
+        icon:"",
+        display:"_____1° Sprint_______",
     },
     {
         path:"/TablaProveedores" ,
@@ -20,25 +20,56 @@ const navLinks = [
         display:"Proveedores",
     },
     {
+        path:"/insumos" ,
+        icon:"ri-pencil-ruler-2-line",
+        display:"Insumos",
+    },
+    {
+        path:"/comprobantes" ,
+        icon:"ri-file-list-3-line",
+        display:"Comprobantes",
+    },
+    {
         path:"/pagos" ,
         icon:"ri-money-dollar-box-line",
         display:"Pagos",
     },
     {
-        path:"/Profesores" ,
-        icon:"ri-filter-line",
-        display:"Profesores",
+        path: "",
+        icon:"",
+        display:"_______2° Sprint______",
+    },
+    {
+        path:"/PersonalEducativo" ,
+        icon:"ri-user-2-line",
+        display:"Personal Educativo",
     },
     {
         path:"/Alumnos" ,
-        icon:"ri-filter-line",
+        icon:"ri-user-2-line",
         display:"Alumnos",
     },
     {
+        path: "",
+        icon:"",
+        display:"_______3° Sprint______",
+    },
+    {
+        path:"/AsignacionPersonal" ,
+        icon:"ri-filter-line",
+        display:"Asignación del Personal",
+    },
+    {
+        path:"/Materias" ,
+        icon:"ri-filter-line",
+        display:"Materias",
+    },
+    {
         path:"/EstructuraEscolar" ,
-        icon:"ri-user-2-line",
+        icon:"ri-filter-line",
         display:"Estructura Escolar",
     },
+
 ]
 
 export default navLinks;
