@@ -14,6 +14,7 @@ import Alumnos from "../componentes/Alumnos";
 import AsignacionPersonal from '../componentes/AsignacionPersonal';
 import PersonalEducativo from '../componentes/PersonalEducativo';
 import Materias from '../componentes/Materias';
+import EstructuraEscolar from '../componentes/EstructuraEscolar';
 /*HASTA ACA*/
 
 
@@ -34,6 +35,7 @@ const Router = () => {
     <Route exact path="/Alumnos" element={<Alumnos/>}/>
     <Route exact path="/PersonalEducativo" element={<PersonalEducativo/>}/>
     <Route exact path="/Materias" element={<Materias/>}/>
+    <Route exact path="/EstructuraEscolar" element={<EstructuraEscolar/>}/>
     {/*HASTA ACA*/}
   </Routes>
     )

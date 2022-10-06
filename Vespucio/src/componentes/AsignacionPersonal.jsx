@@ -68,6 +68,8 @@ const AsignacionPersonal = () => {
 
     const [displayBasic, setDisplayBasic] = useState(false);
 
+    const [dialogEditar, setDialogEditar] = useState(false);
+
     const [selectedCountry, setSelectedCountry] = useState(false);
 
     
@@ -81,12 +83,13 @@ const AsignacionPersonal = () => {
         id_nivel:'',
         id_tipo_personal:'',
         id_anioEduc:'',
-        id_materia:'',
+        id_materia:0,
         id_grado:1,
     })
 
     const dialogFuncMap = {
       'displayBasic': setDisplayBasic,
+      'dialogEditar': setDialogEditar,
   }
 
   const onClick = (name, position) => {
@@ -133,6 +136,9 @@ const AsignacionPersonal = () => {
                 anioEducativo(
                   nombre_anioEduc
                 ),
+                materias(
+                  nombre_materia
+                ),
                 tipoPersonal(
                   nombre_tipo_personal
                 )
@@ -143,7 +149,7 @@ const AsignacionPersonal = () => {
               )
             `)
             .eq("isHabilitado_asignacion",true)
-        
+            console.log(personalEducativo)
             setData(personalEducativo)
         } catch (error) {
             console.log(error)
@@ -178,33 +184,44 @@ const AsignacionPersonal = () => {
       }
     }
 
+    const generarId = () => {
+      const random = Math.random().toString(36).substr(2);
+      const fecha = Date.now().toString(36)
+      return random + fecha
+  }
+
     const submit = async()=>{
       try {
 
-        console.log(id_anioEduc+"-"+id_tipo_personal+"-"+id_materia)
+        var numR = generarId()
+
+        var anio = id_anioEduc
+        var tipo = id_tipo_personal
+        var mat = id_materia
 
         const {error,regCargo}= await supabase.from("cargoFuncion").insert([{
           id_anioEduc,
           id_tipo_personal,
-          id_materia
+          id_materia,
+          random:numR
         }]);
 
+        
         const resultado = await supabase.from("cargoFuncion")
         .select('id_cargo')
-        .eq("id_cargo",regCargo)
-  
-        const valor=resultado.data[0].id_pago
+        .eq("random",numR)
 
+        const valor=resultado.data[0].id_cargo
 
         const result= await supabase.from("personalPorAnio").insert([{
           id_cargo:valor,
-          id_personal,
+          id_personal:selectedCountry.id_personal,
           periodo_lectivo
         
         }]);
 
-        abrirCerrarModalInsertar();
-        //window.location.reload()
+        
+        window.location.reload()
         setData({
           ...data,
           result
@@ -246,12 +263,12 @@ const AsignacionPersonal = () => {
 
     //Configuracion del 
     const columnas=[
-        {title:"Tipo de Personal", field:"cargoFuncion.tipoPersonal.nombre_tipo_personal", lookup:{1:"Directivo",2:"Profesor",3:"Administrativo Educativo",4:"Preceptor",5:"Horas Cátedra"}},
+        {title:"Tipo de Personal", field:"cargoFuncion.tipoPersonal.nombre_tipo_personal" /*, lookup:{1:"Directivo",2:"Profesor",3:"Administrativo Educativo",4:"Preceptor",5:"Horas Cátedra"}*/},
         {title:"Categoría de Cargo", field:"cargoFuncion.anioEducativo.nombre_anioEduc", filtering:false},
         {title:"Nombre", field:"personalEducativo.nombre_personal", filtering:false},
         {title:"Apellido", field:"personalEducativo.apellido_personal", filtering:false},
         {title:"Periodo Lectivo", field:"periodo_lectivo", filtering:false},
-        {title:"Estado Actual",field:"estado_docente", filtering:false}
+        {title:"Materia Asignada",field:"cargoFuncion.materias.nombre_materia", filtering:false}
       ]
 
       
@@ -263,6 +280,15 @@ const AsignacionPersonal = () => {
           ...profesor,
           [e.target.name]: e.target.value,
       })
+
+    }
+
+    const actualizarMaterias = e =>{
+      datosMaterias();
+      profesorAgregado({
+        ...profesor,
+        [e.target.name]: e.target.value,
+    })
 
     }
   
@@ -285,13 +311,14 @@ const AsignacionPersonal = () => {
     setNiveles(result.data)
   }
 
+
   const[materias,setMaterias]=useState({}) 
   const datosMaterias=async()=>{
     const result = await supabase.from('materias')
     .select()
     .eq("isHabilitada_materia",true)
     .eq("id_grado",id_grado)
-
+    console.log(result)
     setMaterias(result.data)
   }
 
@@ -619,38 +646,6 @@ const AsignacionPersonal = () => {
 
     const {id_docAnio}=profesor;
 
-    
-    
-    /*const bodyEditar= (
-      <div className={styles.modal}>
-        <h4>Editar Profesor</h4>        
-        <TextField className={styles.inputMaterial} label="Nombre" onChange={actualizarState} name="nombre_personal" value={profesor&&nombre_personal} />
-        <br/>
-        <br/>
-        <TextField className={styles.inputMaterial} label="Apellido" onChange={actualizarState} name="apellido_personal" value={profesor&&apellido_personal} />
-        <br/>
-        <br/>
-        <TextField className={styles.inputMaterial} label="DNI" onChange={actualizarState} name="dni_personal" value={profesor&&dni_personal} />
-        <br/>
-        <br/>
-        <TextField type="number" className={styles.inputMaterial} label="Telefono" onChange={actualizarState} name="telefono_personal" value={profesor&&telefono_personal} />
-        <br/>
-        <br/>
-        <TextField type="email" className={styles.inputMaterial} label="Email" onChange={actualizarState} name="mail_personal" value={profesor&&mail_personal} />
-        <br/>
-        <br/>
-        <TextField className={styles.inputMaterial} label="Direccion" onChange={actualizarState} name="domicilio_personal" value={profesor&&domicilio_personal}/>
-        <br/>
-        <br/><br/>
-        <div align="right">
-          <Button onClick={()=>update2(id_personal)} color='primary'>Editar</Button>
-          <Button onClick={()=>abrirCerrarModalEditar2()}>Cancelar</Button>
-        </div>
-      </div>
-    )
-    */
-    
-
 
     //Funciones
     const abrirCerrarModalInsertar= ()=>{
@@ -658,12 +653,6 @@ const AsignacionPersonal = () => {
     }
 
     const abrirCerrarModalEditar= ()=>{
-      setModalEditar(!modalEditar)
-    }
-
-    const abrirCerrarModalEditar2= ()=>{
-      setModalEditar(!modalEditar)
-      profesorAgregado({})
     }
 
     const seleccionarProfesor = (profesor,caso)=>{
@@ -671,7 +660,6 @@ const AsignacionPersonal = () => {
       (caso === "Editar")&&abrirCerrarModalEditar();
     }
 
-    const items = Array.from({ length: 100000 }).map((_, i) => ({ label: `Item #${i}`, value: i }));
 
     useEffect(()=>{
         funcion();
@@ -690,11 +678,6 @@ const AsignacionPersonal = () => {
               columns={columnas}
               data={data}
               actions={[
-                  {
-                      icon:"edit",
-                      tooltip:"Modificar",
-                      onClick: (event,rowData)=>seleccionarProfesor(rowData,"Editar")
-                  },
                   {
                       icon:"delete",
                       tooltip:"Eliminar",
@@ -796,7 +779,7 @@ const AsignacionPersonal = () => {
                                 name='id_grado'
                                 id='id_grado'
                                 value={id_grado}
-                                onChange={actualizarState}
+                                onChange={actualizarMaterias}
                             >
                                 <option value="">--Seleccione--</option>
                                 {Object.values(grados).map(pr=>(
@@ -828,6 +811,8 @@ const AsignacionPersonal = () => {
                   <input type="number" disabled value={year}/>
                   <br/><br/>
                 </Dialog>
+
+                
           </div>
           
           <Modal
@@ -837,12 +822,7 @@ const AsignacionPersonal = () => {
             {bodyInsertar}
           </Modal>
               
-          <Modal
-            open={modalEditar}
-            onClose={abrirCerrarModalEditar}
-          >
-            {/*bodyEditar*/}
-          </Modal>
+          
       </div>
                 
     </Main>

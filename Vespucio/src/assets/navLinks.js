@@ -43,6 +43,11 @@ const navLinks = [
         path:"/Materias" ,
         icon:"ri-filter-line",
         display:"Materias",
+    },
+    {
+        path:"/EstructuraEscolar" ,
+        icon:"ri-filter-line",
+        display:"Estructura Escolar",
     }
 
 ]

@@ -78,26 +78,24 @@ const useStyles = makeStyles((theme)=>({
 }))
 
 
-const Alumnos = () => {
+const EstructuraEscolar = () => {
     //Statest
     const [data,setData]=useState([])
     const[modal,insertarModal]=useState(false)
     const [modalEditar, setModalEditar]= useState(false);
-    const[alumnos,alumnoAgregado]=useState({
+    const[datos,alumnoAgregado]=useState({
+        id_nivel:'',
         id_anioEduc:'',
-        nombre_alumno:'',
-        telefono_alumno:'',
-        mail_alumno:'',
-        domicilio_alumno:'',
-        dni_alumno:'',
-        apellido_alumno:'',
-        id_nivel:''
+        id_division:'',
+        id_tipo:'',
+        
+        
     })
 
 
    
     //Funciones que tienen datos desde una api
-    const funcion = async()=>{
+    const funcionA = async()=>{
         try {
            const { data: alumnos, error } = await supabase
             .from('alumnos')
@@ -116,60 +114,31 @@ const Alumnos = () => {
             console.log(error)
         }
     }
-    const update = async(id_alumno)=>{
+
+    const funcionP = async()=>{
       try {
-        const result= await supabase.from("alumnos")
-        .update({isHabilitado_alumno:false})
-        .eq("id_alumno",id_alumno)
-
-
-       console.log(result)
+         const { data: alumnos, error } = await supabase
+          .from('alumnos')
+          .select(`
+          *,
+          anioEducativo(
+            nombre_anioEduc,
+            id_nivel(
+              nombre_nivel
+            )
+          )
+        `)
+        .eq("isHabilitado_alumno",true)
+          setData(alumnos)
       } catch (error) {
-        console.log(error)
+          console.log(error)
       }
     }
 
-    const{id_anioEduc,nombre_alumno,telefono_alumno,mail_alumno,domicilio_alumno,dni_alumno,apellido_alumno,id_nivel}=alumnos;
+    
+    const{id_nivel,id_anioEduc,id_division,id_tipo}=datos;
 
-    const update2=async(id_alumno)=>{
-      try {
-        const {result,error}= await supabase.from("alumnos")
-        .update({id_anioEduc,nombre_alumno,telefono_alumno,mail_alumno,domicilio_alumno,dni_alumno,apellido_alumno})
-        .eq("id_alumno",id_alumno)
-        
-        console.log(result)
-        abrirCerrarModalEditar();
-        window.location.reload();
-       } catch (error) {
-        console.log(error)
-      }
-    }
-
-    const submit = async()=>{
-      try {
-        const {error,result}= await supabase.from("alumnos").insert([{
-            id_anioEduc,
-            nombre_alumno,
-            telefono_alumno,
-            mail_alumno,
-            domicilio_alumno,
-            dni_alumno,
-            apellido_alumno
-        }]);
-
-        console.log(result)
-        abrirCerrarModalInsertar();
-        window.location.reload()
-        setData({
-          ...data,
-          result
-        })
-       
-      } catch (error) {
-        console.log(error)
-      }
-    }
-
+    
     //Nombre Columnas
     //MODIFICAR EL FIELD
     const columnas=[
@@ -185,7 +154,7 @@ const Alumnos = () => {
     const styles=useStyles();
     const actualizarState = e =>{
       alumnoAgregado({
-          ...alumnos,
+          ...datos,
           [e.target.name]: e.target.value
       })
     }
@@ -252,7 +221,7 @@ const Alumnos = () => {
     
 
 
-    const {id_alumno}=alumnos;
+    const {id_alumno}=datos;
 
     //Funciones
     const abrirCerrarModalInsertar= ()=>{
@@ -273,8 +242,8 @@ const Alumnos = () => {
 
 
     useEffect(()=>{
-        funcion();
-        nivs();
+        //funcion();
+        //nivs();
 
     },[])
 
@@ -292,7 +261,7 @@ const Alumnos = () => {
                             onChange={filtrarAnios}
                         >
                             <option value="">--Nivel Educativo--</option>
-                            {Object.values(niveles).map(pr=>(
+                            {Object.values(nivs).map(pr=>(
                             <option key={pr.id_nivel} value={pr.id_nivel}>{pr.nombre_nivel}</option>
                             ))}
                         
@@ -382,4 +351,4 @@ const Alumnos = () => {
 
 
  
-export default Alumnos
+export default EstructuraEscolar
