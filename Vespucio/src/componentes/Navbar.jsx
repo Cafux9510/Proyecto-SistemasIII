@@ -29,10 +29,16 @@ const Navbar = () => {
                 <Link className="nav-link link" to='/TablaProveedores'>Proveedores</Link>
                 </li>
                 <li className="nav-item">
-                <Link className="nav-link link" to='/Profesores'>Profesores</Link>
+                <Link className="nav-link link" to='/AsignacionPersonal'>Asignación del Personal</Link>
                 </li>
                 <li className="nav-item">
                 <Link className="nav-link link" to='/Alumnos'>Alumnos</Link>
+                </li>
+                <li className="nav-item">
+                <Link className="nav-link link" to='/PersonalEducativo'>Personal Educativo</Link>
+                </li>
+                <li className="nav-item">
+                <Link className="nav-link link" to='/Materias'>Materias</Link>
                 </li>
                              
             </ul>
