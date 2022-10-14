@@ -12,7 +12,17 @@ const navLinks = [
     {
         path: "",
         icon:"",
-        display:"_____1° Sprint_______",
+        display:"__Func. p/ Directivos__",
+    },
+    {
+        path:"/EstructuraEscolar" ,
+        icon:"ri-filter-line",
+        display:"Estructura Escolar",
+    },
+    {
+        path: "",
+        icon:"",
+        display:"__Func. p/ Administra__",
     },
     {
         path:"/TablaProveedores" ,
@@ -35,11 +45,6 @@ const navLinks = [
         display:"Pagos",
     },
     {
-        path: "",
-        icon:"",
-        display:"_______2° Sprint______",
-    },
-    {
         path:"/PersonalEducativo" ,
         icon:"ri-user-2-line",
         display:"Personal Educativo",
@@ -48,11 +53,6 @@ const navLinks = [
         path:"/Alumnos" ,
         icon:"ri-user-2-line",
         display:"Alumnos",
-    },
-    {
-        path: "",
-        icon:"",
-        display:"_______3° Sprint______",
     },
     {
         path:"/AsignacionPersonal" ,
@@ -65,9 +65,24 @@ const navLinks = [
         display:"Materias",
     },
     {
-        path:"/EstructuraEscolar" ,
+        path: "",
+        icon:"",
+        display:"__Func. p/ Profesor@s__",
+    },
+    {
+        path:"/Tareas" ,
         icon:"ri-filter-line",
-        display:"Estructura Escolar",
+        display:"Tareas",
+    },
+    {
+        path: "",
+        icon:"",
+        display:"__Func. p/ Alumn@s__",
+    },
+    {
+        path:"/CargaTareas" ,
+        icon:"ri-filter-line",
+        display:"Carga de Tareas",
     },
 
 ]
