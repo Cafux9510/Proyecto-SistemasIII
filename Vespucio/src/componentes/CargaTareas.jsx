@@ -60,9 +60,10 @@ const CargaTareas = () => {
     const [modalEditar, setModalEditar]= useState(false);
     const [modalAdd, setModalAdd]= useState(false);
     const[tareas,setMaterias]=useState({
-        id_alumno:'',
-        id_materia:'',
+        id_alumno:6,
+        id_materia:3,
         link_archivo:'',
+        id_tarea:'',
     });
 
 
@@ -99,11 +100,37 @@ const CargaTareas = () => {
       }
     }*/
 
+    const generarId = () => {
+      const random = Math.random().toString(36).substr(2);
+      const fecha = Date.now().toString(36)
+      return random + fecha
+    }
+
     const submit = async()=>{
+
       try {
+        const avatarFile = document.getElementById('input-tarea').files[0];
+        const  foto = await supabase.storage
+        .from('archivos-subidos')
+        .upload('archivos-tareas/'+(generarId()), avatarFile, {
+          cacheControl: '3600',
+          upsert: false,
+        })
 
-        console.log("Funciona")
 
+        const principio_cadena = 'https://nnlzmdwuqwxgdrnutujk.supabase.co/storage/v1/object/public/';
+        const final_cadena = foto.data.Key
+        const link_archivo= principio_cadena + final_cadena
+
+        const {error,result}= await supabase.from("cargaTareas").insert({
+          id_alumno,
+          id_materia,
+          link_archivo
+        });
+
+          location.reload();
+          
+         
       } catch (error) {
         console.log(error)
       }
@@ -193,13 +220,13 @@ const CargaTareas = () => {
   }
   
     const bodyInsertar= (
-            <div className={styles.modal} style={{width:"40%",height:"45%"}}>
+            <div className={styles.modal} style={{width:"40%",height:"65%"}}>
                 {/* <center><h5>Cargar Tarea</h5></center><br/>
                 <br/>
                 <input type="file" name="input" id="input" accept=".doc,.pdf" /> */}
-
+                <center><h5>Cargar Documento de Tarea</h5></center><br/>
                 <div class="custom-input-file col-md-6 col-sm-6 col-xs-6">
-                    <input type="file" required="" accept=".doc,.docx,.pdf" name="input" id="input-tarea" class="input-file" onChange={vernombre} value=""/>Cargar Documento
+                    <input type="file" accept=".doc,.docx,.pdf" name="input" id="input-tarea" class="input-file" onChange={vernombre}/>Cargar Documento
                 </div>
                 <br/>
                 <div>
@@ -405,5 +432,6 @@ const CargaTareas = () => {
     </Main>
   )
 }
+
 
 export default CargaTareas
