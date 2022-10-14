@@ -449,12 +449,12 @@ const Insumos = () => {
 
         <div className="contenedor">
           <br/>
-          <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Insumo</button>
+          <button className="bg-indigo-600 w-45 p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Insumo</button>
           
           {/*CAMBIO DE FACUNDO-C2*/}
 
           <Link to='/CategoriasInsumos'>
-          <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton">Ver Categorias de Insumos</button>
+          <button className="bg-indigo-600 w-45 p-3 text-white uppercase font-bold hover:bg-slate-700 boton">Ver Categorias de Insumos</button>
           </Link>
 
           {/*HASTA ACA*/}       

@@ -84,6 +84,7 @@ const EstructuraEscolar = () => {
     const [dataP,setDataP]=useState([])
     const[modal,insertarModal]=useState(false)
     const [modalEditar, setModalEditar]= useState(false);
+    const[modalTabla,setModalTabla]=useState(false)
     const[datos,alumnoAgregado]=useState({
         id_nivel:'',
         id_anioEduc:'',
@@ -179,6 +180,19 @@ const EstructuraEscolar = () => {
           [e.target.name]: e.target.value
       })
     }
+
+    const seleccion= (e)=>{
+      if(e.target.value == 2){
+        setModalTabla(true)
+      }else{
+        setModalTabla(false)
+      }
+      alumnoAgregado({
+        id_nivel,
+        id_anioEduc,
+        id_tipo:e.target.value
+      })
+  }
 
     const[niveles,setNiveles]=useState({}) 
     const nivs=async()=>{
@@ -324,7 +338,7 @@ const EstructuraEscolar = () => {
                             name='id_tipo'
                             id='id_tipo'
                             value={id_tipo}
-                            onChange={actualizarState}
+                            onChange={seleccion}
                         >
                             <option value="">--Alumno o Profesor--</option>
                             <option key={1} value={1}>Alumno</option>
@@ -335,64 +349,72 @@ const EstructuraEscolar = () => {
                     </SelectCat>
 
                     {/* /*La tabla tendria que estar invisible, y se hace visible en el momento en que le hariamos click a buscar  */}
-                    <button  className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-500 boton2" onClick={llenarTabla}>Buscar</button>
+                    <button  className="bg-indigo-600 w-45 p-3 text-white uppercase font-bold hover:bg-slate-500 boton2" onClick={llenarTabla}>Buscar</button>
 
 
                 </Campo>
             </div>
-          <MaterialTable
-              title="Tabla de Profesores"
-              
-              columns={columnasP}
-              data={dataP}
 
-              
+            
 
-              options={{
-                    search:false,
-                    actionsColumnIndex: -1,
-                    searchFieldStyle:{
-                      placeContent:"Buscar"
-                    }
-                }}
-              
-                localization={{
-                  header:{
-                    actions:"Acciones",
+            {modalTabla ? (
+                    <MaterialTable
+                    title="Tabla de Profesores"
                     
-                  }
+                    columns={columnasP}
+                    data={dataP}
+      
+                    
+      
+                    options={{
+                          search:false,
+                          actionsColumnIndex: -1,
+                          searchFieldStyle:{
+                            placeContent:"Buscar"
+                          }
+                      }}
+                    
+                      localization={{
+                        header:{
+                          actions:"Acciones",
+                          
+                        }
+                        
+                      }}
+                      
+                  />
+            ) : (
+                  <MaterialTable
+                  title="Tabla de Alumnos"
                   
-                }}
-                
-            />
+                  columns={columnas}
+                  data={data}
+
+                  
+
+                  options={{
+                        search:false,
+                        actionsColumnIndex: -1,
+                        searchFieldStyle:{
+                          placeContent:"Buscar"
+                        }
+                    }}
+                  
+                    localization={{
+                      header:{
+                        actions:"Acciones",
+                        
+                      }
+                      
+                    }}
+                    
+              />
+            )}
+
 
             <br />
 
-            <MaterialTable
-              title="Tabla de Alumnos"
-              
-              columns={columnas}
-              data={data}
 
-              
-
-              options={{
-                    search:false,
-                    actionsColumnIndex: -1,
-                    searchFieldStyle:{
-                      placeContent:"Buscar"
-                    }
-                }}
-              
-                localization={{
-                  header:{
-                    actions:"Acciones",
-                    
-                  }
-                  
-                }}
-                
-          />
           
 
       </div>

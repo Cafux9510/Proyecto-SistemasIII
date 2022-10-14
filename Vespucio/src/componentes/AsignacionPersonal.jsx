@@ -705,7 +705,7 @@ const AsignacionPersonal = () => {
           
           <div className="contenedor">
             <br/>
-            <Button className="bg-indigo-600 w-full p-5 text-white uppercase font-bold hover:bg-slate-900 boton" label="Registrar Nueva Asignación de Personal" onClick={() => onClick('displayBasic')} />
+            <Button className="bg-indigo-600 w-45 p-3 text-white uppercase font-bold hover:bg-slate-900 boton" label="Registrar Nueva Asignación de Personal" onClick={() => onClick('displayBasic')} />
                 <Dialog style={{ width: '600px' }} modal className="p-fluid" visible={displayBasic} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
                   <h6>Registrar una Nueva Asignación</h6>
                   <br/>

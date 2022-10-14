@@ -76,6 +76,7 @@ const Pagos = () => {
     const[modal,insertarModal]=useState(false)
     const [modalEditar, setModalEditar]= useState(false);
     const[dialog,setDialog]=useState(false)
+    const[dialogFactura,setDialogFactura]=useState(false)
     const [ error, guardarError ] = useState(false); 
     const[pagos,setPagos]=useState({
         numero_pago:'',
@@ -485,6 +486,20 @@ const Pagos = () => {
       total_comprobante:seleccionado.total_comprobante
     })
   }
+
+  const mostrarFactura= (pago)=>{
+    setPagos({
+      numero_pago:pago.numero_pago,
+      fecha_emision: pago.fecha_emision,
+      proveedor: pago.proveedores["nombre_proveedor"]
+    })
+    setDialogFactura(true)
+  }
+
+  const hideDialog= ()=>{
+    setDialogFactura(false)
+    setPagos({})
+}
   return (
     <Main>
        
@@ -493,6 +508,11 @@ const Pagos = () => {
             columns={columnas}
             data={data}
             actions={[
+                {
+                  icon:"visibility",
+                  tooltip:"Visualizacion",
+                  onClick: (event,rowData)=>mostrarFactura(rowData)
+                },
                 {
                     icon:"edit",
                     tooltip:"Modificar",
@@ -566,13 +586,33 @@ const Pagos = () => {
               <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
             </DataTable>
         </Dialog>
+        <Dialog visible={dialogFactura} style={{ width: '600px' }} header="DETALLES" onHide={hideDialog}> 
+          <div class="grid">
+              <div class="col">
+                  <div className="field mb-4">
+                      <Label>Nombre Proveedor</Label>
+                      <InputText type="text" disabled  value={pagos.proveedor}/>
+                  </div>
 
+              </div>
+              <div class="col">
+                <div className="field mb-4">
+                  <Label>Comprobante de Pago N°</Label>
+                  <InputText type="text" disabled value={pagos.numero_pago}/>
+                </div>
+                <div className="field mb-4">
+                  <Label>Fecha del Pago</Label>
+                  <InputText type="text" disabled value={pagos.fecha_emision}/>
+                </div>
+              </div>
+          </div>
+        </Dialog>
 
 
 
         <div className="contenedor">
           <br/>
-          <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Pago</button>
+          <button className="bg-indigo-600 w-45 p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Pago</button>
           <br/><br/>
         </div>
     </Main>

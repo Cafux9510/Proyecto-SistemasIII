@@ -338,7 +338,7 @@ const PersonalEducativo = () => {
         
         <div className="contenedor">
           <br/>
-          <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Agregar Nuevo Personal Educativo</button>
+          <button className="bg-indigo-600 w-45 p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Agregar Nuevo Personal Educativo</button>
           <br/>
           
         </div>

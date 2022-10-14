@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 import {DataTable} from "primereact/datatable";
 import { Column } from 'primereact/column';
 import {Dropdown} from "primereact/dropdown";
+import createPalette from "@material-ui/core/styles/createPalette";
 
 const Label = styled.label`
     flex: 0 0 100px;
@@ -76,7 +77,8 @@ const Comprobantes = () => {
     const [data,setData]=useState([])
     const[modal,insertarModal]=useState(false)
     const [modalEditar, setModalEditar]= useState(false);
-    const[dialog,setDialog]=useState(false) 
+    const[dialog,setDialog]=useState(false)
+    const[dialogFactura,setDialogFactura]=useState(false)
     const[comprobante,setComprobante]=useState({
         tipo_comprobante:'',
         proveedor_comprobante:'',
@@ -462,6 +464,7 @@ const Comprobantes = () => {
     }
 
     const seleccionarProveedor = (id_comprobante,caso)=>{
+      console.log(id_comprobante)
       setComprobante(id_comprobante);
       (caso === "Editar")&&abrirCerrarModalEditar();
     }
@@ -484,8 +487,8 @@ const Comprobantes = () => {
 
     useEffect(()=>{
       const variable=detalles.reduce((total,detalle)=>detalle.total+total,0)
-      console.log(variable)
-      setTotales(variable)
+      console.log(Number(variable))
+      setTotales(Number(variable))
 
     },[detalles])
 
@@ -552,15 +555,39 @@ const seleccionArticulo=(e)=>{
   })
 }
 
+const mostrarFactura=(comprobante)=>{
+  
+  setComprobante({
+      tipo_comprobante:comprobante.tipoComprobante["nombre_tipo"],
+      numero_comprobante:comprobante.numero_comprobante,
+      fecha_emision:comprobante.fecha_emision,
+      proveedor:comprobante.proveedores["nombre_proveedor"]
+  })
+  const compro= lineaComprobantes.filter(comprobantee=>comprobantee.id_comprobante !== comprobante.id_comprobante )
+  setDetalles(compro)
+  setDialogFactura(true)
+}
+
+const hideDialog= ()=>{
+  setDialogFactura(false)
+  setComprobante({})
+}
 
   return (
+  
 
-    <Main>       
+    <Main>
+           
         <MaterialTable
             title="Comprobantes"
             columns={columnas}
             data={data}
             actions={[
+                {
+                  icon:"visibility",
+                  tooltip:"Visualizacion",
+                  onClick: (event,rowData)=>mostrarFactura(rowData)
+                },
                 {
                     icon:"edit",
                     tooltip:"Modificar",
@@ -570,7 +597,7 @@ const seleccionArticulo=(e)=>{
                     icon:"delete",
                     tooltip:"Eliminar",
                     onClick: (event,rowData)=>handleEliminar(rowData.id_comprobante)
-                },
+                }
                 //COMO AGREGAR OTRO ICONO BOTON?
 
                 
@@ -609,11 +636,11 @@ const seleccionArticulo=(e)=>{
         >
           {bodyEditar}
         </Modal>
+        
 
         {/*MODAL DEL DETALLE AGREGADO ESTO ES NUEVO FRANCO PAAAA*/}
         <Dialog visible={dialog} header="Detalle" style={{ width: '600px' }} modal className="p-fluid" onHide={eliminarDialog} footer={productDialogFooter}>
           <div className="field mb-4">
-             
               <Dropdown name="id_articulo" optionLabel="nombre_producto" optionValue="id_producto" value={detalle.id_articulo || ""} options={articulos} onChange={seleccionArticulo} placeholder="Seleccione articulo"/>
           </div>
           <div className="field mb-4">
@@ -627,8 +654,8 @@ const seleccionArticulo=(e)=>{
             <div className="field mb-4">
               <InputText   name='input=file' id='selectArchivo'  type='file' />
             </div>
-            <div className="field w-min mb-4">
-                <Button onClick={agregarDatos} className="w-6">Agregar</Button> 
+            <div className="field w-min mb-4 ">
+                <Button onClick={agregarDatos} className="w-15 ">Agregar</Button> 
             </div>
           <DataTable value={detalles} showGridlines >
               <Column field="nombre_producto" header="Nombre Articulo"></Column>
@@ -641,11 +668,36 @@ const seleccionArticulo=(e)=>{
               <span>Total</span> {totales}
           </p>
         </Dialog>
+        <Dialog visible={dialogFactura} style={{ width: '600px' }} header="DETALLES" onHide={hideDialog}> 
+          <div class="grid">
+              <div class="col">
+                  <div className="field mb-4">
+                      <Label>Nombre Proveedor</Label>
+                      <InputText type="text" disabled value={comprobante.proveedor}/>
+                  </div>
+
+                <div className="field mb-4">
+                  <Label>Fecha Emision</Label>
+                  <InputText type="text" disabled value={comprobante.fecha_emision}/>
+                </div>
+              </div>
+              <div class="col">
+                <div className="field mb-4">
+                  <Label>Tipo Comprobante</Label>
+                  <InputText type="text" disabled value={comprobante.tipo_comprobante}/>
+                </div>
+                <div className="field mb-4">
+                  <Label>Numero Comprobante</Label>
+                  <InputText type="text" disabled value={comprobante.numero_comprobante}/>
+                </div>
+              </div>
+          </div>
+        </Dialog>
         <div className="contenedor">
           <br/>
-          <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Comprobante</button>
+          <button className="bg-indigo-600 w-45 p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Comprobante</button>
           <Link to='/CategoriasComprobantes'>
-            <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton">Ver Tipos de Comprobantes</button>          
+            <button className="bg-indigo-600 w-45 p-3 text-white uppercase font-bold hover:bg-slate-700 boton">Ver Tipos de Comprobantes</button>          
           </Link>
           <br/><br/>
         </div>
