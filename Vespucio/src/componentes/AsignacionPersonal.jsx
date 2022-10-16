@@ -689,8 +689,8 @@ const AsignacionPersonal = () => {
               
 
               options={{
-                    search:false,
-                    filtering:true,                    
+                    search:true,
+                    filtering:false,                    
                 }}
               
                 localization={{

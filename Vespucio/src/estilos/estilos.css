@@ -141,4 +141,31 @@ a{
     text-decoration: none;
     }
 
-/*HASTA ACA*/
+    /*HASTA ACA*/
+    /*DEL INICIO*/
+
+.containerInicio{
+    width: 95%;
+    height: 650px;  
+    overflow: hidden;
+    position: relative;
+    margin:95px auto;
+    border-radius: 20px;
+    box-shadow: 5px 8px 12px black;
+}
+.containerInicio img{
+    width: 100%;
+    height: 100%;
+
+}
+.containerInicio p{
+    font-size: 4rem;
+    color: wheat;
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    font-family: 'Berkshire Swash', cursive;
+    font-weight: 500;
+    
+}

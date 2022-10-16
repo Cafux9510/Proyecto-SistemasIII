@@ -340,9 +340,10 @@ const EstructuraEscolar = () => {
                             value={id_tipo}
                             onChange={seleccion}
                         >
-                            <option value="">--Alumno o Profesor--</option>
+                            <option value="">--Categoria--</option>
                             <option key={1} value={1}>Alumno</option>
                             <option key={2} value={2}>Profesor</option>
+                            <option key={3} value={3}>Materia</option>
                         
                             
                         
