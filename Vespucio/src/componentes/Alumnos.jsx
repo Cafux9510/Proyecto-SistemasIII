@@ -6,6 +6,7 @@ import {Modal,TextField} from "@material-ui/core"
 import {makeStyles} from "@material-ui/core/styles"
 import swal from "sweetalert";
 import styled from '@emotion/styled'
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import { Link } from "react-router-dom";
 
 const Label = styled.label`
@@ -396,6 +397,11 @@ const Alumnos = () => {
                       icon:"delete",
                       tooltip:"Eliminar",
                       onClick: (event,rowData)=>handleEliminar(rowData.id_alumno)
+                  },
+                  {
+                    icon:MonetizationOnIcon,
+                    tooltip:"Registrar Pago",
+                    onClick: (event,rowData)=>seleccionarAlumno(rowData,"Editar")
                   }
                   
               ]}
