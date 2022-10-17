@@ -61,6 +61,7 @@ const Alumnos = () => {
     const [data,setData]=useState([])
     const[modal,insertarModal]=useState(false)
     const [modalEditar, setModalEditar]= useState(false);
+    const [modalRegPago, setModalRegPago]= useState(false);
     const[alumnos,alumnoAgregado]=useState({
         id_anioEduc:'',
         nombre_alumno:'',
@@ -349,7 +350,65 @@ const Alumnos = () => {
         </div>
       </div>
     )
-
+    const bodyRegistrarPago= (
+      <div className={styles.modal}>
+        <h4>Registrar Pago Alumno</h4>        
+        <TextField className={styles.inputMaterial} label="Nombre" onChange={actualizarState} name="nombre_alumno" value={alumnos&&nombre_alumno} />
+        <br/>
+        <br/>
+        <TextField className={styles.inputMaterial} label="Apellido" onChange={actualizarState} name="apellido_alumno" value={alumnos&&apellido_alumno} />
+        <br/>
+        <br/>
+        <TextField type="email" className={styles.inputMaterial} label="Email" onChange={actualizarState} name="mail_alumno" value={alumnos&&mail_alumno} />
+        <br/>
+        <br/>
+        <label>Curso del Alumno</label>
+        <br/>
+        <Campo>
+          <Select
+                    name='id_anioEduc'
+                    value={id_anioEduc}
+                    onChange={actualizarState}
+                >
+                    <option value="">--Seleccione--</option>
+                    <option value="">Jardin</option>
+                    <option value="">Primaria</option>
+                    <option value="">Secundaria</option>             
+          </Select>
+        </Campo>
+      
+        <label>Mes a Pagar</label>
+        <Campo>
+          <Select
+                    name='id_anioEduc'
+                    value={id_anioEduc}
+                    onChange={actualizarState}
+                >
+                    <option value="">--Seleccione--</option>
+                    <option value="">--Enero--</option>
+                    <option value="">--Febrero--</option>             
+          </Select>
+        </Campo>
+        <label>Metodo de Pago</label>
+        <Campo>
+          <Select
+                    name='id_anioEduc'
+                    value={id_anioEduc}
+                    onChange={actualizarState}
+                >
+                    <option value="">--Seleccione--</option>
+                    <option value="">--Efectivo--</option>
+                    <option value="">--Debito--</option>             
+          </Select>
+        </Campo>
+     
+        <br/><br/>
+        <div align="right">
+          <Button onClick={()=>update2(id_alumno)} color='primary'>Registrar Pago</Button>
+          <Button onClick={()=>abrirCerrarModalRegPago()}>Cancelar</Button>
+        </div>
+      </div>
+    )
 
     //Funciones
     const abrirCerrarModalInsertar= ()=>{
@@ -359,6 +418,9 @@ const Alumnos = () => {
 
     const abrirCerrarModalEditar= ()=>{
       setModalEditar(!modalEditar)
+    }
+    const abrirCerrarModalRegPago= ()=>{
+      setModalRegPago(!modalRegPago)
     }
 
     const abrirCerrarModalEditar2= ()=>{
@@ -399,9 +461,9 @@ const Alumnos = () => {
                       onClick: (event,rowData)=>handleEliminar(rowData.id_alumno)
                   },
                   {
-                    icon:MonetizationOnIcon,
+                    icon: ()=> <MonetizationOnIcon/>,
                     tooltip:"Registrar Pago",
-                    onClick: (event,rowData)=>seleccionarAlumno(rowData,"Editar")
+                    onClick: (event,rowData)=>abrirCerrarModalRegPago(rowData)
                   }
                   
               ]}
@@ -442,6 +504,12 @@ const Alumnos = () => {
             onClose={abrirCerrarModalEditar}
           >
             {bodyEditar}
+          </Modal>
+          <Modal 
+            open={modalRegPago}
+            onClose={abrirCerrarModalRegPago}
+          >
+                {bodyRegistrarPago}
           </Modal>
       </div>
     </Main>

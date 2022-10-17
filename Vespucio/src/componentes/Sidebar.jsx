@@ -7,6 +7,7 @@ import navLinksProfesores from '../assets/navLinksProfesores'
 import navLinksAdm from '../assets/navLinksAdm'
 import "../estilos/sidebar.css";
 
+
 let listElements = document.querySelectorAll('.list__button--click');
 listElements.forEach(listElement=>{
     listElement.addEventListener('click',()=>{
