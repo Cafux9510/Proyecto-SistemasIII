@@ -460,6 +460,7 @@ const Alumnos = () => {
                       tooltip:"Eliminar",
                       onClick: (event,rowData)=>handleEliminar(rowData.id_alumno)
                   },
+                  //**AGREGUE LA ACCION PARA REGISTRAR PAGO */
                   {
                     icon: ()=> <MonetizationOnIcon/>,
                     tooltip:"Registrar Pago",
@@ -505,6 +506,7 @@ const Alumnos = () => {
           >
             {bodyEditar}
           </Modal>
+          
           <Modal 
             open={modalRegPago}
             onClose={abrirCerrarModalRegPago}
