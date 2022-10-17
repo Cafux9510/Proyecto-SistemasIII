@@ -396,7 +396,7 @@ const Alumnos = () => {
                       icon:"delete",
                       tooltip:"Eliminar",
                       onClick: (event,rowData)=>handleEliminar(rowData.id_alumno)
-                  }
+                  },
                   
               ]}
               

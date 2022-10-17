@@ -359,7 +359,7 @@ const CargaTareas = () => {
     }
 
     const handleAdd=(tareas,caso)=>{
-        /*setMaterias(tareas);*/
+        setMaterias(tareas);
       (caso === "Add")&&abrirCerrarModalAdd();
     }
 
