@@ -15,6 +15,7 @@ import AsignacionPersonal from '../componentes/AsignacionPersonal';
 import PersonalEducativo from '../componentes/PersonalEducativo';
 import Materias from '../componentes/Materias';
 import EstructuraEscolar from '../componentes/EstructuraEscolar';
+import RestablecerContrasenia from '../componentes/RestablecerContrasenia';
 /*HASTA ACA*/
 
 
@@ -36,6 +37,7 @@ const Router = () => {
     <Route exact path="/PersonalEducativo" element={<PersonalEducativo/>}/>
     <Route exact path="/Materias" element={<Materias/>}/>
     <Route exact path="/EstructuraEscolar" element={<EstructuraEscolar/>}/>
+    <Route exact path="/RestablecerContrasenia" element={<RestablecerContrasenia/>}/>
     {/*HASTA ACA*/}
   </Routes>
     )

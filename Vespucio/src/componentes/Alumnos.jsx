@@ -71,7 +71,6 @@ const Alumnos = () => {
         dni_alumno:'',
         apellido_alumno:'',
         id_nivel:'',
-        usuario_alumno:''
     })
 
 
@@ -109,7 +108,7 @@ const Alumnos = () => {
       }
     }
 
-    const{id_anioEduc,nombre_alumno,telefono_alumno,mail_alumno,domicilio_alumno,dni_alumno,apellido_alumno,id_nivel,usuario_alumno}=alumnos;
+    const{id_anioEduc,nombre_alumno,telefono_alumno,mail_alumno,domicilio_alumno,dni_alumno,apellido_alumno,id_nivel}=alumnos;
 
     const update2=async(id_alumno)=>{
       try {
@@ -125,24 +124,9 @@ const Alumnos = () => {
       }
     }
 
-    const generarAleDni = () => {
-      let inicio = 1
-      let fin = dni_alumno;
-      let aleatorio = inicio + Math.floor(Math.random() * fin);
-      return aleatorio;
-  }
 
     const submit = async()=>{
       try {
-
-        let iniNombre = "a";
-        iniNombre = nombre_alumno[0].toLowerCase();
-        let tresApellido = "b";
-        tresApellido = apellido_alumno.substring(0,3).toLowerCase();
-        let alea = generarAleDni().toString();
-        let tresDNI = alea.substring(alea.length-3);
-        let usuario = iniNombre + tresApellido + tresDNI
-
         const {error,result}= await supabase.from("alumnos").insert([{
             id_anioEduc,
             nombre_alumno,
@@ -150,13 +134,19 @@ const Alumnos = () => {
             mail_alumno,
             domicilio_alumno,
             dni_alumno,
-            apellido_alumno,
-            usuario_alumno:usuario
+            apellido_alumno
         }]);
 
-        console.log(result)
+        let mail = mail_alumno;
+        let dni = dni_alumno;
+
+        let { user, errorsign } = await supabase.auth.signUp({
+          email: mail,
+          password: dni
+        })
+
         abrirCerrarModalInsertar();
-        /*window.location.reload()*/
+        window.location.reload()
         setData({
           ...data,
           result
