@@ -9,7 +9,13 @@ const navLinksProfesores = [
         path:"/Materias" ,
         icon:"ri-filter-line",
         display:"Materias",
-    }
+    },
+    {
+        path:"/GestionMateriasProfesor" ,
+        icon:"ri-filter-line",
+        display:"Gestion de Materia",
+    },
+
 
 ]
 
