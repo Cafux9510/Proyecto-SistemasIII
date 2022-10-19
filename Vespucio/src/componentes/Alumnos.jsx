@@ -127,6 +127,27 @@ const Alumnos = () => {
 
     const submit = async()=>{
       try {
+
+        let primerN = (nombre_alumno.substring(0,1)).toLowerCase();
+        let tresA = (apellido_alumno.substring(0,3)).toLowerCase();
+        let dni = parseInt(dni_alumno);
+        let numA = (Math.floor(Math.random() * (dni - 1000) + 1000)).toString()
+        let tresUltN = numA.substring(numA.length-3);
+        let usuario = primerN + tresA + tresUltN;
+
+        const {errorr,usuarioT}= await supabase.from("usuarios").insert([{
+          nombre_usuario:usuario,
+          contrasenia_usuario:dni_alumno
+        }]);
+
+      const user_id = await supabase.from('usuarios')
+      .select('id_usuario')
+      .eq("nombre_usuario",usuario);
+
+      const valor=user_id.data[0].id_usuario
+    
+      console.log(valor)
+
         const {error,result}= await supabase.from("alumnos").insert([{
             id_anioEduc,
             nombre_alumno,
@@ -134,16 +155,9 @@ const Alumnos = () => {
             mail_alumno,
             domicilio_alumno,
             dni_alumno,
-            apellido_alumno
+            apellido_alumno,
+            id_usuario:valor
         }]);
-
-        let mail = mail_alumno;
-        let dni = dni_alumno;
-
-        let { user, errorsign } = await supabase.auth.signUp({
-          email: mail,
-          password: dni
-        })
 
         abrirCerrarModalInsertar();
         window.location.reload()
@@ -225,7 +239,10 @@ const Alumnos = () => {
           const result = await supabase.from('anioEducativo')
           .select()
           .eq("isHabilitado_anio",true)
-          .eq("id_nivel",1);
+            .eq("id_nivel", 1)
+            .neq("id_anioEduc", 43)
+            .neq("id_anioEduc", 46)
+            .neq("id_anioEduc", 49);
       
           setCategorias(result.data)
         }
@@ -236,7 +253,10 @@ const Alumnos = () => {
           const result = await supabase.from('anioEducativo')
           .select()
           .eq("isHabilitado_anio",true)
-          .eq("id_nivel",2);
+            .eq("id_nivel", 2)
+            .neq("id_anioEduc", 44)
+            .neq("id_anioEduc", 47)
+            .neq("id_anioEduc", 50);
       
           setCategorias(result.data)
         }
@@ -246,7 +266,11 @@ const Alumnos = () => {
           const result = await supabase.from('anioEducativo')
           .select()
           .eq("isHabilitado_anio",true)
-          .eq("id_nivel",3);
+            .eq("id_nivel", 3)
+            .neq("id_anioEduc", 45)
+            .neq("id_anioEduc", 48)
+            .neq("id_anioEduc", 51)
+            .neq("id_anioEduc", 52);
       
           setCategorias(result.data)
         }
