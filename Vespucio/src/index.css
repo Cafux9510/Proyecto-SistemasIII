@@ -118,3 +118,8 @@ body {
   margin: 4px 2px;
   cursor: pointer;
 }
+
+#cargoPersonal{
+  width: 350px;
+  text-align: center;
+}
