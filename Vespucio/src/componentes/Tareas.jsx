@@ -58,16 +58,18 @@ const useStyles = makeStyles((theme)=>({
 }))
 
 
-const Materias = () => {
+
+const Tareas = () => {
     //Statest
     const [data,setData]=useState([])
     const[modal,insertarModal]=useState(false)
     const [modalEditar, setModalEditar]= useState(false);
-    const[materias,setMaterias]=useState({
-        nombre_materia:'',
-        descripcion_materia:'',
-        id_grado:'',
-        id_nivel:'',
+    const[tareas,setMaterias]=useState({
+        id_materia:'',
+        titulo_tarea:'',
+        descripcion_tarea:'',
+        plazo_tarea:'',
+        trimestre_tarea:'',
     });
 
 
@@ -75,27 +77,25 @@ const Materias = () => {
     //Funciones que tienen datos desde una api
     const funcion = async()=>{
         try {
-           const result= await supabase.from('materias')
+           const result= await supabase.from('tareas')
            .select(`
-              *,
-              grados(
-                nombre_grado,
-                nivelesEducativos(
-                    nombre_nivel
-                )
+                *,
+              materias(
+                nombre_materia,
+                *
               )
           `)
-           .eq("isHabilitada_materia",true)
+           .eq("isHabilitada_tarea",true)
            setData(result.data)
         } catch (error) {
             console.log(error)
         }
     }
-    const update = async(id_materia)=>{
+    const update = async(id_tarea)=>{
       try {
-        const result= await supabase.from("materias")
-        .update({isHabilitada_materia:false})
-        .eq("id_materia",id_materia)
+        const result= await supabase.from("tareas")
+        .update({isHabilitada_tarea:false})
+        .eq("id_tarea",id_tarea)
 
 
        
@@ -104,13 +104,13 @@ const Materias = () => {
       }
     }
 
-    const{nombre_materia,descripcion_materia,id_grado,id_nivel}=materias;
+    const{id_materia,titulo_tarea,descripcion_tarea,plazo_tarea,trimestre_tarea}=tareas;
 
-    const update2=async(id_materia)=>{
+    const update2=async(id_tarea)=>{
       try {
-        const result= await supabase.from("materias")
-        .update({nombre_materia,descripcion_materia,id_grado})
-        .eq("id_materia",id_materia)
+        const result= await supabase.from("tareas")
+        .update({id_materia,titulo_tarea,descripcion_tarea,plazo_tarea,trimestre_tarea})
+        .eq("id_tarea",id_tarea)
         
         abrirCerrarModalEditar();
         window.location.reload()
@@ -121,10 +121,12 @@ const Materias = () => {
 
     const submit = async()=>{
       try {
-        const {error,result}= await supabase.from("materias").insert({
-            nombre_materia,
-            descripcion_materia,
-            id_grado
+        const {error,result}= await supabase.from("tareas").insert({
+            id_materia,
+            titulo_tarea,
+            descripcion_tarea,
+            plazo_tarea,
+            trimestre_tarea
         });
 
         abrirCerrarModalInsertar();
@@ -138,7 +140,7 @@ const Materias = () => {
       }
     }
 
-    const handleEliminar=(id_materia)=>{
+    const handleEliminar=(id_tarea)=>{
       swal({
         title: "Estas seguro de eliminar este registro?",
         text: "Una vez eliminado, no podras recuperar el archivo de vuelta!",
@@ -151,7 +153,7 @@ const Materias = () => {
           swal("Registro eliminado con exito!", {
             icon: "success",
           });
-          update(id_materia);
+          update(id_tarea);
         }
         setTimeout(() => {
           window.location.reload()
@@ -160,146 +162,93 @@ const Materias = () => {
     }
 
     //Configuracion del {/*DEJO LOS PARAMETROS DEL VALUE, SINO ME CRASHEA */}
-    const columnas=[ 
-        {title:"N°", field:"id_materia"},
-        {title:"Nombre", field:"nombre_materia"},
-        {title:"Nivel", field:"grados.nivelesEducativos.nombre_nivel"},
-        {title:"Grado", field:"grados.nombre_grado"},
-        {title:"Descripcion", field:"descripcion_materia"}
+    const columnas=[
+        {title:"N°", field:"id_tarea"}, 
+        {title:"Titulo", field:"titulo_tarea"},
+        {title:"Materia", field:"materias.nombre_materia"},
+        {title:"Descripcion", field:"descripcion_tarea"},
+        {title:"Plazo de la Tarea", field:"plazo_tarea"},
+        {title:"Trimestre de la Tarea", field:"trimestre_tarea"}
       ]
-
 
     //Estilos
     const styles=useStyles();
     const actualizarState = e =>{
         
         setMaterias({
-          ...materias,
+          ...tareas,
           [e.target.name]: e.target.value
       })
     }
   
 
   //Funcion que me trae la lista de categorias y lo agrega a la lista desplegable
-  const[gradosMaterias,setGrados]=useState({}) 
+  const[materias,setGrados]=useState({}) 
   const datos=async()=>{
-    const result = await supabase.from('grados')
+    const result = await supabase.from('materias')
     .select()
-    .eq("isHabilitado_grado",true);
+    .eq("isHabilitada_materia",true);
 
     setGrados(result.data)
-    console.log(result.data)
   }
 
-  const[niveles,setNiveles]=useState({}) 
-  const nivs=async()=>{
-    const result = await supabase.from('nivelesEducativos')
-    .select();
+  //ACA TENGO QUE TRAER LA MATERIAS DEL PROFESOR QUE ESTOY LOGEADO, ENTONCES SACO EL ID DEL PROFE Y PREGUNTO EN LA TABLA
+  // PROFESOR X MATERIA Y LLENO EL DESPLEGABLE
 
-    setNiveles(result.data)
-    return result.data
-  }
-
-  const filtrarAnios = e =>{
-
-    setMaterias({
-      ...materias,
-      [e.target.name]: e.target.value
-    })
-
-    var selection = document.getElementById("id_nivel");
-    var valor = selection.options[selection.selectedIndex].value
-
-    if (valor == 1) {
-      const datos=async()=>{
-        const result = await supabase.from('grados')
-        .select()
-        .eq("isHabilitado_grado",true)
-        .eq("nivelEduc",1);
-    
-        setGrados(result.data)
-      }
-      datos();
-
-    }else if(valor == 2){
-      const datos=async()=>{
-        const result = await supabase.from('grados')
-        .select()
-        .eq("isHabilitado_grado",true)
-        .eq("nivelEduc",2);
-    
-        setGrados(result.data)
-      }
-      datos();
-    }else{
-      const datos=async()=>{
-        const result = await supabase.from('grados')
-        .select()
-        .eq("isHabilitado_grado",true)
-        .eq("nivelEduc",3);
-    
-        setGrados(result.data)
-      }
-      datos();
-    }
-      
-    
-
-      
-  }
 
 
     const bodyInsertar= (
       <div className={styles.modal}>
-        <h3>Agregar Nuevo Insumo</h3> {/*DEJO LOS PARAMETROS DEL VALUE, SINO ME CRASHEA */}
-        <TextField className={styles.inputMaterial} label="Nombre Materia" onChange={actualizarState} name="nombre_materia" value={nombre_materia}/> 
+        <h3>Agregar Nueva Tarea</h3> 
         <br/>
+        <label>Indique la Materia de la Tarea</label>
         <br/>
-        <label>Indique el Nivel Educativo de la Materia</label>
-         <br/>
-         <br/>
             <Campo>
-            <Select
-                        name='id_nivel'
-                        id='id_nivel'
-                        value={id_nivel}
-                        onChange={filtrarAnios}
+                <Select
+                        name='id_materia'
+                        id='id_materia'
+                        value={id_materia}
+                        onChange={actualizarState}
                     >
                         <option value="">--Seleccione--</option>
-                        {Object.values(niveles).map(pr=>(
-                        <option key={pr.id_nivel} value={pr.id_nivel}>{pr.nombre_nivel}</option>
+                        {Object.values(materias).map(pr=>(
+                        <option key={pr.id_materia} value={pr.id_materia}>{pr.nombre_materia}</option>
                         ))}
                     
                         
                     
                 </Select>
             </Campo>
-         <br/>
-         <label>Indique el Grado de la Materia</label>
-         <br/>
-        <Campo>
-          <Select
-                    name='id_grado'
-                    value={id_grado}
-                    onChange={actualizarState}
-                >
-                    <option value="">--Seleccione--</option>
-                    {Object.values(gradosMaterias).map(pr=>(
-                      <option key={pr.id_grado} value={pr.id_grado}>{pr.nombre_grado}</option>
-                    ))}
-                
-                    
-                  
-            </Select>
-        </Campo>
-        <br/>
-        <label>Descripcion de la Materia</label>
+        <TextField className={styles.inputMaterial} label="Titulo de la Tarea" onChange={actualizarState} name="titulo_tarea" value={titulo_tarea}/> 
         <br/>
         <br/>
-        <textarea type="text" className={styles.inputMaterial} label="Descripcion" onChange={actualizarState} name="descripcion_materia" value={descripcion_materia} />
+        <label>Descripcion de la Tarea</label>
+        <br/>
+        <textarea type="text" className={styles.inputMaterial} label="Descripcion de la Tarea" onChange={actualizarState} name="descripcion_tarea" value={descripcion_tarea} />
         <br/>
         <br/>
+        <label>Plazo para la Tarea</label>
         <br/>
+        <br/>
+        <TextField type="date" className={styles.inputMaterial} onChange={actualizarState} name="plazo_tarea" value={plazo_tarea}/> 
+        <br/>
+        <br/>
+        <label>Indique el Trimestre Actual</label>
+        <br/>
+        <br/>
+            <Campo>
+                <Select
+                        name='trimestre_tarea'
+                        id='trimestre_tarea'
+                        value={trimestre_tarea}
+                        onChange={actualizarState}
+                    >
+                        <option value="">--Seleccione--</option>
+                        <option value="Primer Trimestre">1° Trimestre</option>
+                        <option value="Segundo Trimestre">2° Trimestre</option>
+                        <option value="Tercer Trimestre">3° Trimestre</option>                  
+                </Select>
+            </Campo>
         <br/>
         <div align="right">
           <Button color='primary' onClick={()=>submit()} >Insertar</Button>
@@ -308,59 +257,63 @@ const Materias = () => {
       </div>
     )
 
-    const{id_materia}=materias;
+
+
+
+    const{id_tarea}=materias;
 
     const bodyEditar= (
         <div className={styles.modal}>
-        <h3>Agregar Nuevo Insumo</h3> {/*DEJO LOS PARAMETROS DEL VALUE, SINO ME CRASHEA */}
-        <TextField className={styles.inputMaterial} label="Nombre Materia" onChange={actualizarState} name="nombre_materia" value={materias&&nombre_materia}/> 
+        <h3>Agregar Nueva Tarea</h3> 
         <br/>
+        <label>Indique la Materia de la Tarea</label>
         <br/>
-        <label>Indique el Nivel Educativo de la Materia</label>
-         <br/>
-         <br/>
             <Campo>
-            <Select
-                        name='id_nivel'
-                        id='id_nivel'
-                        value={id_nivel}
-                        onChange={filtrarAnios}
+                <Select
+                        name='id_materia'
+                        id='id_materia'
+                        value={tareas&&id_materia}
+                        onChange={actualizarState}
                     >
                         <option value="">--Seleccione--</option>
-                        {Object.values(niveles).map(pr=>(
-                        <option key={pr.id_nivel} value={pr.id_nivel}>{pr.materias&&nombre_nivel}</option>
+                        {Object.values(materias).map(pr=>(
+                        <option key={pr.id_materia} value={pr.id_materia}>{pr.nombre_materia}</option>
                         ))}
                     
                         
                     
                 </Select>
             </Campo>
-         <br/>
-         <label>Indique el Grado de la Materia</label>
-         <br/>
-        <Campo>
-          <Select
-                    name='id_grado'
-                    value={id_grado}
-                    onChange={actualizarState}
-                >
-                    <option value="">--Seleccione--</option>
-                    {Object.values(gradosMaterias).map(pr=>(
-                      <option key={pr.id_grado} value={pr.id_grado}>{pr.materias&&nombre_grado}</option>
-                    ))}
-                
-                    
-                  
-            </Select>
-        </Campo>
-        <br/>
-        <label>Descripcion de la Materia</label>
+        <TextField className={styles.inputMaterial} label="Titulo de la Tarea" onChange={actualizarState} name="titulo_tarea" value={tareas&&titulo_tarea}/> 
         <br/>
         <br/>
-        <textarea type="text" className={styles.inputMaterial} label="Descripcion" onChange={actualizarState} name="descripcion_materia" value={materias&&descripcion_materia} />
+        <label>Descripcion de la Tarea</label>
+        <br/>
+        <textarea type="text" className={styles.inputMaterial} label="Descripcion de la Tarea" onChange={actualizarState} name="descripcion_tarea" value={tareas&&descripcion_tarea} />
         <br/>
         <br/>
+        <label>Plazo para la Tarea</label>
         <br/>
+        <br/>
+        <TextField type="date" className={styles.inputMaterial} onChange={actualizarState} name="plazo_tarea" value={tareas&&plazo_tarea}/> 
+        <br/>
+        <br/>
+        <label>Indique el Trimestre Actual</label>
+        <br/>
+        <br/>
+            <Campo>
+                <Select
+                        name='trimestre_tarea'
+                        id='trimestre_tarea'
+                        value={trimestre_tarea}
+                        onChange={actualizarState}
+                    >
+                        <option value="">--Seleccione--</option>
+                        <option value="Primer Trimestre">1° Trimestre</option>
+                        <option value="Segundo Trimestre">2° Trimestre</option>
+                        <option value="Tercer Trimestre">3° Trimestre</option>                  
+                </Select>
+            </Campo>
         <br/>
         <div align="right">
           <Button color='primary' onClick={()=>submit()} >Insertar</Button>
@@ -368,6 +321,8 @@ const Materias = () => {
         </div>
       </div>
     )
+
+
 
 
     /*ACA TAMBIEN MODIFICO FACUNDO-C1*/
@@ -395,26 +350,18 @@ const Materias = () => {
       setMaterias({})
     }
 
-    /*agregado por FACUNDO-C1*/
-    const abrirCerrarModalActualizarStock= ()=>{
-      stockModal(!modalEditarStock)
-      setMaterias({})
-    }
-    /*HASTA ACA*/
-
     const abrirCerrarModalEditar= ()=>{
       setModalEditar(!modalEditar)
     }
 
-    const seleccionarInsumo = (materias,caso)=>{
-        setMaterias(materias);
+    const seleccionarInsumo = (tareas,caso)=>{
+        setMaterias(tareas);
       (caso === "Editar")&&abrirCerrarModalEditar();
     }
 
     useEffect(()=>{
         funcion();
         datos();
-        nivs();
     },[])
    
 
@@ -422,7 +369,7 @@ const Materias = () => {
     <Main>
        
         <MaterialTable
-            title="Materias"
+            title="Tareas"
             columns={columnas}
             data={data}
             actions={[
@@ -434,7 +381,7 @@ const Materias = () => {
                 {
                     icon:"delete",
                     tooltip:"Eliminar",
-                    onClick: (event,rowData)=>handleEliminar(rowData.id_materia)
+                    onClick: (event,rowData)=>handleEliminar(rowData.id_tarea)
                 },
                 //COMO AGREGAR OTRO ICONO BOTON?
 
@@ -479,7 +426,7 @@ const Materias = () => {
 
         <div className="contenedor">
           <br/>
-          <button className="bg-indigo-600 w-45 p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Insumo</button>
+          <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nueva Tarea</button>
            
 
           <br/><br/>
@@ -488,4 +435,4 @@ const Materias = () => {
   )
 }
 
-export default Materias
+export default Tareas
