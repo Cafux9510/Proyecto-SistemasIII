@@ -9,7 +9,7 @@ const Sidebar = () => {
     <div className="sidebar">
         <div className="sidebar__top">
             <h3>
-               <span><i class="ri-vimeo-line"></i></span> Colegio Americo Vespucio
+               <span><i className="ri-vimeo-line"></i></span> Colegio Americo Vespucio
             </h3>
         </div>
         <div className="sidebar__content">
@@ -27,7 +27,7 @@ const Sidebar = () => {
             
             </div>
             <div className="sidebar__bottom">
-                <span><i class="ri-logout-box-line"></i>Cerrar Sesión</span>
+                <span><i className="ri-logout-box-line"></i>Cerrar Sesión</span>
             </div>
         </div>
     </div>

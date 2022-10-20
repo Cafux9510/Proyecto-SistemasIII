@@ -14,7 +14,6 @@ import { Button } from 'primereact/button';
 const Label = styled.label`
     flex: 0 0 100px;
     text-align:center;
-
 `;
 
 const Main = styled.div `
@@ -149,7 +148,6 @@ const AsignacionPersonal = () => {
               )
             `)
             .eq("isHabilitado_asignacion",true)
-            console.log(personalEducativo)
             setData(personalEducativo)
         } catch (error) {
             console.log(error)
@@ -283,11 +281,6 @@ const AsignacionPersonal = () => {
 
     const actualizarMaterias = e =>{
       datosMaterias();
-      profesorAgregado({
-        ...profesor,
-        [e.target.name]: e.target.value,
-    })
-
     }
   
     const datosPersonalE=async()=>{
@@ -295,7 +288,6 @@ const AsignacionPersonal = () => {
       const resultado = await supabase.from('DatosCompletosPersonalView')
       .select(`id_personal, concatenado`);
 
-      console.log(resultado.data)
       setPersonalE(resultado.data)
 
       /*const result = await supabase.from('personalEducativo')
@@ -322,7 +314,6 @@ const AsignacionPersonal = () => {
     .select()
     .eq("isHabilitada_materia",true)
     .eq("id_grado",id_grado)
-    console.log(result)
     setMaterias(result.data)
   }
 
@@ -348,8 +339,6 @@ const AsignacionPersonal = () => {
 
     var selection = document.getElementById("select");
     var idNivel = parseInt(selection.options[selection.selectedIndex].value)
-    console.log(typeof idNivel)
-    console.log(idNivel === 1 || idNivel === 2)
 
     if (idNivel === 1 || idNivel === 2) {
       console.log("1 o 2")
@@ -364,7 +353,6 @@ const AsignacionPersonal = () => {
       datos();
     }else{
       const datos=async()=>{
-        console.log("33333")
         const resultB = await supabase
           .from("tipoPersonal")
           .select()
@@ -389,7 +377,6 @@ const AsignacionPersonal = () => {
 
     var selection = document.getElementById("id_tipo_personal");
     var valor = selection.options[selection.selectedIndex].value
-    console.log(valor);
 
     if (valor == 1 && id_nivel == 1) {
       const datos=async()=>{
@@ -534,7 +521,6 @@ const AsignacionPersonal = () => {
       div.style.display = '';
       datos();
       datosGrados();
-      datosMaterias();
     }else if(valor == 2 && id_nivel == 2){
       const datos=async()=>{
         const result = await supabase.from('anioEducativo')
@@ -833,12 +819,6 @@ const AsignacionPersonal = () => {
     
         setAnioCargo(result.data)
         
-        let selection = document.getElementById("id_anioEduc");
-    
-        let idAnioSelec = selection.options[selection.selectedIndex].value;
-
-        console.log(idAnioSelec);
-
         let personal = selectedCountry.id_personal;
 
         var divDirec = document.getElementById("id_anioEduc");
@@ -886,9 +866,6 @@ const AsignacionPersonal = () => {
 
     var selection = document.getElementById("id_anioEduc");
     var valor = selection.options[selection.selectedIndex].value
-    console.log(valor);
-
-    //profesorAgregado({ id_anioEduc: valor })
 
     const buscaGrado=async()=>{
       const resultA = await supabase
@@ -901,42 +878,35 @@ const AsignacionPersonal = () => {
 
       const resultB = await supabase
         .from("grados")
-        .select('nombre_grado')
+        .select('id_grado, nombre_grado')
         .eq("isHabilitado_grado", true)
         .eq("id_grado",grado);
 
       var selection2 = document.getElementById("gradoMateria");
       selection2.value = resultB.data[0].nombre_grado;
-      //console.log();   
+
+      const idGradoActual = resultB.data[0].id_grado
+
+      profesorAgregado({
+        id_anioEduc:valor,
+        id_nivel,
+        id_personal,
+        id_tipo_personal,
+        periodo_lectivo,
+        id_grado:idGradoActual
+      })
+
+      const resultMat = await supabase.from('materias')
+        .select()
+        .eq("isHabilitada_materia",true)
+        .eq("id_grado",idGradoActual)
+        setMaterias(resultMat.data)
+        console.log(resultMat.data)
+
     }
+
     buscaGrado();
 
-
-    /*
-    if (idNivel === 1 || idNivel === 2) {
-      console.log("1 o 2")
-      const datos=async()=>{
-      const resultA = await supabase
-        .from("tipoPersonal")
-        .select()
-        .eq("isHabilitado_tipoPerso", true)
-        .neq("id_tipo_personal",5);
-      setCargos(resultA.data);
-      }
-      datos();
-    }else{
-      const datos=async()=>{
-        console.log("33333")
-        const resultB = await supabase
-          .from("tipoPersonal")
-          .select()
-          .eq("isHabilitado_tipoPerso", true)
-          .neq("id_tipo_personal", 2);
-        setCargos(resultB.data);
-      }
-      datos();
-    }
-    */
   }
   
 
