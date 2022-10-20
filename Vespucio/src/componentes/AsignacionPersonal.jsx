@@ -276,9 +276,9 @@ const AsignacionPersonal = () => {
     const styles=useStyles();
     const actualizarState = e =>{
       profesorAgregado({
-          ...profesor,
-          [e.target.name]: e.target.value,
-      })
+        ...profesor,
+        [e.target.name]: e.target.value,
+      });
     }
 
     const actualizarMaterias = e =>{
@@ -832,8 +832,14 @@ const AsignacionPersonal = () => {
         .lte('id_anioEduc', 42);
     
         setAnioCargo(result.data)
+        
+        let selection = document.getElementById("id_anioEduc");
+    
+        let idAnioSelec = selection.options[selection.selectedIndex].value;
 
-        let personal = selectedCountry.id_personal
+        console.log(idAnioSelec);
+
+        let personal = selectedCountry.id_personal;
 
         var divDirec = document.getElementById("id_anioEduc");
         divDirec.style.display = '';
@@ -846,7 +852,8 @@ const AsignacionPersonal = () => {
           id_nivel,
           id_personal:personal,
           id_tipo_personal:valor,
-          periodo_lectivo
+          periodo_lectivo,
+          id_grado
         })
 
       }
