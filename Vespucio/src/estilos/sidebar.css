@@ -10,7 +10,7 @@ body{
     z-index: 999;
     background-color: var(--primary-color);
     padding: 0px 15px;
-    
+    overflow: auto;
 }
 
 .sidebar__top{

@@ -13,18 +13,18 @@ export const GestionMateriasProfesor = () => {
     ];
   return (
         
-    <div className="grid grid-nogutter surface-0 text-800 contenedorGestion">
-        <div className="col-12 md:col-6 p-6 text-center md:text-left flex align-items-center infoInput ">
-            <section className='selector'>
-                <span className="block text-6xl font-bold mb-1 spanTitulo">Gestione sus Materias</span>
-                <div className="text-4xl font-bold mb-3 subtitulo">Seleccione la Materia</div>
+    <div className="grid grid-nogutter text-800 contenedorGestion">
+        <div className="md:col-6 p-6 text-center md:text-left flex align-items-center " >
+            <section>
+                <span className="block text-6xl font-bold mb-1 spanTituloGestion" >Gestione sus Materias</span>
+                <div className="text-4xl font-bold mb-3 subtituloGestion">Seleccione la Materia</div>
 
                 <Dropdown value={"materia"} options={materias} onChange={(e) => setCity(e.value)} placeholder="Seleccione Materia"/>
  
-                <Button label="Seleccionar" type="button" className="mr-3 p-button-raised botonSubmit" />
+                <Button label="Seleccionar" type="button" className="mr-3 p-button-raised botonSubmitGestion" />
             </section>
         </div>
-        <div className="col-12 md:col-6 overflow-hidden imagen">
+        <div className="md:col-6 overflow-hidden">
             <img src="https://cdn.pixabay.com/photo/2014/03/12/18/45/boys-286245_960_720.jpg" alt="hero-1" className="md:ml-auto block md:h-full"  />
         </div>
     </div>
