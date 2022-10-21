@@ -253,7 +253,7 @@ const Comprobantes = () => {
         {title:"Id", field:"id_comprobante"},
         {title:"Tipo", field:"tipoComprobante.nombre_tipo"},
         {title:"Proveedor", field:"proveedores.nombre_proveedor"},
-        {title:"Movimiento", field:"tipo_movimiento"},
+        /*{title:"Movimiento", field:"tipo_movimiento"},*/
         {title:"Numero", field:"numero_comprobante"},
         {title:"Fecha Emision",field:"fecha_emision"},
         {title:"Valor total",field:"total_comprobante"},
@@ -369,6 +369,16 @@ const Comprobantes = () => {
         <TextField type="date" className={styles.inputMaterial}   onChange={actualizarState} name="fecha_emision" value={fecha_emision}/>
         <br/>
         <br/>
+        <br/>
+        {/*<Label>Tipo Movimiento</Label>
+        <Select name="tipo_movimiento" value={tipo_movimiento} onChange={actualizarState}>
+          <option value="">--Seleccione--</option>
+          <option value="Ingreso">Ingreso</option>
+          <option value="Egreso">Egreso</option>
+
+        </Select>*/}
+        <br/>
+        <br/>
         <TextField type="number" className={styles.inputMaterial} label="Monto Total" onChange={actualizarState} name="total_comprobante" value={total_comprobante} />
         <br/><br/>
         <div align="right">
@@ -423,13 +433,13 @@ const Comprobantes = () => {
         <br/>
         <br/>
         <br/>
-        <Label>Tipo Movimiento</Label>
+        {/*<Label>Tipo Movimiento</Label>
         <Select name="tipo_movimiento" value={comprobante&&tipo_movimiento} onChange={actualizarState}>
           <option value="">--Seleccione--</option>
           <option value="Ingreso">Ingreso</option>
           <option value="Egreso">Egreso</option>
 
-        </Select>
+        </Select>*/}
         <br/>
         <br/>
         <input type="file"  name='input=file' id='selectArchivo'/>
