@@ -17,7 +17,7 @@ const Label = styled.label`
 `;
 
 const Main = styled.div `
-  margin-top: 7%
+  margin-top: 5%;
 `;
 
 const Select = styled.select`
@@ -1044,8 +1044,8 @@ const AsignacionPersonal = () => {
           <div className="contenedor">
             <br/>
             <Button className="bg-indigo-600 w-full p-5 text-white uppercase font-bold hover:bg-slate-900 boton" label="Registrar Nueva Asignación de Personal" onClick={() => onClick('displayBasic')} />
-                <Dialog style={{ width: '600px', textAlign:"center" }} modal className="p-fluid" visible={displayBasic} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
-                  <h4><b>Registrar una Nueva Asignación</b></h4>
+                <Dialog style={{ width: '600px' }} modal className="p-fluid" visible={displayBasic} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
+                  <h6>Registrar una Nueva Asignación</h6>
                   <br/>
                   <p style={{textAlign:"center"}}><b>DNI del Personal a Asignar</b></p>
                   <Dropdown
@@ -1143,15 +1143,7 @@ const AsignacionPersonal = () => {
                 </Dialog>
 
                 
-          </div>
-          
-          <Modal
-            open={modal}
-            onClose={abrirCerrarModalInsertar}
-          >
-            {/*bodyInsertar*/}
-          </Modal>
-              
+          </div>              
           
       </div>
                 

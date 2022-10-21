@@ -464,7 +464,6 @@ const Comprobantes = () => {
     }
 
     const seleccionarProveedor = (id_comprobante,caso)=>{
-      console.log(id_comprobante)
       setComprobante(id_comprobante);
       (caso === "Editar")&&abrirCerrarModalEditar();
     }
