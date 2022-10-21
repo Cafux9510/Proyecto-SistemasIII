@@ -122,6 +122,7 @@ const EstructuraEscolar = () => {
             `)
           .eq("isHabilitado_asignacion",true)
           .eq("id_anioEduc",id_anioEduc)
+          console.log(alumnos.data)
             setDataA(alumnos)
         } catch (error) {
             console.log(error)
@@ -133,13 +134,18 @@ const EstructuraEscolar = () => {
          const { data: profes, error } = await supabase
           .from('personalPorAnio')
           .select(`
-            id_anio,
+            cargoFuncion(
+              materias(
+                nombre_materia
+              )
+            ),
             personalEducativo(
               nombre_personal,
               telefono_personal,
               apellido_personal,
               dni_personal
-            )
+            ),
+            id_anio
           `)
         .eq("isHabilitado_asignacion",true)
         .eq("id_anio",id_anioEduc)
@@ -167,9 +173,12 @@ const EstructuraEscolar = () => {
       {title:"Nombre", field:"personalEducativo.nombre_personal"},
       {title:"Apellido", field:"personalEducativo.apellido_personal"},
       {title:"DNI", field:"personalEducativo.dni_personal"},
-      {title:"Telefono", field:"personalEducativo.telefono_personal"}
+      {title:"Telefono", field:"personalEducativo.telefono_personal"},
+      {title:"Materia Asignada", field:"cargoFuncion.materias.nombre_materia"}
 
-  ]
+    ]
+
+    
 
 
     //Estilos
@@ -343,9 +352,6 @@ const EstructuraEscolar = () => {
                             <option value="">--Categoria--</option>
                             <option key={1} value={1}>Alumno</option>
                             <option key={2} value={2}>Profesor</option>
-                            <option key={3} value={3}>Materia</option>
-                        
-                            
                         
                     </SelectCat>
 

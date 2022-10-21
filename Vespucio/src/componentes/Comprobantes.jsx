@@ -292,7 +292,7 @@ const Comprobantes = () => {
   }
 
   const abrirCerrarDialog=()=>{
-    if(tipo_comprobante.trim() ==="" || proveedor_comprobante.trim() ==="" || tipo_movimiento.trim()==="" || numero_comprobante.trim() ==="" || fecha_emision.trim() ==="" || total_comprobante.trim() ===""){
+    if(tipo_comprobante.trim() ==="" || proveedor_comprobante.trim() ==="" || numero_comprobante.trim() ==="" || fecha_emision.trim() ==="" || total_comprobante.trim() ===""){
         guardarError(true)
 
         setTimeout(()=>{

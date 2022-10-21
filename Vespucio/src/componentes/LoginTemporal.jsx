@@ -102,7 +102,6 @@ const Alumnos = () => {
                 .update({ isActivo: true })
                 .eq("id_usuario", userID);
               //acá se redirecciona a lo que le pongas.
-              window.location.href = "https://google.com";
               break;
             case 2:
               console.log("Profesor");

@@ -68,15 +68,15 @@ const Alumnos = () => {
 
     const[alumnos,alumnoAgregado]=useState({
         id_anioEduc:'',
+        id_nivel:'',
         nombre_alumno:'',
         telefono_alumno:'',
         mail_alumno:'',
         domicilio_alumno:'',
         dni_alumno:'',
         apellido_alumno:'',
-        id_nivel:'',
         id_alumno:'',
-        id_cuota:'',
+        id_cuota: '',
         valorPagado_cuota:'',
         metodoPago_cuota:'',
         numMes_cuota:'',
@@ -93,6 +93,7 @@ const Alumnos = () => {
             anioEducativo(
               nombre_anioEduc,
               id_nivel(
+                id_nivel,
                 nombre_nivel
               )
             )
@@ -116,8 +117,8 @@ const Alumnos = () => {
       }
     }
 
-    const{id_anioEduc,
-      nombre_alumno,telefono_alumno,mail_alumno,domicilio_alumno,dni_alumno,apellido_alumno,id_nivel,id_cuota,valorPagado_cuota,metodoPago_cuota,numMes_cuota,periodo_lectivo}=alumnos;
+    const{id_anioEduc,id_nivel,nombre_alumno,telefono_alumno,mail_alumno,domicilio_alumno,dni_alumno,apellido_alumno,
+      id_cuota,valorPagado_cuota,metodoPago_cuota,numMes_cuota,periodo_lectivo}=alumnos;
 
 
     const registrarPago=async() =>{
@@ -244,7 +245,7 @@ const Alumnos = () => {
       .select();
   
       setNiveles(result.data)
-      return result.data
+      
     }
     const[categorias,setCategorias]=useState({}) 
 
@@ -494,6 +495,42 @@ const Alumnos = () => {
         <TextField className={styles.inputMaterial} label="DNI" onChange={actualizarState} name="dni_alumno" value={alumnos&&dni_alumno} />
         <br/>
         <br/>
+        <Label>Nivel Educativo</Label>
+        <Campo>
+          <Select
+                    name='id_nivel'
+                    id='id_nivel'
+                    value={alumnos&&id_nivel}
+                    onChange={filtrarAnios}
+                >
+                    <option value="">--Seleccione--</option>
+                    {Object.values(niveles).map(pr=>(
+                      <option key={pr.id_nivel} value={pr.id_nivel}>{pr.nombre_nivel}</option>
+                    ))}
+                
+                    
+                  
+            </Select>
+        </Campo>
+        <br/>
+        <Label>Año a Cursar</Label>
+        <br/>
+        <Campo>
+          <Select
+                    name='id_anioEduc'
+                    value={alumnos&&id_anioEduc}
+                    onChange={actualizarState}
+                >
+                    <option value="">--Seleccione--</option>
+                    {Object.values(categorias).map(pr=>(
+                      <option key={pr.id_anioEduc} value={pr.id_anioEduc}>{pr.nombre_anioEduc}</option>
+                    ))}
+                
+                    
+                  
+            </Select>
+        </Campo>
+        <br/>
         <TextField type="number" className={styles.inputMaterial} label="Telefono" onChange={actualizarState} name="telefono_alumno" value={alumnos&&telefono_alumno} />
         <br/>
         <br/>
@@ -591,7 +628,8 @@ const Alumnos = () => {
     }
 
     const seleccionarAlumno = (alumno,caso)=>{
-        alumnoAgregado(alumno);
+      console.log(alumno)
+        alumnoAgregado(alumno);     
       (caso === "Editar")&&abrirCerrarModalEditar();
     }
 
