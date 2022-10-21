@@ -576,8 +576,12 @@ const mostrarFactura=(comprobante)=>{
       fecha_emision:comprobante.fecha_emision,
       proveedor:comprobante.proveedores["nombre_proveedor"]
   })
-  const compro= lineaComprobantes.filter(comprobantee=>comprobantee.id_comprobante !== comprobante.id_comprobante )
+
+  
+  const compro= subTotal.filter(comprobantee=>comprobantee.id_comprobante !== comprobante.id_comprobante )
   setDetalles(compro)
+
+  const variable=subTotal.reduce((total,detalle)=>detalle.SubTotal+total,0)
   setDialogFactura(true)
 }
 
@@ -682,8 +686,8 @@ const hideDialog= ()=>{
           </p>
         </Dialog>
         <Dialog visible={dialogFactura} style={{ width: '600px' }} header="DETALLES" onHide={hideDialog}> 
-          <div class="grid">
-              <div class="col">
+          <div className="grid">
+              <div className="col">
                   <div className="field mb-4">
                       <Label>Nombre Proveedor</Label>
                       <InputText type="text" disabled value={comprobante.proveedor}/>
@@ -694,7 +698,7 @@ const hideDialog= ()=>{
                   <InputText type="text" disabled value={comprobante.fecha_emision}/>
                 </div>
               </div>
-              <div class="col">
+              <div className="col">
                 <div className="field mb-4">
                   <Label>Tipo Comprobante</Label>
                   <InputText type="text" disabled value={comprobante.tipo_comprobante}/>
@@ -711,10 +715,10 @@ const hideDialog= ()=>{
                   <Column field="nombre_producto" header="Nombre Articulo"></Column>
                   <Column field="cantidad_articulo" header="Cantidad"></Column>
                   <Column field="precio_unitario" header="Precio Unitario"></Column>
-                  <Column field="total" header="Subtotal"></Column>
+                  <Column field="SubTotal" header="Subtotal"></Column>
               </DataTable>
           <p>
-              <span>Total</span> 
+              <span>Total: {totales}</span> 
           </p>
           </div>
         </Dialog>
