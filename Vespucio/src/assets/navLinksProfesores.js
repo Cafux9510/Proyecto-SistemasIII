@@ -15,6 +15,11 @@ const navLinksProfesores = [
         icon:"ri-filter-line",
         display:"Gestion de Materia",
     },
+    {
+        path:"/CargaTareas" ,
+        icon:"ri-filter-line",
+        display:"Cargas de Tareas",
+    }
 
 
 ]
