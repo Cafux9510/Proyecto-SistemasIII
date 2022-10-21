@@ -64,6 +64,7 @@ const CargaTareas = () => {
         id_materia:3,
         link_archivo:'',
         id_tarea:'',
+        estado_tarea:'Entregado / No Entregado'
     });
 
 
@@ -79,13 +80,31 @@ const CargaTareas = () => {
               )
           `)
            .eq("isHabilitada_tarea",true)
+
            setData(result.data)
+
+          //  for (let index = 0; index < result.data.length; index++) {
+
+          //     let idTarea = result.data[index].id_tarea
+
+          //     const result2= await supabase.from('cargaTareas')
+          //     .select(`
+          //     isCargada_tarea,
+          //     id_tarea`)
+          //     .eq("id_tarea",idTarea)
+
+
+
+          //     row result2.data[0].isCargada_tarea
+
+          // }
+
         } catch (error) {
             console.log(error)
         }
     }
 
-    const{id_alumno,id_materia,link_archivo}=tareas;
+    const{id_alumno,estado_tarea,id_materia,link_archivo}=tareas;
 
     /*const update2=async(id_tarea)=>{
       try {
@@ -166,7 +185,8 @@ const CargaTareas = () => {
         {title:"Materia", field:"materias.nombre_materia"},
         {title:"Descripcion", field:"descripcion_tarea"},
         {title:"Plazo de la Tarea", field:"plazo_tarea"},
-        {title:"Trimestre de la Tarea", field:"trimestre_tarea"}
+        {title:"Trimestre de la Tarea", field:"trimestre_tarea"},
+        {title:"Estado de Entrega", field:"estado_tarea"}
       ]
 
     //Estilos
@@ -256,70 +276,7 @@ const CargaTareas = () => {
 
     const{id_tarea}=materias;
 
-    /*
-    const bodyEditar= (
-        <div className={styles.modal}>
-        <h3>Agregar Nueva Tarea</h3> 
-        <br/>
-        <label>Indique la Materia de la Tarea</label>
-        <br/>
-            <Campo>
-                <Select
-                        name='id_materia'
-                        id='id_materia'
-                        value={tareas&&id_materia}
-                        onChange={actualizarState}
-                    >
-                        <option value="">--Seleccione--</option>
-                        {Object.values(materias).map(pr=>(
-                        <option key={pr.id_materia} value={pr.id_materia}>{pr.nombre_materia}</option>
-                        ))}
-                    
-                        
-                    
-                </Select>
-            </Campo>
-        <TextField className={styles.inputMaterial} label="Titulo de la Tarea" onChange={actualizarState} name="titulo_tarea" value={tareas&&titulo_tarea}/> 
-        <br/>
-        <br/>
-        <label>Descripcion de la Materia</label>
-        <br/>
-        <textarea type="text" className={styles.inputMaterial} label="Descripcion de la Tarea" onChange={actualizarState} name="descripcion_tarea" value={tareas&&descripcion_tarea} />
-        <br/>
-        <br/>
-        <label>Plazo para la Tarea</label>
-        <br/>
-        <br/>
-        <TextField type="date" className={styles.inputMaterial} onChange={actualizarState} name="plazo_tarea" value={tareas&&plazo_tarea}/> 
-        <br/>
-        <br/>
-        <label>Indique el Trimestre Actual</label>
-        <br/>
-        <br/>
-            <Campo>
-                <Select
-                        name='trimestre_tarea'
-                        id='trimestre_tarea'
-                        value={trimestre_tarea}
-                        onChange={actualizarState}
-                    >
-                        <option value="">--Seleccione--</option>
-                        <option value="Primer Trimestre">1° Trimestre</option>
-                        <option value="Segundo Trimestre">2° Trimestre</option>
-                        <option value="Tercer Trimestre">3° Trimestre</option>                  
-                </Select>
-            </Campo>
-        <br/>
-        <div align="right">
-          <Button color='primary' onClick={()=>submit()} >Insertar</Button>
-          <Button onClick={()=>abrirCerrarModalInsertar()}>Cancelar</Button>
-        </div>
-      </div>
-    )
-*/
-
-
-
+  
     /*ACA TAMBIEN MODIFICO FACUNDO-C1*/
 
     const selectProduct=(event)=>{
