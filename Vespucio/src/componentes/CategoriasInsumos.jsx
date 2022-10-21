@@ -293,7 +293,7 @@ const CategoriasInsumos = () => {
         <div className="contenedor">
           <br/>
 
-          <button className="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nueva Categoría</button>
+          <button className="bg-indigo-600 w-45 p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nueva Categoría</button>
       
           <br/><br/>
         </div>

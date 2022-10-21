@@ -291,8 +291,17 @@ const Comprobantes = () => {
     setPro(result.data)
   }
 
+  const[subTotal,setsubTotal]=useState([])
+  const buscarTotales = async()=>{
+    const {data:subtotal} = await supabase.from('SubtoalesComprobantesView')
+    .select()  
+
+    setsubTotal(subtotal)
+  }
+
+
   const abrirCerrarDialog=()=>{
-    if(tipo_comprobante.trim() ==="" || proveedor_comprobante.trim() ==="" || tipo_movimiento.trim()==="" || numero_comprobante.trim() ==="" || fecha_emision.trim() ==="" || total_comprobante.trim() ===""){
+    if(tipo_comprobante.trim() ==="" || proveedor_comprobante.trim() ==="" || numero_comprobante.trim() ==="" || fecha_emision.trim() ==="" || total_comprobante.trim() ===""){
         guardarError(true)
 
         setTimeout(()=>{
@@ -306,7 +315,7 @@ const Comprobantes = () => {
     setDialog(true);
   }
   const abrirCerrarDialog2=(id)=>{
-    const array= lineaComprobantes.filter(comprobante=>comprobante.id_comprobante !==id )
+    const array= subTotal.filter(comprobante=>comprobante.id_comprobante !==id )
     setDetalles(array)
     abrirCerrarModalEditar();
     setDialog(true);
@@ -358,16 +367,6 @@ const Comprobantes = () => {
         <br/>
         <br/>
         <TextField type="date" className={styles.inputMaterial}   onChange={actualizarState} name="fecha_emision" value={fecha_emision}/>
-        <br/>
-        <br/>
-        <br/>
-        <Label>Tipo Movimiento</Label>
-        <Select name="tipo_movimiento" value={tipo_movimiento} onChange={actualizarState}>
-          <option value="">--Seleccione--</option>
-          <option value="Ingreso">Ingreso</option>
-          <option value="Egreso">Egreso</option>
-
-        </Select>
         <br/>
         <br/>
         <TextField type="number" className={styles.inputMaterial} label="Monto Total" onChange={actualizarState} name="total_comprobante" value={total_comprobante} />
@@ -474,6 +473,7 @@ const Comprobantes = () => {
         datos();
         dato();
         lineaComprobante();
+        buscarTotales()
     },[])
    
     const productDialogFooter = (
@@ -490,6 +490,7 @@ const Comprobantes = () => {
       console.log(Number(variable))
       setTotales(Number(variable))
 
+     
     },[detalles])
 
     const crearDetalle=(de)=>{
@@ -529,6 +530,8 @@ const Comprobantes = () => {
         console.log(error)
     }
 }
+
+
 
 useEffect(()=>{
   articulosBD();
@@ -661,7 +664,7 @@ const hideDialog= ()=>{
               <Column field="nombre_producto" header="Nombre Articulo"></Column>
               <Column field="cantidad_articulo" header="Cantidad"></Column>
               <Column field="precio_unitario" header="Precio Unitario"></Column>
-              <Column field="total" header="Subtotal"></Column>
+              <Column field="SubTotal" header="Subtotal"></Column>
               <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }} header="Acciones"></Column>
           </DataTable>
           <p>
@@ -691,6 +694,18 @@ const hideDialog= ()=>{
                   <InputText type="text" disabled value={comprobante.numero_comprobante}/>
                 </div>
               </div>
+          </div>
+          <div className="field mb-4 text-center">
+              <Label className="text-3xl font-semibold">Cliente:Colegio Americo Vespucio</Label>
+              <DataTable value={detalles} showGridlines >
+                  <Column field="nombre_producto" header="Nombre Articulo"></Column>
+                  <Column field="cantidad_articulo" header="Cantidad"></Column>
+                  <Column field="precio_unitario" header="Precio Unitario"></Column>
+                  <Column field="total" header="Subtotal"></Column>
+              </DataTable>
+          <p>
+              <span>Total</span> 
+          </p>
           </div>
         </Dialog>
         <div className="contenedor">
