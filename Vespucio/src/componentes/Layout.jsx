@@ -2,6 +2,8 @@ import React from 'react'
 import Router from '../routes/Router'
 import Sidebar from './Sidebar'
 import TopNav from './TopNav'
+import "../estilos/estilos.css";
+
 
 
 const Layout = () => {

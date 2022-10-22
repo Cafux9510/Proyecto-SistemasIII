@@ -1,0 +1,71 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    
+}
+body{
+    color: aliceblue;
+    display: flex;
+}
+
+#infoInputGestion{
+    background-color: white;
+    width: 60%;
+    border-left: 0;
+    display: flex;
+    text-align: center;
+}
+#imagenGestion{
+    width: 40%;
+}
+.spanTituloGestion{
+    color: #6366F1;
+    padding-bottom:30px ;
+}
+.subtituloGestion{
+    color: #4e50e7;
+}
+
+.botonSubmitGestion{
+    margin-left: 15px;
+}
+
+.tablaGestion{
+    background-color: white;
+    width: 80%;
+    border-left: 0;
+    display: flex;
+    text-align: center;
+}
+.botonesGestion{
+    width: 20%;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    row-gap: 1em;
+}
+.botonTareaGestion{
+    width: 15em;
+}
+.h1TituloGestion{
+    display: inline-block;
+    margin-top: 70px;
+    color: black;
+}
+.mainGestion{
+    background-color: white;
+    width: 50vh;
+    min-width: 40vh;
+    display: inline-block;
+    /* border: 5px solid red; */
+    position: relative;
+    box-sizing: inherit;
+}
+.contenedorGestion2{
+    background-color: aliceblue;
+    
+
+}

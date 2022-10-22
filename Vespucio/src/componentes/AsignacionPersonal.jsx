@@ -14,11 +14,10 @@ import { Button } from 'primereact/button';
 const Label = styled.label`
     flex: 0 0 100px;
     text-align:center;
-
 `;
 
 const Main = styled.div `
-  margin-top: 7%
+  margin-top: 5%;
 `;
 
 const Select = styled.select`
@@ -80,7 +79,7 @@ const AsignacionPersonal = () => {
         id_cargo:'',
         id_personal:'',
         periodo_lectivo:year,
-        id_nivel:'',
+        id_nivel:0,
         id_tipo_personal:'',
         id_anioEduc:'',
         id_materia:0,
@@ -115,14 +114,14 @@ const AsignacionPersonal = () => {
 
   const onCountryChange = (e) => {
     setSelectedCountry(e.value);
-     const datosPersonalE=async()=>{
+     /*const datosPersonalE=async()=>{
        const result = await supabase.from('personalEducativo')
        .select(`nombre_personal,apellido_personal`)
        .eq("dni_personal",selectedCountry.dni_personal);
 
      }
     datosPersonalE();
-    setSelectedCountry(e.value);
+    setSelectedCountry(e.value);*/
   }
    
     //Funciones que tienen datos desde una api
@@ -149,7 +148,6 @@ const AsignacionPersonal = () => {
               )
             `)
             .eq("isHabilitado_asignacion",true)
-            console.log(personalEducativo)
             setData(personalEducativo)
         } catch (error) {
             console.log(error)
@@ -195,10 +193,6 @@ const AsignacionPersonal = () => {
 
         var numR = generarId()
 
-        var anio = id_anioEduc
-        var tipo = id_tipo_personal
-        var mat = id_materia
-
         const {error,regCargo}= await supabase.from("cargoFuncion").insert([{
           id_anioEduc,
           id_tipo_personal,
@@ -213,9 +207,11 @@ const AsignacionPersonal = () => {
 
         const valor=resultado.data[0].id_cargo
 
+        console.log(valor)
+
         const result= await supabase.from("personalPorAnio").insert([{
           id_cargo:valor,
-          id_personal:selectedCountry.id_personal,
+          id_personal,
           periodo_lectivo,
           id_anio:id_anioEduc
         
@@ -278,27 +274,27 @@ const AsignacionPersonal = () => {
     const styles=useStyles();
     const actualizarState = e =>{
       profesorAgregado({
-          ...profesor,
-          [e.target.name]: e.target.value,
-      })
-
+        ...profesor,
+        [e.target.name]: e.target.value,
+      });
     }
 
     const actualizarMaterias = e =>{
       datosMaterias();
-      profesorAgregado({
-        ...profesor,
-        [e.target.name]: e.target.value,
-    })
-
     }
   
     const datosPersonalE=async()=>{
-      const result = await supabase.from('personalEducativo')
+
+      const resultado = await supabase.from('DatosCompletosPersonalView')
+      .select(`id_personal, concatenado`);
+
+      setPersonalE(resultado.data)
+
+      /*const result = await supabase.from('personalEducativo')
       .select(`id_personal,nombre_personal,apellido_personal,dni_personal`)
       .eq("isHabilitado_personal",true);
 
-      setPersonalE(result.data)
+      setPersonalE(result.data)*/
 
 
 
@@ -308,7 +304,6 @@ const AsignacionPersonal = () => {
   const datosNiveles=async()=>{
     const result = await supabase.from('nivelesEducativos')
     .select()
-
     setNiveles(result.data)
   }
 
@@ -319,7 +314,6 @@ const AsignacionPersonal = () => {
     .select()
     .eq("isHabilitada_materia",true)
     .eq("id_grado",id_grado)
-    console.log(result)
     setMaterias(result.data)
   }
 
@@ -334,12 +328,41 @@ const AsignacionPersonal = () => {
 
   const[anioCargo,setAnioCargo]=useState({})
 
-  const[cargos,setCargos]=useState({}) 
-  const datosCargos=async()=>{
-    const result = await supabase.from('tipoPersonal')
-    .select()
-    .eq("isHabilitado_tipoPerso",true);
-    setCargos(result.data)
+  const[cargos,setCargos]=useState({})
+
+  const filtrarPorNivel = e => {
+    profesorAgregado({
+      ...profesor,
+      [e.target.name]: e.target.value,
+      
+    })
+
+    var selection = document.getElementById("select");
+    var idNivel = parseInt(selection.options[selection.selectedIndex].value)
+
+    if (idNivel === 1 || idNivel === 2) {
+      console.log("1 o 2")
+      const datos=async()=>{
+      const resultA = await supabase
+        .from("tipoPersonal")
+        .select()
+        .eq("isHabilitado_tipoPerso", true)
+        .neq("id_tipo_personal",5);
+      setCargos(resultA.data);
+      }
+      datos();
+    }else{
+      const datos=async()=>{
+        const resultB = await supabase
+          .from("tipoPersonal")
+          .select()
+          .eq("isHabilitado_tipoPerso", true)
+          .neq("id_tipo_personal", 2);
+        setCargos(resultB.data);
+      }
+      datos();
+    }
+
   }
 
   const filtrarPorPersonal = e =>{
@@ -348,7 +371,7 @@ const AsignacionPersonal = () => {
       ...profesor,
       [e.target.name]: e.target.value,
       
-  })
+    })
 
     const div = document.getElementById('divMateria');
 
@@ -365,9 +388,31 @@ const AsignacionPersonal = () => {
         .lte('id_anioEduc', 45)
     
         setAnioCargo(result.data)
+
+        let anio = result.data[0].id_anioEduc
+
+        let personal = selectedCountry.id_personal
+
+        var divDirec = document.getElementById("divPersonalNotProfe");
+        divDirec.style.display = '';
+
+        var listaDesp = document.getElementById("id_anioEduc");
+        listaDesp.style.display = 'none';
+
+        var input = document.getElementById("cargoPersonal");
+        input.value = result.data[0].nombre_anioEduc;
+
+        profesorAgregado({
+          id_anioEduc:anio,
+          id_nivel,
+          id_personal:personal,
+          id_tipo_personal:valor,
+          periodo_lectivo
+        })
+   
       }
 
-      div.style.display = 'none';
+      
 
       datos();
 
@@ -381,6 +426,28 @@ const AsignacionPersonal = () => {
         .lte('id_anioEduc', 45)
     
         setAnioCargo(result.data)
+
+        let anio = result.data[0].id_anioEduc
+
+        let personal = selectedCountry.id_personal
+
+        var divDirec = document.getElementById("divPersonalNotProfe");
+        divDirec.style.display = '';
+
+        var listaDesp = document.getElementById("id_anioEduc");
+        listaDesp.style.display = 'none';
+
+        var input = document.getElementById("cargoPersonal");
+        input.value = result.data[0].nombre_anioEduc;
+
+        profesorAgregado({
+          id_anioEduc:anio,
+          id_nivel,
+          id_personal:personal,
+          id_tipo_personal:valor,
+          periodo_lectivo
+        })
+
       }
 
       div.style.display = 'none';
@@ -396,6 +463,28 @@ const AsignacionPersonal = () => {
         .lte('id_anioEduc', 45)
     
         setAnioCargo(result.data)
+
+        let anio = result.data[0].id_anioEduc
+
+        let personal = selectedCountry.id_personal
+
+        var divDirec = document.getElementById("divPersonalNotProfe");
+        divDirec.style.display = '';
+
+        var listaDesp = document.getElementById("id_anioEduc");
+        listaDesp.style.display = 'none';
+
+        var input = document.getElementById("cargoPersonal");
+        input.value = result.data[0].nombre_anioEduc;
+
+        profesorAgregado({
+          id_anioEduc:anio,
+          id_nivel,
+          id_personal:personal,
+          id_tipo_personal:valor,
+          periodo_lectivo
+        })
+
       }
 
       div.style.display = 'none';
@@ -411,11 +500,27 @@ const AsignacionPersonal = () => {
         .lte('id_anioEduc', 42)
     
         setAnioCargo(result.data)
+
+        let personal = selectedCountry.id_personal
+
+        var divDirec = document.getElementById("id_anioEduc");
+        divDirec.style.display = '';
+
+        var listaDesp = document.getElementById("divPersonalNotProfe");
+        listaDesp.style.display = 'none';
+
+        profesorAgregado({
+          id_anioEduc,
+          id_nivel,
+          id_personal:personal,
+          id_tipo_personal:valor,
+          periodo_lectivo
+        })
+
       }
       div.style.display = '';
       datos();
       datosGrados();
-      datosMaterias();
     }else if(valor == 2 && id_nivel == 2){
       const datos=async()=>{
         const result = await supabase.from('anioEducativo')
@@ -426,6 +531,23 @@ const AsignacionPersonal = () => {
         .lte('id_anioEduc', 42)
     
         setAnioCargo(result.data)
+
+        let personal = selectedCountry.id_personal
+
+        var divDirec = document.getElementById("id_anioEduc");
+        divDirec.style.display = '';
+
+        var listaDesp = document.getElementById("divPersonalNotProfe");
+        listaDesp.style.display = 'none';
+
+        profesorAgregado({
+          id_anioEduc,
+          id_nivel,
+          id_personal:personal,
+          id_tipo_personal:valor,
+          periodo_lectivo
+        })
+
       }
 
       div.style.display = '';
@@ -442,6 +564,23 @@ const AsignacionPersonal = () => {
         .lte('id_anioEduc', 42)
     
         setAnioCargo(result.data)
+
+        let personal = selectedCountry.id_personal
+
+        var divDirec = document.getElementById("id_anioEduc");
+        divDirec.style.display = '';
+
+        var listaDesp = document.getElementById("divPersonalNotProfe");
+        listaDesp.style.display = 'none';
+
+        profesorAgregado({
+          id_anioEduc,
+          id_nivel,
+          id_personal:personal,
+          id_tipo_personal:valor,
+          periodo_lectivo
+        })
+
       }
 
       div.style.display = '';
@@ -458,6 +597,28 @@ const AsignacionPersonal = () => {
         .lte('id_anioEduc', 48)
     
         setAnioCargo(result.data)
+
+        let anio = result.data[0].id_anioEduc
+
+        let personal = selectedCountry.id_personal
+
+        var divDirec = document.getElementById("divPersonalNotProfe");
+        divDirec.style.display = '';
+  
+        var listaDesp = document.getElementById("id_anioEduc");
+        listaDesp.style.display = 'none';
+  
+        var input = document.getElementById("cargoPersonal");
+        input.value = result.data[0].nombre_anioEduc;
+
+        profesorAgregado({
+          id_anioEduc:anio,
+          id_nivel,
+          id_personal:personal,
+          id_tipo_personal:valor,
+          periodo_lectivo
+        })
+
       }
 
       div.style.display = 'none';
@@ -473,6 +634,28 @@ const AsignacionPersonal = () => {
         .lte('id_anioEduc', 48)
     
         setAnioCargo(result.data)
+
+        let anio = result.data[0].id_anioEduc
+
+        let personal = selectedCountry.id_personal
+      
+        var divDirec = document.getElementById("divPersonalNotProfe");
+        divDirec.style.display = '';
+  
+        var listaDesp = document.getElementById("id_anioEduc");
+        listaDesp.style.display = 'none';
+  
+        var input = document.getElementById("cargoPersonal");
+        input.value = result.data[0].nombre_anioEduc;
+
+        profesorAgregado({
+          id_anioEduc:anio,
+          id_nivel,
+          id_personal:personal,
+          id_tipo_personal:valor,
+          periodo_lectivo
+        })
+
       }
 
       div.style.display = 'none';
@@ -488,6 +671,28 @@ const AsignacionPersonal = () => {
         .lte('id_anioEduc', 48)
     
         setAnioCargo(result.data)
+
+        let anio = result.data[0].id_anioEduc
+
+        let personal = selectedCountry.id_personal
+      
+        var divDirec = document.getElementById("divPersonalNotProfe");
+        divDirec.style.display = '';
+  
+        var listaDesp = document.getElementById("id_anioEduc");
+        listaDesp.style.display = 'none';
+  
+        var input = document.getElementById("cargoPersonal");
+        input.value = result.data[0].nombre_anioEduc;
+
+        profesorAgregado({
+          id_anioEduc:anio,
+          id_nivel,
+          id_personal:personal,
+          id_tipo_personal:valor,
+          periodo_lectivo
+        })
+      
       }
 
       div.style.display = 'none';
@@ -503,6 +708,28 @@ const AsignacionPersonal = () => {
         .lte('id_anioEduc', 51)
     
         setAnioCargo(result.data)
+
+        let anio = result.data[0].id_anioEduc
+
+        let personal = selectedCountry.id_personal
+
+        var divDirec = document.getElementById("divPersonalNotProfe");
+        divDirec.style.display = '';
+  
+        var listaDesp = document.getElementById("id_anioEduc");
+        listaDesp.style.display = 'none';
+  
+        var input = document.getElementById("cargoPersonal");
+        input.value = result.data[0].nombre_anioEduc;
+
+        profesorAgregado({
+          id_anioEduc:anio,
+          id_nivel,
+          id_personal:personal,
+          id_tipo_personal:valor,
+          periodo_lectivo
+        })
+
       }
 
       div.style.display = 'none';
@@ -518,6 +745,28 @@ const AsignacionPersonal = () => {
         .lte('id_anioEduc', 51)
     
         setAnioCargo(result.data)
+
+        let anio = result.data[0].id_anioEduc
+
+        let personal = selectedCountry.id_personal
+
+        var divDirec = document.getElementById("divPersonalNotProfe");
+        divDirec.style.display = '';
+  
+        var listaDesp = document.getElementById("id_anioEduc");
+        listaDesp.style.display = 'none';
+  
+        var input = document.getElementById("cargoPersonal");
+        input.value = result.data[0].nombre_anioEduc;
+
+        profesorAgregado({
+          id_anioEduc:anio,
+          id_nivel,
+          id_personal:personal,
+          id_tipo_personal:valor,
+          periodo_lectivo
+        })
+
       }
 
       div.style.display = 'none';
@@ -533,6 +782,28 @@ const AsignacionPersonal = () => {
         .lte('id_anioEduc', 51)
     
         setAnioCargo(result.data)
+
+        let anio = result.data[0].id_anioEduc
+
+        let personal = selectedCountry.id_personal
+
+        var divDirec = document.getElementById("divPersonalNotProfe");
+        divDirec.style.display = '';
+  
+        var listaDesp = document.getElementById("id_anioEduc");
+        listaDesp.style.display = 'none';
+  
+        var input = document.getElementById("cargoPersonal");
+        input.value = result.data[0].nombre_anioEduc;
+
+        profesorAgregado({
+          id_anioEduc:anio,
+          id_nivel,
+          id_personal:personal,
+          id_tipo_personal:valor,
+          periodo_lectivo
+        })
+
       }
 
       div.style.display = 'none';
@@ -543,9 +814,28 @@ const AsignacionPersonal = () => {
         const result = await supabase.from('anioEducativo')
         .select()
         .eq("isHabilitado_anio",true)
-        .eq("id_anioEduc",52);
+        .gte('id_anioEduc', 28)
+        .lte('id_anioEduc', 42);
     
         setAnioCargo(result.data)
+        
+        let personal = selectedCountry.id_personal;
+
+        var divDirec = document.getElementById("id_anioEduc");
+        divDirec.style.display = '';
+
+        var listaDesp = document.getElementById("divPersonalNotProfe");
+        listaDesp.style.display = 'none';
+
+        profesorAgregado({
+          id_anioEduc,
+          id_nivel,
+          id_personal:personal,
+          id_tipo_personal:valor,
+          periodo_lectivo,
+          id_grado
+        })
+
       }
 
       div.style.display = '';
@@ -567,10 +857,60 @@ const AsignacionPersonal = () => {
       
   }
 
+  const filtrarPorAnio = e => {
+    profesorAgregado({
+      ...profesor,
+      [e.target.name]: e.target.value,
+      
+    })
 
+    var selection = document.getElementById("id_anioEduc");
+    var valor = selection.options[selection.selectedIndex].value
+
+    const buscaGrado=async()=>{
+      const resultA = await supabase
+        .from("anioEducativo")
+        .select('id_grado')
+        .eq("isHabilitado_anio", true)
+        .eq("id_anioEduc",valor);
+
+      const grado = resultA.data[0].id_grado;
+
+      const resultB = await supabase
+        .from("grados")
+        .select('id_grado, nombre_grado')
+        .eq("isHabilitado_grado", true)
+        .eq("id_grado",grado);
+
+      var selection2 = document.getElementById("gradoMateria");
+      selection2.value = resultB.data[0].nombre_grado;
+
+      const idGradoActual = resultB.data[0].id_grado
+
+      profesorAgregado({
+        id_anioEduc:valor,
+        id_nivel,
+        id_personal,
+        id_tipo_personal,
+        periodo_lectivo,
+        id_grado:idGradoActual
+      })
+
+      const resultMat = await supabase.from('materias')
+        .select()
+        .eq("isHabilitada_materia",true)
+        .eq("id_grado",idGradoActual)
+        setMaterias(resultMat.data)
+        console.log(resultMat.data)
+
+    }
+
+    buscaGrado();
+
+  }
   
 
-    const bodyInsertar= (
+    /*const bodyInsertar= (
       
       <div className={styles.modal}>
         <h4>Registrar una Nueva Asignación</h4>
@@ -579,10 +919,10 @@ const AsignacionPersonal = () => {
         <Label>Nivel Educativo</Label>
         <Campo>
           <Select
-                    name='id_nivel'
-                    id='id_nivel'
+                    name='selectNivel'
+                    id='selectNivel'
                     value={id_nivel}
-                    onChange={actualizarState}
+                    onChange={filtrarPorNivel}
                 >
                     <option value="">--Seleccione--</option>
                     {Object.values(niveles).map(pr=>(
@@ -629,10 +969,8 @@ const AsignacionPersonal = () => {
             </Select>
         </Campo>
         <br/>
-        {/* <TextField className={styles.inputMaterial} label="DNI" onChange={actualizarState} name="dni_personal" value={dni_personal} /> */}
         <br/>
         <br/>
-        {/* <TextField type="number" className={styles.inputMaterial} label="Telefono" onChange={actualizarState} name="telefono_personal" value={telefono_personal} /> */}
         <br/><br/><br/>
         <div align="right">
           <Button color='primary' onClick={()=>submit()} >Insertar</Button>
@@ -640,6 +978,7 @@ const AsignacionPersonal = () => {
         </div>
       </div>
     )
+    */
 
       
     
@@ -664,7 +1003,6 @@ const AsignacionPersonal = () => {
 
     useEffect(()=>{
         funcion();
-        datosCargos();
         datosNiveles();
         datosPersonalE();
 
@@ -689,8 +1027,8 @@ const AsignacionPersonal = () => {
               
 
               options={{
-                    search:false,
-                    filtering:true,                    
+                    search:true,
+                    filtering:false,                    
                 }}
               
                 localization={{
@@ -705,32 +1043,28 @@ const AsignacionPersonal = () => {
           
           <div className="contenedor">
             <br/>
-            <Button className="bg-indigo-600 w-45 p-3 text-white uppercase font-bold hover:bg-slate-900 boton" label="Registrar Nueva Asignación de Personal" onClick={() => onClick('displayBasic')} />
+            <Button className="bg-indigo-600 w-full p-5 text-white uppercase font-bold hover:bg-slate-900 boton" label="Registrar Nueva Asignación de Personal" onClick={() => onClick('displayBasic')} />
                 <Dialog style={{ width: '600px' }} modal className="p-fluid" visible={displayBasic} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
                   <h6>Registrar una Nueva Asignación</h6>
                   <br/>
-                  <p style={{textAlign:"center"}}>DNI del Personal a Asignar</p>
+                  <p style={{textAlign:"center"}}><b>DNI del Personal a Asignar</b></p>
                   <Dropdown
                     value={selectedCountry}
                     options={personalE}
                     onChange={onCountryChange}
-                    optionLabel="dni_personal"
-                    filter showClear filterBy="dni_personal"
+                    optionLabel="concatenado"
+                    filter showClear filterBy="concatenado"
                     placeholder="Seleccione un Personal"
                   />
                   <br/>
-                  <p style={{textAlign:"center"}}>Datos del Personal Elegido</p>
-                  <input className="inputIzq" style={{marginRight:100,textAlign:"center"}} type="text" disabled value={selectedCountry.apellido_personal}/>
-                  <input type="text" style={{textAlign:"center"}} disabled value={selectedCountry.nombre_personal}/>
                   <br/>
-                  <br/>
-                  <Label>Nivel Educativo del Cargo</Label>
+                  <Label><b>Nivel Educativo del Cargo</b></Label>
                   <Campo>
                     <Select
                               name='id_nivel'
                               id='select'
                               value={id_nivel}
-                              onChange={actualizarState}
+                              onChange={filtrarPorNivel}
                           >
                               <option value="">--Seleccione--</option>
                               {Object.values(niveles).map(pr=>(
@@ -741,7 +1075,7 @@ const AsignacionPersonal = () => {
                       </Select>
                   </Campo>
                   <br/>
-                  <Label>Cargo/Función</Label>
+                  <Label><b>Cargo/Función</b></Label>
                   <Campo>
                     <Select
                             name='id_tipo_personal'
@@ -756,13 +1090,19 @@ const AsignacionPersonal = () => {
                     </Select>
                   </Campo>
                   <br/>
-                  <Label>Curso a Asignar / Cargo por Nivel</Label>
+                  <Label><b>Curso a Asignar / Cargo por Nivel</b></Label>
+                  <div id="divPersonalNotProfe" style={{display: "none"}}>
+                    <br/>
+                      <input disabled style={{textAlign:"center"}} type="text" name="cargoPersonal" id="cargoPersonal" />
+                    <br/>
+                    <br/>
+                  </div>
                   <Campo>
                     <Select
                               name='id_anioEduc'
                               id='id_anioEduc'
                               value={id_anioEduc}
-                              onChange={actualizarState}
+                              onChange={filtrarPorAnio}
                           >
                               <option value="">--Seleccione--</option>
                               {Object.values(anioCargo).map(pr=>(
@@ -774,24 +1114,13 @@ const AsignacionPersonal = () => {
                       </Select>
                   </Campo>
                   <div id="divMateria" name="divMateria" onChange={datosGrados} style={{display: "none"}}>
-                    <Label>Grado de la Materia</Label>
-                      <Campo>
-                        <Select
-                                name='id_grado'
-                                id='id_grado'
-                                value={id_grado}
-                                onChange={actualizarMaterias}
-                            >
-                                <option value="">--Seleccione--</option>
-                                {Object.values(grados).map(pr=>(
-                                  <option key={pr.id_grado} value={pr.id_grado}>{pr.nombre_grado}</option>
-                                ))}
-                            
-                              
-                        </Select>
-                      </Campo>
+                    <Label><b>Grado de la Materia</b></Label>
                     <br/>
-                    <Label>Materia a Asignar</Label>
+                    <br/>
+                      <input disabled style={{textAlign:"center"}} type="text" name="gradoMateria" id="gradoMateria" />
+                    <br/>
+                    <br/>
+                    <Label><b>Materia a Asignar</b></Label>
                     <Campo>
                       <Select
                                 name='id_materia'
@@ -808,21 +1137,13 @@ const AsignacionPersonal = () => {
                         </Select>
                     </Campo>
                   </div>
-                  <p>Periodo Lectivo Actual</p>
-                  <input type="number" disabled value={year}/>
+                  <p><b>Periodo Lectivo Actual</b></p>
+                  <input type="number" style={{textAlign: "center"}} disabled value={year}/>
                   <br/><br/>
                 </Dialog>
 
                 
-          </div>
-          
-          <Modal
-            open={modal}
-            onClose={abrirCerrarModalInsertar}
-          >
-            {bodyInsertar}
-          </Modal>
-              
+          </div>              
           
       </div>
                 

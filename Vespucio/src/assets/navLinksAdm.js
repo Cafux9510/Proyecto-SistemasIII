@@ -1,19 +1,5 @@
-const navLinks = [
-    {
-        path: "",
-        icon:"",
-        display:"",
-    },
-    {
-        path: "/inicio",
-        icon:"ri-home-3-line",
-        display:"Inicio",
-    },
-    {
-        path: "",
-        icon:"",
-        display:"_____1° Sprint_______",
-    },
+const navLinksAdm = [
+
     {
         path:"/TablaProveedores" ,
         icon:"ri-user-2-line",
@@ -34,11 +20,7 @@ const navLinks = [
         icon:"ri-money-dollar-box-line",
         display:"Pagos",
     },
-    {
-        path: "",
-        icon:"",
-        display:"_______2° Sprint______",
-    },
+
     {
         path:"/PersonalEducativo" ,
         icon:"ri-user-2-line",
@@ -50,11 +32,6 @@ const navLinks = [
         display:"Alumnos",
     },
     {
-        path: "",
-        icon:"",
-        display:"_______3° Sprint______",
-    },
-    {
         path:"/AsignacionPersonal" ,
         icon:"ri-filter-line",
         display:"Asignación del Personal",
@@ -64,12 +41,8 @@ const navLinks = [
         icon:"ri-filter-line",
         display:"Materias",
     },
-    {
-        path:"/EstructuraEscolar" ,
-        icon:"ri-filter-line",
-        display:"Estructura Escolar",
-    },
+
 
 ]
 
-export default navLinks;
+export default navLinksAdm;
