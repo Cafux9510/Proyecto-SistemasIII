@@ -29,7 +29,7 @@ const TopNav = () => {
       <div className="top__nav-wrapper">
         <div className="search__box">
           <input type="text" placeholder='Buscar...' />
-          <span><i class="ri-search-line"></i></span>
+          <span><i className="ri-search-line"></i></span>
         </div>
         <div className="top__nav-right">
          

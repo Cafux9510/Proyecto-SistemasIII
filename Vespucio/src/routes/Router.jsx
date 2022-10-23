@@ -21,6 +21,8 @@ import MateriaXProfesor from '../componentes/MateriaXProfesor';
 import RegistrarAsistencia from '../componentes/RegistrarAsistencia';
 
 
+import Tareas from '../componentes/Tareas';
+import CargaTareas from '../componentes/CargaTareas';
 /*HASTA ACA*/
 
 
@@ -50,6 +52,8 @@ const Router = () => {
     
 
     
+    <Route exact path="/Tareas" element={<Tareas/>}/>
+    <Route exact path="/CargaTareas" element={<CargaTareas/>}/>
     {/*HASTA ACA*/}
   </Routes>
     )

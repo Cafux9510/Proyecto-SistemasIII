@@ -253,7 +253,7 @@ const Comprobantes = () => {
         {title:"Id", field:"id_comprobante"},
         {title:"Tipo", field:"tipoComprobante.nombre_tipo"},
         {title:"Proveedor", field:"proveedores.nombre_proveedor"},
-        {title:"Movimiento", field:"tipo_movimiento"},
+        /*{title:"Movimiento", field:"tipo_movimiento"},*/
         {title:"Numero", field:"numero_comprobante"},
         {title:"Fecha Emision",field:"fecha_emision"},
         {title:"Valor total",field:"total_comprobante"},
@@ -292,7 +292,7 @@ const Comprobantes = () => {
   }
 
   const abrirCerrarDialog=()=>{
-    if(tipo_comprobante.trim() ==="" || proveedor_comprobante.trim() ==="" || tipo_movimiento.trim()==="" || numero_comprobante.trim() ==="" || fecha_emision.trim() ==="" || total_comprobante.trim() ===""){
+    if(tipo_comprobante.trim() ==="" || proveedor_comprobante.trim() ==="" || numero_comprobante.trim() ==="" || fecha_emision.trim() ==="" || total_comprobante.trim() ===""){
         guardarError(true)
 
         setTimeout(()=>{
@@ -361,13 +361,13 @@ const Comprobantes = () => {
         <br/>
         <br/>
         <br/>
-        <Label>Tipo Movimiento</Label>
+        {/*<Label>Tipo Movimiento</Label>
         <Select name="tipo_movimiento" value={tipo_movimiento} onChange={actualizarState}>
           <option value="">--Seleccione--</option>
           <option value="Ingreso">Ingreso</option>
           <option value="Egreso">Egreso</option>
 
-        </Select>
+        </Select>*/}
         <br/>
         <br/>
         <TextField type="number" className={styles.inputMaterial} label="Monto Total" onChange={actualizarState} name="total_comprobante" value={total_comprobante} />
@@ -424,13 +424,13 @@ const Comprobantes = () => {
         <br/>
         <br/>
         <br/>
-        <Label>Tipo Movimiento</Label>
+        {/*<Label>Tipo Movimiento</Label>
         <Select name="tipo_movimiento" value={comprobante&&tipo_movimiento} onChange={actualizarState}>
           <option value="">--Seleccione--</option>
           <option value="Ingreso">Ingreso</option>
           <option value="Egreso">Egreso</option>
 
-        </Select>
+        </Select>*/}
         <br/>
         <br/>
         <input type="file"  name='input=file' id='selectArchivo'/>
@@ -464,7 +464,6 @@ const Comprobantes = () => {
     }
 
     const seleccionarProveedor = (id_comprobante,caso)=>{
-      console.log(id_comprobante)
       setComprobante(id_comprobante);
       (caso === "Editar")&&abrirCerrarModalEditar();
     }

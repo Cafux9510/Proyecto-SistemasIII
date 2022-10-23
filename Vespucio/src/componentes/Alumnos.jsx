@@ -37,7 +37,7 @@ const Campo= styled.div`
 const useStyles = makeStyles((theme)=>({
   modal:{
     position:"absolute",
-    width:400,
+    width:530,
     backgroundColor: theme.palette.background.paper,
     border: "2px solid #000",
     boxShadow: theme.shadows[5],
@@ -62,19 +62,27 @@ const Alumnos = () => {
     const[modal,insertarModal]=useState(false)
     const [modalEditar, setModalEditar]= useState(false);
     const [modalRegPago, setModalRegPago]= useState(false);
+
+    var currentTime = new Date();
+    var year = currentTime.getFullYear()
+
     const[alumnos,alumnoAgregado]=useState({
         id_anioEduc:'',
+        id_nivel:'',
         nombre_alumno:'',
         telefono_alumno:'',
         mail_alumno:'',
         domicilio_alumno:'',
         dni_alumno:'',
         apellido_alumno:'',
-        id_nivel:'',
+        id_alumno:'',
+        id_cuota: '',
+        valorPagado_cuota:'',
+        metodoPago_cuota:'',
+        numMes_cuota:'',
+        periodo_lectivo:year,
     })
-
-
-   
+ 
     //Funciones que tienen datos desde una api
     const funcion = async()=>{
         try {
@@ -85,6 +93,7 @@ const Alumnos = () => {
             anioEducativo(
               nombre_anioEduc,
               id_nivel(
+                id_nivel,
                 nombre_nivel
               )
             )
@@ -108,7 +117,23 @@ const Alumnos = () => {
       }
     }
 
-    const{id_anioEduc,nombre_alumno,telefono_alumno,mail_alumno,domicilio_alumno,dni_alumno,apellido_alumno,id_nivel}=alumnos;
+    const{id_anioEduc,id_nivel,nombre_alumno,telefono_alumno,mail_alumno,domicilio_alumno,dni_alumno,apellido_alumno,
+      id_cuota,valorPagado_cuota,metodoPago_cuota,numMes_cuota,periodo_lectivo}=alumnos;
+
+
+    const registrarPago=async() =>{
+      const result7 = await supabase.from("cobranzas").insert([
+        {
+          id_alumno,
+          id_cuota,
+          valorPagado_cuota,
+          metodoPago_cuota,
+          numMes_cuota,
+          periodo_lectivo
+        },
+      ]);
+      window.location.reload();
+    }
 
     const update2=async(id_alumno)=>{
       try {
@@ -220,7 +245,7 @@ const Alumnos = () => {
       .select();
   
       setNiveles(result.data)
-      return result.data
+      
     }
     const[categorias,setCategorias]=useState({}) 
 
@@ -275,11 +300,114 @@ const Alumnos = () => {
           setCategorias(result.data)
         }
         datos();
-      }
-        
+      }  
+    }
+
+    const cargarDatos=async(alumno)=>{
+      let nombreNivel = alumno.anioEducativo.id_nivel.nombre_nivel;
+      let idAlumno = alumno.id_alumno;
+
+      //Voy a buscar el nombre de la cuota, segun el nivel del alumno
+
+      const result = await supabase
+        .from("nivelesEducativos")
+        .select("id_nivel")
+        .eq("nombre_nivel",nombreNivel);
+
+      let idNivel = result.data[0].id_nivel;
+
+      const result2 = await supabase
+        .from("cuotas")
+        .select("nombre_cuota")
+        .eq("id_nivel",idNivel);
+
+      var selection = document.getElementById("cuotaNivel");
+      selection.value = result2.data[0].nombre_cuota;
+
+      //A partir de aca voy a buscar el valor de la cuota
+
+      const result3 = await supabase
+        .from("cobranzas")
+        .select("id_cobro, numMes_cuota")
+        .eq("id_alumno",idAlumno)
+        .eq("periodo_lectivo",year);
       
+      if(result3.data.length !== 0){
+
+        let cobrosMayMin = result3.data.sort(((a, b) => b.numMes_cuota - a.numMes_cuota));
+
+        if(cobrosMayMin[0].numMes_cuota !== 12){
+
+          let idUltCobro = cobrosMayMin[0].id_cobro
+  
+          const result4 = await supabase
+            .from("cobranzas")
+            .select("id_cuota, numMes_cuota, periodo_lectivo")
+            .eq("id_cobro", idUltCobro);
+    
+          let ultMesPagado = result4.data[0].numMes_cuota;
+          let idCuota = result4.data[0].id_cuota;
+          let proxMes = ultMesPagado+1;
+    
+          const result5 = await supabase
+            .from("meses")
+            .select("nombre_mes")
+            .eq("numero_mes",proxMes);
+    
+          const result6 = await supabase
+            .from("cuotas")
+            .select("valor_cuota")
+            .eq("id_cuota",idCuota);
+    
+    
+          var selection2 = document.getElementById("cuotaDisponible");
+          var valorCuota = result6.data[0].valor_cuota
+          selection2.value = result5.data[0].nombre_mes+"/"+result4.data[0].periodo_lectivo+" - $"+valorCuota; 
+    
+          alumnoAgregado({
+            id_alumno:idAlumno,
+            id_cuota:idCuota,
+            valorPagado_cuota:valorCuota,
+            metodoPago_cuota,
+            numMes_cuota:proxMes,
+            periodo_lectivo,
+          })
+
+        }else{
+          var selection2 = document.getElementById("cuotaDisponible");
+          selection2.value = "Todas las cuotas del Periodo Lectivo "+year+" están abonadas.";
+          var divBoton = document.getElementById('botReg');
+          divBoton.style.display = 'none';
+
+        }
 
         
+
+      }else{
+
+        const result6 = await supabase
+          .from("cuotas")
+          .select("valor_cuota")
+          .eq("id_cuota",idNivel);
+
+        var selection2 = document.getElementById("cuotaDisponible");
+        var valorCuota = result6.data[0].valor_cuota
+        selection2.value = "Enero"+"/"+year+" - $"+valorCuota;
+
+        alumnoAgregado({
+          id_alumno:idAlumno,
+          id_cuota:idNivel,
+          valorPagado_cuota:valorCuota,
+          metodoPago_cuota,
+          numMes_cuota:1,
+          periodo_lectivo,
+        })
+
+      }
+     
+
+
+
     }
 
 
@@ -367,6 +495,42 @@ const Alumnos = () => {
         <TextField className={styles.inputMaterial} label="DNI" onChange={actualizarState} name="dni_alumno" value={alumnos&&dni_alumno} />
         <br/>
         <br/>
+        <Label>Nivel Educativo</Label>
+        <Campo>
+          <Select
+                    name='id_nivel'
+                    id='id_nivel'
+                    value={alumnos&&id_nivel}
+                    onChange={filtrarAnios}
+                >
+                    <option value="">--Seleccione--</option>
+                    {Object.values(niveles).map(pr=>(
+                      <option key={pr.id_nivel} value={pr.id_nivel}>{pr.nombre_nivel}</option>
+                    ))}
+                
+                    
+                  
+            </Select>
+        </Campo>
+        <br/>
+        <Label>Año a Cursar</Label>
+        <br/>
+        <Campo>
+          <Select
+                    name='id_anioEduc'
+                    value={alumnos&&id_anioEduc}
+                    onChange={actualizarState}
+                >
+                    <option value="">--Seleccione--</option>
+                    {Object.values(categorias).map(pr=>(
+                      <option key={pr.id_anioEduc} value={pr.id_anioEduc}>{pr.nombre_anioEduc}</option>
+                    ))}
+                
+                    
+                  
+            </Select>
+        </Campo>
+        <br/>
         <TextField type="number" className={styles.inputMaterial} label="Telefono" onChange={actualizarState} name="telefono_alumno" value={alumnos&&telefono_alumno} />
         <br/>
         <br/>
@@ -384,60 +548,55 @@ const Alumnos = () => {
     )
     const bodyRegistrarPago= (
       <div className={styles.modal}>
-        <h4>Registrar Pago Alumno</h4>        
-        <TextField className={styles.inputMaterial} label="Nombre" onChange={actualizarState} name="nombre_alumno" value={alumnos&&nombre_alumno} />
+        <h4>Registrar Pago Alumno</h4>
+        <br/> 
+        <label><b>Nombre del Alumno</b></label>
+        <br/>
+        <TextField className={styles.inputMaterial} disabled onChange={actualizarState} name="nombre_alumno" value={alumnos&&nombre_alumno} />
+        <br/><br/>
+        <label><b>Apellido del Alumno</b></label>
+        <br/>
+        <TextField className={styles.inputMaterial} disabled onChange={actualizarState} name="apellido_alumno" value={alumnos&&apellido_alumno} />
+        <br/><br/>
+        <label><b>DNI del Alumno</b></label>
+        <br/>
+        <TextField type="text" className={styles.inputMaterial} disabled onChange={actualizarState} name="dni_alumno" value={alumnos&&dni_alumno} />
         <br/>
         <br/>
-        <TextField className={styles.inputMaterial} label="Apellido" onChange={actualizarState} name="apellido_alumno" value={alumnos&&apellido_alumno} />
+        <label><b>Tipo de Cuota</b></label>
         <br/>
-        <br/>
-        <TextField type="email" className={styles.inputMaterial} label="Email" onChange={actualizarState} name="mail_alumno" value={alumnos&&mail_alumno} />
-        <br/>
-        <br/>
-        <label>Curso del Alumno</label>
-        <br/>
+        <TextField className={styles.inputMaterial} disabled onChange={actualizarState} id="cuotaNivel" name="cuotaNivel"/>     
+        <br/><br/>
+        <label><b>Mes Disponible a Pagar</b></label>
+        <TextField className={styles.inputMaterial} disabled onChange={actualizarState} id="cuotaDisponible" name="cuotaDisponible"/>     
+        <br/><br/>
+        <label><b>Metodo de Pago</b></label>
         <Campo>
           <Select
-                    name='id_anioEduc'
-                    value={id_anioEduc}
+                    name='metodoPago_cuota'
+                    value={metodoPago_cuota}
                     onChange={actualizarState}
                 >
-                    <option value="">--Seleccione--</option>
-                    <option value="">Jardin</option>
-                    <option value="">Primaria</option>
-                    <option value="">Secundaria</option>             
-          </Select>
-        </Campo>
-      
-        <label>Mes a Pagar</label>
-        <Campo>
-          <Select
-                    name='id_anioEduc'
-                    value={id_anioEduc}
-                    onChange={actualizarState}
-                >
-                    <option value="">--Seleccione--</option>
-                    <option value="">--Enero--</option>
-                    <option value="">--Febrero--</option>             
-          </Select>
-        </Campo>
-        <label>Metodo de Pago</label>
-        <Campo>
-          <Select
-                    name='id_anioEduc'
-                    value={id_anioEduc}
-                    onChange={actualizarState}
-                >
-                    <option value="">--Seleccione--</option>
-                    <option value="">--Efectivo--</option>
-                    <option value="">--Debito--</option>             
+                    <option value="0">--Seleccione--</option>
+                    <option value="Transferencia">Transferencia</option>
+                    <option value="Debito">Debito</option>
+                    <option value="Efectivo">Efectivo</option>               
           </Select>
         </Campo>
      
+        <p><b>Periodo Lectivo Actual</b></p>
+                  <input type="number" style={{textAlign: "center"}} disabled value={year}/>
+                  <br/>
         <br/><br/>
+
         <div align="right">
-          <Button onClick={()=>update2(id_alumno)} color='primary'>Registrar Pago</Button>
-          <Button onClick={()=>abrirCerrarModalRegPago()}>Cancelar</Button>
+          <div id="botReg">
+            <Button onClick={()=>registrarPago()} color='primary'>Registrar Cobro</Button>
+          </div>
+          <br/>
+          <div>
+            <Button onClick={()=>abrirCerrarModalPagar()}>Cancelar</Button>
+          </div>
         </div>
       </div>
     )
@@ -445,24 +604,32 @@ const Alumnos = () => {
     //Funciones
     const abrirCerrarModalInsertar= ()=>{
       insertarModal(!modal)
-      console.log(data)
     }
 
     const abrirCerrarModalEditar= ()=>{
       setModalEditar(!modalEditar)
     }
-    const abrirCerrarModalRegPago= ()=>{
+
+    const abrirCerrarModalPagar= ()=>{
       setModalRegPago(!modalRegPago)
+    
+    }
+
+    const abrirCerrarModalRegPago= (alumno,caso)=>{
+      alumnoAgregado(alumno);
+      (caso === "Pagar")&&abrirCerrarModalPagar();
+      cargarDatos(alumno);
+
     }
 
     const abrirCerrarModalEditar2= ()=>{
       setModalEditar(!modalEditar)
       alumnoAgregado({})
-      console.log(alumnos.anioEducativo.id_nivel.nombre_nivel)
     }
 
     const seleccionarAlumno = (alumno,caso)=>{
-        alumnoAgregado(alumno);
+      console.log(alumno)
+        alumnoAgregado(alumno);     
       (caso === "Editar")&&abrirCerrarModalEditar();
     }
 
@@ -496,7 +663,7 @@ const Alumnos = () => {
                   {
                     icon: ()=> <MonetizationOnIcon/>,
                     tooltip:"Registrar Pago",
-                    onClick: (event,rowData)=>abrirCerrarModalRegPago(rowData)
+                    onClick: (event,rowData)=>abrirCerrarModalRegPago(rowData,"Pagar")
                   }
                   
               ]}

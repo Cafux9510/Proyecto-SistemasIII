@@ -18,7 +18,7 @@ const Sidebar = () => {
     <div className="sidebar">
         <div className="sidebar__top">
             <h3>
-               <span><i class="ri-vimeo-line"></i></span> Colegio Americo Vespucio
+               <span><i className="ri-vimeo-line"></i></span> Colegio Americo Vespucio
             </h3>
         </div>
         <div className="sidebar__content">
