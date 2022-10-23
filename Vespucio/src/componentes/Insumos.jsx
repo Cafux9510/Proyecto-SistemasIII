@@ -19,7 +19,9 @@ const Label = styled.label`
 `;
 
 const Main = styled.div `
-  margin-top: 7%
+
+  margin-top: 2%;
+  width:70em;
 `;
 
 const Select = styled.select`

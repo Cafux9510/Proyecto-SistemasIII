@@ -15,8 +15,8 @@ const Label = styled.label`
 `;
 
 const Main = styled.div `
-  margin-top: 7%;
-  width:97%;
+  margin-top: 0;
+  width:65em;
   margin-left:1%;
 
 `;

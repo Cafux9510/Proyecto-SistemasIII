@@ -3,6 +3,7 @@ import Router from '../routes/Router'
 import Sidebar from './Sidebar'
 import TopNav from './TopNav'
 import "../estilos/estilos.css";
+import "../estilos/sidebar.css";
 
 
 

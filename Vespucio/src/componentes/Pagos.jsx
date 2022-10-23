@@ -20,7 +20,8 @@ const Label = styled.label`
 `;
 
 const Main = styled.div `
-  margin-top: 7%
+  margin-top: 7%;
+  width:70em;
 `;
 
 const Select = styled.select`

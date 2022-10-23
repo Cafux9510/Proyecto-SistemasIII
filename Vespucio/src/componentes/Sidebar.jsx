@@ -15,7 +15,7 @@ const Sidebar = () => {
     const[open4, setOpen4]=useState(false)
 
   return (
-    <div className="sidebar">
+    <div className="sidebar show">
         <div className="sidebar__top">
             <h3>
                <span><i className="ri-vimeo-line"></i></span> Colegio Americo Vespucio
