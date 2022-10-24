@@ -19,6 +19,7 @@ import LoginTemporal from '../componentes/LoginTemporal';
 import { GestionMateriasProfesor } from '../componentes/GestionMateriasProfesor';
 import MateriaXProfesor from '../componentes/MateriaXProfesor';
 import RegistrarAsistencia from '../componentes/RegistrarAsistencia';
+import AsistenciaXCurso from '../componentes/AsistenciaXCurso';
 
 
 import Tareas from '../componentes/Tareas';
@@ -49,6 +50,7 @@ const Router = () => {
     <Route exact path="/GestionMateriasProfesor" element={<GestionMateriasProfesor/>}/>
     <Route exact path="/MateriaXProfesor" element={<MateriaXProfesor/>}/>
     <Route exact path="/RegistrarAsistencia" element={<RegistrarAsistencia/>}/>
+    <Route exact path="/AsistenciaXCurso" element={<AsistenciaXCurso/>}/>
     
 
     

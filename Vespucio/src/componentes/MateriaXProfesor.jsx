@@ -22,18 +22,23 @@ const Main = styled.div `
   width: 78vw;
   overflow:hidden;
 `;
+const Datos= styled.div`
+    width:100%;
+    display:flex;
+    justify-content:space-evenly
+ `;
 const Container = styled.div `
   display:flex;
   width:100%;
   height:100%;
 `;
-const Titulo = styled.h1`
-    color:#6366F1;
-    text-decoration:underline;
-    margin-top:20px;
-    margin-left:30%;
+// const Titulo = styled.h1`
+//     color:#6366F1;
+//     text-decoration:underline;
+//     margin-top:20px;
+//     margin-left:30%;
     
-`;
+// `;
 const Tabla = styled.div `
   width:70%;
 `;
@@ -225,10 +230,35 @@ const MateriaXProfesor = () => {
 
   return (
     <Main>
-        <Titulo>CURSO</Titulo>
-        <h2>profesor</h2>
-        <h2>horarios</h2>   
-        <h3>fecha</h3>
+        <h1>Gestión de Curso</h1>
+        <br />
+        <Datos>
+        <TextField
+          id="outlined-read-only-input"
+          label="Curso"
+          defaultValue="5° A"
+          InputProps={{
+            readOnly: true,
+          }}
+        />
+        <TextField
+          id="outlined-read-only-input"
+          label="Ciclo Lectivo"
+          defaultValue="2022"
+          InputProps={{
+            readOnly: true,
+          }}
+        />
+        <TextField
+          id="outlined-read-only-input"
+          label="Fecha"
+          defaultValue="La de hoy ah"
+          InputProps={{
+            readOnly: true,
+          }}
+        />
+        </Datos> 
+        <br />
         <br />
         <Container>
             <Tabla>
