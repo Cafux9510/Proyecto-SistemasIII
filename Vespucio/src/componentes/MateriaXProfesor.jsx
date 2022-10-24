@@ -9,12 +9,17 @@ import styled from '@emotion/styled'
 import { Link } from "react-router-dom";
 import { Toast } from 'primereact/toast';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
+import{useNavigate} from "react-router-dom";
+
 
 
 const Label = styled.label`
     flex: 0 0 100px;
     text-align:center;
 
+`;
+const Titulo = styled.h1`
+  margin-left:12px;
 `;
 const Main = styled.div `
   margin-top:7%;
@@ -84,6 +89,8 @@ const useStyles = makeStyles((theme)=>({
 }))
 
 const MateriaXProfesor = () => {
+
+  const navigate=useNavigate();
     //Statest
     const [data,setData]=useState([])
     const[modal,insertarModal]=useState(false)
@@ -213,7 +220,7 @@ const MateriaXProfesor = () => {
 
     return (
     <Main>
-        <h1>Gestión de Curso</h1>
+        <Titulo>Gestión de Curso</Titulo>
         <br />
         <Datos>
         <TextField
@@ -273,7 +280,7 @@ const MateriaXProfesor = () => {
                 <Button className="itemBoton" variant="contained" startIcon={<MenuBookIcon />}>
                     Calificar Tarea
                 </Button>
-                <Button className="itemBoton" variant="outlined" startIcon={<MenuBookIcon />}>
+                <Button className="itemBoton" onClick={()=>navigate('/GestionMateriasProfesor')} variant="outlined" startIcon={<MenuBookIcon />}>
                     Volver Atrás
                 </Button>
             </BotonesAccion>
