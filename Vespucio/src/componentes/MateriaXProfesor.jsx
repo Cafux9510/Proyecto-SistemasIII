@@ -10,6 +10,7 @@ import { Link } from "react-router-dom";
 import { Toast } from 'primereact/toast';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 
+
 const Label = styled.label`
     flex: 0 0 100px;
     text-align:center;
@@ -22,17 +23,15 @@ const Main = styled.div `
   width: 78vw;
   overflow:hidden;
 `;
+const Datos= styled.div`
+    width:100%;
+    display:flex;
+    justify-content:space-evenly
+ `;
 const Container = styled.div `
   display:flex;
   width:100%;
   height:100%;
-`;
-const Titulo = styled.h1`
-    color:#6366F1;
-    text-decoration:underline;
-    margin-top:20px;
-    margin-left:30%;
-    
 `;
 const Tabla = styled.div `
   width:70%;
@@ -63,7 +62,6 @@ const Campo= styled.div`
     align-items:center;
 `;
 
-
 const useStyles = makeStyles((theme)=>({
   modal:{
     position:"absolute",
@@ -85,7 +83,6 @@ const useStyles = makeStyles((theme)=>({
 
 }))
 
-
 const MateriaXProfesor = () => {
     //Statest
     const [data,setData]=useState([])
@@ -100,7 +97,6 @@ const MateriaXProfesor = () => {
         dni_personal:'',
     })
     const toast = useRef(null);
-
 
    
     //Funciones que tienen datos desde una api
@@ -143,7 +139,6 @@ const MateriaXProfesor = () => {
         .update({nombre_personal,telefono_personal,mail_personal,domicilio_personal,apellido_personal,dni_personal})
         .eq("id_personal",id_personal)
         funcion()
-
 
         const arrayProveedores = data.map((prove)=>{
           if(prove.id_personal === id_personal ){
@@ -190,7 +185,6 @@ const MateriaXProfesor = () => {
       }
     }
 
-
     //Configuracion del 
     const columnas=[
         {title:"Nombre", field:"nombre_personal"},
@@ -199,7 +193,6 @@ const MateriaXProfesor = () => {
         {title:"TPs Entregados", field:"mail_personal"},
         {title:"Porcentaje de Asistencia", field:"mail_personal"},
       ]
-
 
 
     //Estilos
@@ -212,23 +205,43 @@ const MateriaXProfesor = () => {
   }
 
 
-
     
-
 
     const {id_personal}=personal;
 
-
-
     //Funciones
 
-
-  return (
+    return (
     <Main>
-        <Titulo>CURSO</Titulo>
-        <h2>profesor</h2>
-        <h2>horarios</h2>   
-        <h3>fecha</h3>
+        <h1>Gestión de Curso</h1>
+        <br />
+        <Datos>
+        <TextField
+          id="outlined-read-only-input"
+          label="Curso"
+          defaultValue="5° A"
+          InputProps={{
+            readOnly: true,
+          }}
+        />
+        <TextField
+          id="outlined-read-only-input"
+          label="Ciclo Lectivo"
+          defaultValue="2022"
+          InputProps={{
+            readOnly: true,
+          }}
+        />
+        <TextField
+          id="outlined-read-only-input"
+          label="Fecha"
+          defaultValue="La de hoy ah"
+          InputProps={{
+            readOnly: true,
+          }}
+        />
+        </Datos> 
+        <br />
         <br />
         <Container>
             <Tabla>
@@ -273,7 +286,6 @@ const MateriaXProfesor = () => {
     </Main>
   )
 }
-
 
  
 export default MateriaXProfesor
