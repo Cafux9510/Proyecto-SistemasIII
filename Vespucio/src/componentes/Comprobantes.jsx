@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 import {DataTable} from "primereact/datatable";
 import { Column } from 'primereact/column';
 import {Dropdown} from "primereact/dropdown";
+import { Calendar } from 'primereact/calendar';
 import createPalette from "@material-ui/core/styles/createPalette";
 
 const Label = styled.label`
@@ -238,6 +239,15 @@ const Comprobantes = () => {
       });
     }
 
+    useEffect(()=>{
+        funcion();
+        datos();
+        dato();
+        lineaComprobante();
+        buscarTotales()
+    },[])
+   
+
     const[lineaComprobantes, setLineaComprobante]=useState([])
 
     const lineaComprobante= async()=>{
@@ -322,8 +332,13 @@ const Comprobantes = () => {
   }
   const eliminarDialog=()=>{
     setDialog(false)
+    setComprobante({})
+    setDetalles([])
   }
 
+  const mostrarDialog=()=>{
+    setDialog(true)
+  }
   const volverAnterior=()=>{
     eliminarDialog()
     insertarModal(true)
@@ -334,7 +349,7 @@ const Comprobantes = () => {
         <h4>Agregar Nuevo Comprobante</h4>
         {error ? <Error>Todos los campos son obligatorios</Error>:null}
         <br/>
-        <Campo>
+        <Campo>Label
         <Label>Tipo Comprobante</Label>
           <Select
                     name='tipo_comprobante'
@@ -472,25 +487,20 @@ const Comprobantes = () => {
       setModalEditar(!modalEditar)
     }
 
-    const seleccionarProveedor = (id_comprobante,caso)=>{
-      console.log(id_comprobante)
-      setComprobante(id_comprobante);
-      (caso === "Editar")&&abrirCerrarModalEditar();
+    const editProduct = (comprobante)=>{
+      console.log(comprobante)
+      const details= subTotal.filter(linea=> linea.id_comprobante === comprobante.id_comprobante);
+      console.log(details)
+      setComprobante({...comprobante})
+      setDetalles([...details])
+      setDialog(true)
     }
 
-    useEffect(()=>{
-        funcion();
-        datos();
-        dato();
-        lineaComprobante();
-        buscarTotales()
-    },[])
-   
     const productDialogFooter = (
-      <React.Fragment>
-          <Button label="Volver" icon="pi pi-times" className="p-button-text" onClick={volverAnterior} />
-          <Button label="Registrar Comprobante" icon="pi pi-check" className="p-button-text" onClick={submit}/>
-      </React.Fragment>
+        <React.Fragment>
+          <Button label="Cancelar" icon="pi pi-times" className="p-button-text" onClick={eliminarDialog} />
+          <Button label="Guardar" icon="pi pi-check" className="p-button-text" />
+        </React.Fragment>
     );
 
     //Funciones para agregar datos a la tabla de detalles fiumba
@@ -581,10 +591,7 @@ const mostrarFactura=(comprobante)=>{
   setDialogFactura(true)
 }
 
-const hideDialog= ()=>{
-  setDialogFactura(false)
-  setComprobante({})
-}
+
 
   return (
   
@@ -604,7 +611,7 @@ const hideDialog= ()=>{
                 {
                     icon:"edit",
                     tooltip:"Modificar",
-                    onClick: (event,rowData)=>seleccionarProveedor(rowData,"Editar")
+                    onClick: (event,rowData)=>editProduct(rowData)
                 },
                 {
                     icon:"delete",
@@ -652,75 +659,68 @@ const hideDialog= ()=>{
         
 
         {/*MODAL DEL DETALLE AGREGADO ESTO ES NUEVO FRANCO PAAAA*/}
-        <Dialog visible={dialog} header="Detalle" style={{ width: '600px' }} modal className="p-fluid" onHide={eliminarDialog} footer={productDialogFooter}>
-          <div className="field mb-4">
-              <Dropdown name="id_articulo" optionLabel="nombre_producto" optionValue="id_producto" value={detalle.id_articulo || ""} options={articulos} onChange={seleccionArticulo} placeholder="Seleccione articulo"/>
-          </div>
-          <div className="field mb-4">
+        <Dialog header={comprobante["id_comprobante"] ? "Editar Datos Comprobantes":"Agregar Comprobante"} visible={dialog} style={{ width: '700px' }} modal className="p-fluid" footer={productDialogFooter}   onHide={eliminarDialog}>
+          <div className='grid'>
+            <div className='col'>
+                <div className='field flex gap-2 mb-4'>
+                <label className='flex-initial flex align-items-center'>Tipo Comprobante</label>
+                    <Dropdown name="tipo_comprobante" className='w-12 border-500' optionValue="id_tipo" onChange={actualizarState} value={comprobante.tipo_comprobante || ""} optionLabel="nombre_tipo" placeholder="Seleccione Comprobante" options={tipo}/>
+                </div>
+                
+                <div className='field flex gap-2 mb-4'>
+                <label className='flex-initial flex align-items-center'>Nombre Proveedor</label>
+                  <Dropdown name="proveedor_comprobante" className='w-12  border-500' optionValue="id_proveedor"  optionLabel="nombre_proveedor" onChange={actualizarState} value={comprobante.proveedor_comprobante} options={pro} placeholder="Seleccionar Proveedor"/>
+                </div>
+                <div className='field mb-4'>
+                  <InputText name="numero_comprobante" placeholder='N° Comprobante' value={comprobante.numero_comprobante || ""} onChange={actualizarState}  required autoFocus type="number"/>
+                </div>
+                <div className='field mb-4'>
+                  <Calendar name="fecha_emision" placeholder='Fecha' value={comprobante.fecha_emision || ""} onChange={actualizarState} showIcon />
+              </div>
+              <div className='field'>
+                <InputText name="total_comprobante" required placeholder='Monto Total' value={comprobante.total_comprobante || ""} onChange={actualizarState} autoFocus type="number"/>
+              </div>
+            </div>
+
+            <div className='col'>
+              <div className='field flex gap-2 mb-4'>
+                <Dropdown name="id_articulo" className='w-12  border-500' optionLabel="nombre_producto" optionValue="id_producto" value={detalle.id_articulo || ""} options={articulos} onChange={seleccionArticulo} placeholder="Seleccione articulo"/>
+              </div>
+
+              <div className='field flex gap-2 mb-4'>
                 <InputText name="cantidad_articulo" type="number"  value={detalle.cantidad_articulo || ""} onChange={actualizarStateDetalle} placeholder="Cantidad" required autoFocus />  
-          </div>
+              </div>
 
-            <div className="field mb-4">
+              <div className='field flex gap-2 mb-4'>
                 <InputText name="precio_unitario" value={detalle.precio_unitario || ""} type="number" onChange={actualizarStateDetalle} placeholder="precio unitario"  />  
+              </div>
+
+              <div className="field mb-4">
+                <InputText className='w-12' name='input=file' id='selectArchivo' type='file' />
+                {comprobante["id_comprobante"]? <a href={comprobante&&link_archivo} target="_blank"><b>Previsualización del Archivo Subido</b></a> :null}
+              </div>
+              <div className="field w-min mb-4 m-auto">
+                <Button className="w-15 "  onClick={agregarDatos}>Agregar</Button> 
+              </div>
             </div>
 
-            <div className="field mb-4">
-              <InputText   name='input=file' id='selectArchivo'  type='file' />
+              <div className="field m-auto">
+                <DataTable  value={detalles} showGridlines >
+                    <Column className='p-3' field="nombre_producto" header="Nombre Articulo"></Column>
+                    <Column className='p-3' field="cantidad_articulo" header="Cantidad"></Column>
+                    <Column className='p-3' field="precio_unitario" header="Precio Unitario"></Column>
+                    <Column className='p-3' field="SubTotal" header="Subtotal"></Column>
+                    <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
+                </DataTable>
             </div>
-            <div className="field w-min mb-4 ">
-                <Button onClick={agregarDatos} className="w-15 ">Agregar</Button> 
-            </div>
-          <DataTable value={detalles} showGridlines >
-              <Column field="nombre_producto" header="Nombre Articulo"></Column>
-              <Column field="cantidad_articulo" header="Cantidad"></Column>
-              <Column field="precio_unitario" header="Precio Unitario"></Column>
-              <Column field="SubTotal" header="Subtotal"></Column>
-              <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }} header="Acciones"></Column>
-          </DataTable>
-          <p>
-              <span>Total</span> {totales}
-          </p>
-        </Dialog>
-        <Dialog visible={dialogFactura} style={{ width: '600px' }} header="DETALLES" onHide={hideDialog}> 
-          <div class="grid">
-              <div class="col">
-                  <div className="field mb-4">
-                      <Label>Nombre Proveedor</Label>
-                      <InputText type="text" disabled value={comprobante.proveedor}/>
-                  </div>
-
-                <div className="field mb-4">
-                  <Label>Fecha Emision</Label>
-                  <InputText type="text" disabled value={comprobante.fecha_emision}/>
-                </div>
-              </div>
-              <div class="col">
-                <div className="field mb-4">
-                  <Label>Tipo Comprobante</Label>
-                  <InputText type="text" disabled value={comprobante.tipo_comprobante}/>
-                </div>
-                <div className="field mb-4">
-                  <Label>Numero Comprobante</Label>
-                  <InputText type="text" disabled value={comprobante.numero_comprobante}/>
-                </div>
-              </div>
           </div>
-          <div className="field mb-4 text-center">
-              <Label className="text-3xl font-semibold">Cliente:Colegio Americo Vespucio</Label>
-              <DataTable value={detalles} showGridlines >
-                  <Column field="nombre_producto" header="Nombre Articulo"></Column>
-                  <Column field="cantidad_articulo" header="Cantidad"></Column>
-                  <Column field="precio_unitario" header="Precio Unitario"></Column>
-                  <Column field="total" header="Subtotal"></Column>
-              </DataTable>
-          <p>
-              <span>Total</span> 
-          </p>
+          <div>
+            <label className="text-2xl uppercase">Total: <span>{totales}</span></label>
           </div>
         </Dialog>
         <div className="contenedor">
           <br/>
-          <button className="bg-indigo-600 w-45 p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Comprobante</button>
+          <button className="bg-indigo-600 w-45 p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={mostrarDialog}>Registrar Nuevo Comprobante</button>
           <Link to='/CategoriasComprobantes'>
             <button className="bg-indigo-600 w-45 p-3 text-white uppercase font-bold hover:bg-slate-700 boton">Ver Tipos de Comprobantes</button>          
           </Link>

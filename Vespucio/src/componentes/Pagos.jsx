@@ -269,6 +269,12 @@ const Pagos = () => {
     
   }
 
+    useEffect(()=>{
+        funcion();
+        pago();
+        dato();
+        compro();
+   },[])
 
   const[comprobantes,setComprabantes]=useState([]);
   const compro= async()=>{
@@ -415,46 +421,36 @@ const Pagos = () => {
       setModalEditar(!modalEditar)
     }
 
-    const seleccionarPagos = (pagos,caso)=>{
+    const seleccionarPagos = (pagos)=>{
+      console.log(pagos)
+      console.log(lineaPago)
+      const detalis=lineaPago.filter(pago=>pago.id_pago == pagos.id_pago);
+      console.log(detalis)
       setPagos(pagos);
-      (caso === "Editar")&&abrirCerrarModalEditar();
+      setCobros([...detalis])
+      setDialog(true)
+     
     }
 
-    useEffect(()=>{
-        funcion();
-        dato();
-        compro();
-        pago();
-    },[])
 
     //Nuevo
 
-    const volverAnterior=()=>{
-      eliminarDialog()
-      insertarModal(true)
+    
+    const eliminarDialog=()=>{
+      setDialog(false)
+      setPagos({})
+      setComprobantes2({})
+      setCobro({})
+      setCobros([])
     }
     const productDialogFooter = (
       <React.Fragment>
-          <Button label="Volver" icon="pi pi-times" className="p-button-text" onClick={volverAnterior} />
+          <Button label="Cancelar" icon="pi pi-times" className="p-button-text" onClick={eliminarDialog} />
           <Button label="Registrar Pago" icon="pi pi-check" className="p-button-text" onClick={submit}/>
       </React.Fragment>
     );
     const abrirCerrarDialog=()=>{
-      if(numero_pago.trim()===""|| proveedor_pago.trim()===""||fecha_emision.trim()===""|| total_pago.trim()===""){
-        guardarError(true)
-
-        setTimeout(()=>{
-          guardarError(false)
-        },3000)
-        return;
-      }
-      guardarError(false);
-      abrirCerrarModalInsertar();
       setDialog(true);
-    }
-
-    const eliminarDialog=()=>{
-      setDialog(false)
     }
 
     const actionBodyTemplate = (rowData) => {
@@ -516,7 +512,7 @@ const Pagos = () => {
                 {
                     icon:"edit",
                     tooltip:"Modificar",
-                    onClick: (event,rowData)=>seleccionarPagos(rowData,"Editar")
+                    onClick: (event,rowData)=>seleccionarPagos(rowData)
                 },
                 {
                     icon:"delete",
@@ -561,50 +557,54 @@ const Pagos = () => {
           {bodyEditar}
         </Modal>
 
-        <Dialog visible={dialog}  header="Detalle" style={{ width: '450px' }} modal className="p-fluid"  footer={productDialogFooter} onHide={eliminarDialog}>
-            <div className="field mb-4">
-                <Dropdown name="id_comprobante" placeholder="Numero del Comprobante" optionValue="id_comprobante" optionLabel="numero_comprobante" value={cobro.id_comprobante} onChange={seleccionaComprobante} options={comprobantes}/>
-            </div>
-            <div className="field mb-4">
-              <label>Fecha del Comprobante</label>
-              <InputText  placeholder="Fecha del Comprobante" value={comprobantes2.fecha_emision} disabled type="text"/>
-            </div>
-            <div className="field mb-4">
-             <label>Monto Comprobante</label>
-              <InputText  placeholder="Monto del Comprobante" value={comprobantes2.total_comprobante} disabled type="text"/>
-            </div>
-            <div className="field mb-4">
-              <Dropdown name="modo_pago" placeholder="Modo de pago" onChange={actualizarStateDetalle} value={cobro.modo_pago}  options={modosPago}/>
-            </div>
-            <div className="field mb-4">
-              <InputText   name='input=file' id='selectArchivo'  type='file' />
-            </div>
-            <Button onClick={agregarDatos}>Agregar</Button>
-            <DataTable value={cobros}>
-              <Column field="id_comprobante" header="Comprobantes"></Column>
-              <Column field="modo_pago" header="Modo de pago"></Column>
-              <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
-            </DataTable>
-        </Dialog>
-        <Dialog visible={dialogFactura} style={{ width: '600px' }} header="DETALLES" onHide={hideDialog}> 
-          <div class="grid">
-              <div class="col">
-                  <div className="field mb-4">
-                      <Label>Nombre Proveedor</Label>
-                      <InputText type="text" disabled  value={pagos.proveedor}/>
-                  </div>
-
+        <Dialog visible={dialog}  header={pagos.id_pago? "Editar Pago": "Registrar Pago"} style={{ width: '700px' }} modal className="p-fluid"  footer={productDialogFooter} onHide={eliminarDialog}>
+          <div className="grid">
+            <div className="col">
+              <div className='field'>
+                <label>Numero de Pago</label>
+                <InputText value={pagos.numero_pago || ""} required autoFocus type="number"/>
               </div>
-              <div class="col">
-                <div className="field mb-4">
-                  <Label>Comprobante de Pago N°</Label>
-                  <InputText type="text" disabled value={pagos.numero_pago}/>
-                </div>
-                <div className="field mb-4">
-                  <Label>Fecha del Pago</Label>
-                  <InputText type="text" disabled value={pagos.fecha_emision}/>
-                </div>
+              <div className='field flex gap-2'>
+                <label className='flex-initial flex align-items-center'>Nombre Proveedor</label>
+                  <Dropdown name="proveedor_pago" value={pagos.proveedor_pago || ""} className='w-12  border-500' optionValue="id_proveedor"  optionLabel="nombre_proveedor"  options={pro} placeholder="Seleccionar Proveedor"/>
               </div>
+              <div className="field mb-4">
+                <InputText name="fecha_emision" value={pagos.fecha_emision || ""}  type="date"/>
+              </div>
+              <div className="field mb-4">
+                <label>Monto</label>
+                <InputText name="total_pago" value={pagos.total_pago || ""} type="number"/>
+              </div>
+            </div>
+            <div className="col">
+              <div className="field mb-4">
+                <label>Comprobantes</label>
+                <Dropdown name="id_comprobante" placeholder="Numero del Comprobante" optionValue="id_comprobante" optionLabel="numero_comprobante" value={cobro.id_comprobante || ""} onChange={seleccionaComprobante} options={comprobantes}/>
+              </div>
+              <div className="field mb-4">
+                
+                <InputText  placeholder="Fecha del Comprobante" value={comprobantes2.fecha_emision || ""} disabled type="text"/>
+             </div>
+              <div className="field mb-4">
+                  <InputText  placeholder="Monto del Comprobante" value={comprobantes2.total_comprobante || ""} disabled type="text"/>
+              </div>
+              <div className="field mb-4">
+                <Dropdown name="modo_pago" placeholder="Modo de pago" onChange={actualizarStateDetalle} value={cobro.modo_pago || ""}  options={modosPago}/>
+              </div>
+              <div className="field mb-4">
+                <InputText   name='input=file' id='selectArchivo'  type='file' />
+              </div>
+              <div className="field w-min mb-4 m-auto">
+                <Button className="w-15 "  onClick={agregarDatos}>Agregar</Button> 
+              </div>
+            </div>
+            <div className="field m-auto">
+              <DataTable value={cobros || ""} showGridlines>
+                <Column field="id_comprobante" header="Comprobantes"></Column>
+                <Column field="modo_pago" header="Modo de pago"></Column>
+                <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
+              </DataTable>
+            </div>
           </div>
         </Dialog>
 
@@ -612,7 +612,7 @@ const Pagos = () => {
 
         <div className="contenedor">
           <br/>
-          <button className="bg-indigo-600 w-45 p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Pago</button>
+          <button className="bg-indigo-600 w-45 p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={abrirCerrarDialog}>Registrar Nuevo Pago</button>
           <br/><br/>
         </div>
     </Main>

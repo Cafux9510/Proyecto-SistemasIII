@@ -22,7 +22,7 @@ const Router = () => {
   return (
     <Routes>
     {/* <Route exact path="/" element={<Inicio/>}/> */}
-    <Route exact path="/inicio" element={<Inicio/>}/>
+    <Route exact path="/" element={<Inicio/>}/>
     <Route exact path="/comprobantes" element={<Comprobantes/>}/>
     <Route exact path="/insumos" element={<Insumos/>}/>
     <Route exact path="/TablaProveedores" element={<TablaProveedores/>}/>
