@@ -6,15 +6,19 @@ import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import PersonAdd from '@mui/icons-material/PersonAdd';
-import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 
-import { Link } from 'react-router-dom'
-import profileImg from '../assets/imagenes/perfil1.jpg'
 import "../estilos/top-nav.css"
+
+import styled from '@emotion/styled'
+
+const Desplegable = styled.div`
+  display:flex;
+  flex-direction:column;
+  column-gap:2px;
+`
 const TopNav = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -52,6 +56,7 @@ const TopNav = () => {
           </IconButton>
         </Tooltip>
       </Box>
+      <Desplegable>
       <Menu
         anchorEl={anchorEl}
         id="account-menu"
@@ -113,6 +118,7 @@ const TopNav = () => {
           Cerrar sesion
         </MenuItem>
       </Menu>
+      </Desplegable>
     </React.Fragment>
 
 

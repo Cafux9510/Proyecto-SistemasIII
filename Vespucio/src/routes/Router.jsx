@@ -25,6 +25,7 @@ import AsistenciaXCurso from '../componentes/AsistenciaXCurso';
 
 import Tareas from '../componentes/Tareas';
 import CargaTareas from '../componentes/CargaTareas';
+import Cobranzas from '../componentes/Cobranzas';
 /*HASTA ACA*/
 
 
@@ -52,6 +53,8 @@ const Router = () => {
     <Route exact path="/MateriaXProfesor" element={<MateriaXProfesor/>}/>
     <Route exact path="/RegistrarAsistencia" element={<RegistrarAsistencia/>}/>
     <Route exact path="/AsistenciaXCurso" element={<AsistenciaXCurso/>}/>
+
+    <Route exact path="/Cobranzas" element={<Cobranzas/>}/>
 
     
     <Route exact path="/Tareas" element={<Tareas/>}/>

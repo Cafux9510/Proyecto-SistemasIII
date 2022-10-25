@@ -41,7 +41,11 @@ const navLinksAdm = [
         icon:"ri-filter-line",
         display:"Materias",
     },
-
+    {
+        path:"/Cobranzas" ,
+        icon:"ri-money-dollar-circle-line",
+        display:"Cobranzas",
+    },
 
 ]
 
