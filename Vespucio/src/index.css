@@ -241,3 +241,85 @@ form .btn {
   width: 350px;
   text-align: center;
 }
+
+.containerPago {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 0.4fr 0.4fr 0.4fr 0.4fr 0.4fr 1.8fr 0.4fr 0.4fr 0.4fr;
+  gap: 0px 15px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "label_nombre label_apellido"
+    "textfield_nombre textfield_apellido"
+    "label_dni label_dni"
+    "textfield_dni textfield_dni"
+    "label_cuotasPagar label_cuotasPagar"
+    "tabla tabla"
+    "label_totalPago label_dinero"
+    "metodo_pago periodo"
+    "boton_cancelar boton_pagar";
+  justify-content: center;
+  align-content: center;
+  justify-items: center;
+  align-items: center;
+}
+
+.label_nombre {
+  grid-area: label_nombre;
+}
+
+.label_apellido {
+  grid-area: label_apellido;
+}
+
+.textfield_nombre {
+  grid-area: textfield_nombre;
+}
+
+.textfield_apellido {
+  grid-area: textfield_apellido;
+}
+
+.label_dni {
+  grid-area: label_dni;
+}
+
+.textfield_dni {
+  grid-area: textfield_dni;
+}
+
+.label_cuotasPagar {
+  grid-area: label_cuotasPagar;
+}
+
+.tabla {
+  grid-area: tabla;
+}
+
+.label_totalPago {
+  grid-area: label_totalPago;
+}
+
+.label_dinero {
+  grid-area: label_dinero;
+}
+
+.metodo_pago {
+  grid-area: metodo_pago;
+}
+
+.periodo {
+  grid-area: periodo;
+}
+
+.boton_pagar {
+  grid-area: boton_pagar;
+}
+
+.boton_cancelar {
+  grid-area: boton_cancelar;
+}
+
+#inputCentrado{
+    text-align: center;
+  }

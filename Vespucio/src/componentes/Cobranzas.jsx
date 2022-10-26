@@ -8,6 +8,10 @@ import swal from "sweetalert";
 import styled from '@emotion/styled'
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 
+
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+ 
 import UpgradeIcon from '@mui/icons-material/Upgrade';
 import NotificationImportantIcon from '@mui/icons-material/NotificationImportant';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -99,7 +103,27 @@ const Cobranzas = () => {
         numMes_cuota:'',
         periodo_lectivo:year,
     })
- 
+  
+  const [cuotasAdeudadas, setCuotasAdeudadas] = useState([]);
+  
+  const cargarCuotasA = async()=>{
+        try {
+           const { data: cuotas, error } = await supabase
+            .from('cuotasCobros')
+             .select(`
+             meses(
+              nombre_mes
+             ),
+             *`)
+            setCuotasAdeudadas(cuotas)
+            console.log(cuotas)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+  
+
+
     //Funciones que tienen datos desde una api
     const funcion = async()=>{
         try {
@@ -433,15 +457,87 @@ const Cobranzas = () => {
     const bodyRegistrarPago= (
       <div className={styles.modal}>
         <h4>Registrar Pago Alumno</h4>
-        <br/> 
-        <label><b>Nombre del Alumno</b></label>
+        <div class="containerPago">
+          <div class="label_nombre">
+            <label><b>Nombre del Alumno</b></label>
+          </div>
+          <div class="label_apellido">
+            <label><b>Apellido del Alumno</b></label>
+          </div>
+          <div class="textfield_nombre">
+            <TextField id="inputCentrado" className={styles.inputMaterial} disabled onChange={actualizarState} name="nombre_alumno" value={alumnos && nombre_alumno} />
+          </div>
+          <div class="textfield_apellido">
+            <TextField id="inputCentrado" className={styles.inputMaterial} disabled onChange={actualizarState} name="apellido_alumno" value={alumnos && apellido_alumno} />
+          </div>
+          <div class="label_dni">
+            <label><b>DNI del Alumno</b></label>
+          </div>
+          <div class="textfield_dni">
+            <TextField id="inputCentrado" type="text" className={styles.inputMaterial} disabled onChange={actualizarState} name="dni_alumno" value={alumnos && dni_alumno} />
+            <br/><br/>
+          </div>
+          <div class="label_cuotasPagar">
+            <label><b>Cuotas Adeudadas por el Alumno</b></label>
+          </div>
+          <div class="tabla">
+            <div className="card">
+                <DataTable value={cuotasAdeudadas} responsiveLayout="scroll">
+                    <Column field="meses.nombre_mes" header="Mes"></Column>
+                    <Column field="valor_cuotaC" header="Importe"></Column>
+                    <Column field="isSelec_aPagar" header="Pagar"></Column>
+                </DataTable>
+            </div>
+          </div>
+          <div class="label_totalPago">
+            <br/>
+            <label><b>Total del Pago</b></label>
+            <br/><br/>
+          </div>
+          <div class="label_dinero">
+            <TextField id="inputCentrado" type="text" className={styles.inputMaterial} disabled onChange={actualizarState} name="total_pagar" />
+            <br/><br/>
+          </div>
+          <div class="metodo_pago">
+            <label><b>Metodo de Pago</b></label>
+            <br/>
+            <Campo>
+              <Select
+                        name='metodoPago_cuota'
+                        value={metodoPago_cuota}
+                        onChange={actualizarState}
+                    >
+                        <option value="0">--Seleccione--</option>
+                        <option value="Transferencia">Transferencia</option>
+                        <option value="Debito">Debito</option>
+                        <option value="Efectivo">Efectivo</option>               
+              </Select>
+            </Campo>
+          </div>
+          <div id="inputCentrado" class="periodo">
+            <label><b>Periodo</b></label>
+            <br/>
+            <input type="number" style={{textAlign: "center"}} disabled value={year}/>
+          </div>
+          <div class="boton_pagar">
+            <Button onClick={()=>registrarPago()} color='primary'>Registrar Cobro</Button>
+          </div>
+          <div class="boton_cancelar">
+              <Button onClick={()=>abrirCerrarModalPagar()}>Cancelar</Button>
+          </div>
+        </div>
+        {/* <h4>Registrar Pago Alumno</h4>
+        <br />
+        <div className="controlesHorizontales">
+          <label className="controlIzq"><b>Nombre del Alumno</b></label>
+          <br/>
+          <label className="controlDer"><b>Apellido del Alumno</b></label>
+        </div>
         <br/>
-        <TextField className={styles.inputMaterial} disabled onChange={actualizarState} name="nombre_alumno" value={alumnos&&nombre_alumno} />
-        <br/><br/>
-        <label><b>Apellido del Alumno</b></label>
-        <br/>
-        <TextField className={styles.inputMaterial} disabled onChange={actualizarState} name="apellido_alumno" value={alumnos&&apellido_alumno} />
-        <br/><br/>
+        <div className="controlesHorizontales">
+          <TextField id="textfieldIzq" className={styles.inputMaterial} disabled onChange={actualizarState} name="nombre_alumno" value={alumnos && nombre_alumno} />
+          <TextField id="textfieldDer" className={styles.inputMaterial} disabled onChange={actualizarState} name="apellido_alumno" value={alumnos && apellido_alumno} />  
+        </div> 
         <label><b>DNI del Alumno</b></label>
         <br/>
         <TextField type="text" className={styles.inputMaterial} disabled onChange={actualizarState} name="dni_alumno" value={alumnos&&dni_alumno} />
@@ -481,7 +577,7 @@ const Cobranzas = () => {
           <div>
             <Button onClick={()=>abrirCerrarModalPagar()}>Cancelar</Button>
           </div>
-        </div>
+        </div> */}
       </div>
     )
 
@@ -495,6 +591,7 @@ const Cobranzas = () => {
 
     const abrirCerrarModalRegPago= (alumno,caso)=>{
       alumnoAgregado(alumno);
+      cargarCuotasA();
       (caso === "Pagar")&&abrirCerrarModalPagar();
       cargarDatos(alumno);
 
