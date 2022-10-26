@@ -105,6 +105,7 @@ const Cobranzas = () => {
     })
   
   const [cuotasAdeudadas, setCuotasAdeudadas] = useState([]);
+  const [selectedCuotas, setselectedCuotas] = useState(null);
   
   const cargarCuotasA = async()=>{
         try {
@@ -116,7 +117,6 @@ const Cobranzas = () => {
              ),
              *`)
             setCuotasAdeudadas(cuotas)
-            console.log(cuotas)
         } catch (error) {
             console.log(error)
         }
@@ -280,6 +280,21 @@ const Cobranzas = () => {
       })
     }
 
+    const actualizarTotal = e =>{
+      setselectedCuotas(e.value);
+      let array = e.value
+      var selection2 = document.getElementById("inputTotalCuotas");
+      let valorParcial=0;
+
+      array.map(function(element){
+        valorParcial = valorParcial + element.valor_cuotaC
+      });
+      selection2.value = valorParcial;
+    }
+
+    
+
+
     const[niveles,setNiveles]=useState({}) 
     const nivs=async()=>{
       const result = await supabase.from('nivelesEducativos')
@@ -288,6 +303,7 @@ const Cobranzas = () => {
       setNiveles(result.data)
       
     }
+
     const[categorias,setCategorias]=useState({}) 
 
     const filtrarAnios = e =>{
@@ -482,10 +498,10 @@ const Cobranzas = () => {
           </div>
           <div class="tabla">
             <div className="card">
-                <DataTable value={cuotasAdeudadas} responsiveLayout="scroll">
+                <DataTable value={cuotasAdeudadas} responsiveLayout="scroll" selection={selectedCuotas} onSelectionChange={actualizarTotal}>
                     <Column field="meses.nombre_mes" header="Mes"></Column>
                     <Column field="valor_cuotaC" header="Importe"></Column>
-                    <Column field="isSelec_aPagar" header="Pagar"></Column>
+                    <Column selectionMode="multiple" field="isSelec_aPagar"></Column>
                 </DataTable>
             </div>
           </div>
@@ -495,7 +511,7 @@ const Cobranzas = () => {
             <br/><br/>
           </div>
           <div class="label_dinero">
-            <TextField id="inputCentrado" type="text" className={styles.inputMaterial} disabled onChange={actualizarState} name="total_pagar" />
+            <TextField id="inputTotalCuotas" type="text" className={styles.inputMaterial} disabled onChange={actualizarState} name="total_pagar" />
             <br/><br/>
           </div>
           <div class="metodo_pago">
