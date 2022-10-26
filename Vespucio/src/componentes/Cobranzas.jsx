@@ -116,7 +116,7 @@ const Cobranzas = () => {
               nombre_mes
              ),
              *`)
-            setCuotasAdeudadas(cuotas)
+          setCuotasAdeudadas(cuotas)
         } catch (error) {
             console.log(error)
         }
@@ -257,6 +257,21 @@ const Cobranzas = () => {
         }, 1000); 
       });
     }
+    
+  const buscarNumMes = async (idMes) => {
+    let cuota = 0;
+        try {
+           cuota = await supabase
+            .from('meses')
+             .select(`numero_mes`)
+            .eq("id_mes", idMes)
+                    
+        } catch (error) {
+            console.log(error)
+        }
+        
+    return cuota.data[0].numero_mes;
+    }
 
     //Configuracion del 
     const columnas=[
@@ -283,17 +298,52 @@ const Cobranzas = () => {
     const actualizarTotal = e =>{
       setselectedCuotas(e.value);
       let array = e.value
+      let arrEterno = cuotasAdeudadas
+      let arrmod = [];
+      array.forEach(element => {
+        arrmod.push(element.id_cuotaC)
+      });
+      
       var selection2 = document.getElementById("inputTotalCuotas");
-      let valorParcial=0;
+      let valorParcial = 0;
+      
+      let mayorid = 0;
 
-      array.map(function(element){
+      arrmod.map(function(element) {
+        if (element >= mayorid) {
+          mayorid = element
+        }
+      });
+
+      const arrayfiltrado = arrEterno.filter(function (elemento) {
+        return elemento.id_cuotaC <= mayorid
+      });
+
+      setselectedCuotas(arrayfiltrado);
+      
+      arrayfiltrado.map(function(element){
         valorParcial = valorParcial + element.valor_cuotaC
       });
       selection2.value = valorParcial;
+
+      // Ya funciona, tengo que no perder los valores de los states,
+      // asi que tengo que ovlver a definirlos de nuevo
+
+      // dice que esta pendiente la promesa, calculo que es que no puedo
+      // llamar asi esta mal, ver eso
+
+      let numCuota = buscarNumMes(mayorid)
+      console.log(numCuota)
+
+      alumnoAgregado({
+        valorPagado_cuota: valorParcial,
+        id_alumno,
+        numMes_cuota:numCuota
+        
+      })
+
+
     }
-
-    
-
 
     const[niveles,setNiveles]=useState({}) 
     const nivs=async()=>{
@@ -508,10 +558,10 @@ const Cobranzas = () => {
           <div class="label_totalPago">
             <br/>
             <label><b>Total del Pago</b></label>
-            <br/><br/>
+            <br/><br/><br/>
           </div>
           <div class="label_dinero">
-            <TextField id="inputTotalCuotas" type="text" className={styles.inputMaterial} disabled onChange={actualizarState} name="total_pagar" />
+            <TextField id="inputTotalCuotas" type="text" className={styles.inputMaterial} disabled onChange={actualizarState} name="total_pagar" value={valorPagado_cuota} />
             <br/><br/>
           </div>
           <div class="metodo_pago">
