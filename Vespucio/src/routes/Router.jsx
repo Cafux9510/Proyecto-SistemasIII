@@ -1,6 +1,5 @@
 import React from 'react'
 import { Routes,Route } from 'react-router-dom'
-import Inicio from "../componentes/Inicio";
 import Pagos from "../componentes/Pagos"
 import Insumos from "../componentes/Insumos"
 import Comprobantes from "../componentes/Comprobantes"
@@ -15,7 +14,6 @@ import AsignacionPersonal from '../componentes/AsignacionPersonal';
 import PersonalEducativo from '../componentes/PersonalEducativo';
 import Materias from '../componentes/Materias';
 import EstructuraEscolar from '../componentes/EstructuraEscolar';
-import LoginTemporal from '../componentes/LoginTemporal';
 import { GestionMateriasProfesor } from '../componentes/GestionMateriasProfesor';
 import MateriaXProfesor from '../componentes/MateriaXProfesor';
 import RegistrarAsistencia from '../componentes/RegistrarAsistencia';
@@ -33,7 +31,6 @@ const Router = () => {
   return (
     <Routes>
     {/* <Route exact path="/" element={<Inicio/>}/> */}
-    <Route exact path="/inicio" element={<Inicio/>}/>
     <Route exact path="/comprobantes" element={<Comprobantes/>}/>
     <Route exact path="/insumos" element={<Insumos/>}/>
     <Route exact path="/TablaProveedores" element={<TablaProveedores/>}/>
@@ -47,8 +44,7 @@ const Router = () => {
     <Route exact path="/PersonalEducativo" element={<PersonalEducativo/>}/>
     <Route exact path="/Materias" element={<Materias />} />
     <Route exact path="/EstructuraEscolar" element={<EstructuraEscolar/>}/>
-    <Route exact path="/LoginTemporal" element={<LoginTemporal />} />
-    
+   
     <Route exact path="/GestionMateriasProfesor" element={<GestionMateriasProfesor/>}/>
     <Route exact path="/MateriaXProfesor" element={<MateriaXProfesor/>}/>
     <Route exact path="/RegistrarAsistencia" element={<RegistrarAsistencia/>}/>
