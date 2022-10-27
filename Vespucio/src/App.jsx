@@ -3,9 +3,11 @@ import "./estilos/estilos.css";
 
 function App() {
 
-
+  let variable=20
   return (
-    <Layout />
+    <Layout
+      variable={variable} 
+    />
 
   )
 }

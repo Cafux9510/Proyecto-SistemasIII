@@ -305,7 +305,7 @@ const Pagos = () => {
     setPro(result.data)
   }
 
-    const bodyInsertar= (
+   /*  const bodyInsertar= (
       <div className={styles.modal}>
         <h4>Registrar Nuevo Pago</h4>
         {error ? <Error>Todos los campos son obligatorios</Error>:null}
@@ -343,10 +343,10 @@ const Pagos = () => {
         </div>
       </div>
     )
-
+ */
     const{id_pago}=pagos;
 
-    const bodyEditar= (
+/*     const bodyEditar= (
       <div className={styles.modal}>
         <h4>Editar Pago</h4>
         <br/>
@@ -398,7 +398,7 @@ const Pagos = () => {
           <Button onClick={()=>vaciarState()}>Cancelar</Button>
         </div>
       </div>
-    )
+    ) */
 
     const modosPago = [
       {label: 'Efectivo', value: 'Efectivo'},
@@ -547,14 +547,14 @@ const Pagos = () => {
           open={modal}
           onClose={abrirCerrarModalInsertar}
         >
-          {bodyInsertar}
+         
         </Modal>
             
         <Modal
           open={modalEditar}
           onClose={abrirCerrarModalEditar}
         >
-          {bodyEditar}
+        
         </Modal>
 
         <Dialog visible={dialog}  header={pagos.id_pago? "Editar Pago": "Registrar Pago"} style={{ width: '700px' }} modal className="p-fluid"  footer={productDialogFooter} onHide={eliminarDialog}>
@@ -574,6 +574,9 @@ const Pagos = () => {
               <div className="field mb-4">
                 <label>Monto</label>
                 <InputText name="total_pago" value={pagos.total_pago || ""} type="number"/>
+              </div>
+              <div>
+                {pagos["id_pago"] ?<a href={pagos&&link_archivo} target="_blank"><b>Previsualización del Archivo Subido</b></a>:null}
               </div>
             </div>
             <div className="col">
