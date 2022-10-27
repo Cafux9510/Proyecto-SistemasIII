@@ -101,13 +101,15 @@ const Cobranzas = () => {
         valorPagado_cuota:'',
         metodoPago_cuota:'',
         numMes_cuota:'',
-        periodo_lectivo:year,
+        periodo_lectivo:year
     })
   
+  const[nuevoSaldo, setNuevoSaldo] = useState(null);
+  const[mayorC, setMayorC] = useState(null);
   const [cuotasAdeudadas, setCuotasAdeudadas] = useState([]);
   const [selectedCuotas, setselectedCuotas] = useState(null);
   
-  const cargarCuotasA = async()=>{
+  const cargarCuotasA = async(idAl)=>{
         try {
            const { data: cuotas, error } = await supabase
             .from('cuotasCobros')
@@ -116,6 +118,9 @@ const Cobranzas = () => {
               nombre_mes
              ),
              *`)
+             .eq("isPagada_cuota",false)
+             .eq("id_alumno",idAl)
+             .order("id_cuotaC", {ascending: true});
           setCuotasAdeudadas(cuotas)
         } catch (error) {
             console.log(error)
@@ -163,16 +168,15 @@ const Cobranzas = () => {
 
 
     const registrarPago=async() =>{
-      const result7 = await supabase.from("cobranzas").insert([
-        {
-          id_alumno,
-          id_cuota,
-          valorPagado_cuota,
-          metodoPago_cuota,
-          numMes_cuota,
-          periodo_lectivo
-        },
-      ]);
+
+      await actualizarEstado(selectedCuotas)
+
+      const result= await supabase.from("cuotasCobros")
+      .update({
+        saldoActual_cuotaC:nuevoSaldo
+      })
+      .eq("id_cuotaC",mayorC)
+      
       window.location.reload();
     }
 
@@ -258,7 +262,7 @@ const Cobranzas = () => {
       });
     }
     
-  const buscarNumMes = async (idMes) => {
+  const buscarNumMes = async function (idMes) {
     let cuota = 0;
         try {
            cuota = await supabase
@@ -269,9 +273,69 @@ const Cobranzas = () => {
         } catch (error) {
             console.log(error)
         }
-        
     return cuota.data[0].numero_mes;
     }
+    
+    const buscarIdMayCuota = async function (id_alumno) {
+      let cuotas = 0;
+          try {
+             cuotas = await supabase
+              .from('cuotasCobros')
+               .select(`id_cuotaC`)
+              .eq("id_alumno", id_alumno)
+              .order("id_cuotaC", {ascending: false});
+                      
+          } catch (error) {
+              console.log(error)
+          }
+      return cuotas.data[0].id_cuotaC;
+      }
+
+    
+
+    const buscarSaldoMax = async function (mayorid,id_alumno) {
+      let saldo = 0;
+          try {
+             saldo = await supabase
+              .from('cuotasCobros')
+               .select(`saldoActual_cuotaC`)
+              .eq("id_cuotaC", mayorid)
+              .eq("id_alumno", id_alumno)
+              .eq("periodoLectivo_cuotaC", 2022)
+                      
+          } catch (error) {
+              console.log(error)
+          }
+      return saldo.data[0].saldoActual_cuotaC;
+      }
+
+      const actualizar = async function (idCuota) {
+            try {
+              await supabase.from("cuotasCobros")
+              .update({
+                isPagada_cuota:true,
+                forma_pago:metodoPago_cuota
+              })
+              .eq("id_cuotaC",idCuota)             
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+
+
+      const actualizarEstado = async function (cuotasSeleccionadas) {
+        let idCuota;
+            try {
+              cuotasSeleccionadas.map(function(element) {
+                idCuota = element.id_cuotaC;         
+                actualizar(idCuota)        
+              });
+                        
+            } catch (error) {
+                console.log(error)
+            }
+        }
 
     //Configuracion del 
     const columnas=[
@@ -332,17 +396,36 @@ const Cobranzas = () => {
       // dice que esta pendiente la promesa, calculo que es que no puedo
       // llamar asi esta mal, ver eso
 
-      let numCuota = buscarNumMes(mayorid)
-      console.log(numCuota)
+      let numCuota;
+      let saldoMax;
+      let mayorCuota;
+      let saldoAux;
+      (
+        async () => {
+            numCuota = await buscarNumMes(mayorid)
 
-      alumnoAgregado({
-        valorPagado_cuota: valorParcial,
-        id_alumno,
-        numMes_cuota:numCuota
-        
-      })
+            mayorCuota = await buscarIdMayCuota(id_alumno)
 
+            saldoMax = await buscarSaldoMax(mayorCuota,id_alumno)
 
+            saldoAux = saldoMax - valorParcial;
+
+            setMayorC(mayorCuota);
+
+            setNuevoSaldo(saldoAux);
+
+            setselectedCuotas(arrayfiltrado);
+           
+            alumnoAgregado({
+              valorPagado_cuota: valorParcial,
+              id_alumno,
+              numMes_cuota:numCuota,
+              periodo_lectivo:year,
+              nuevoSaldo:saldoMax - valorParcial
+              
+            })
+        }
+    )()
     }
 
     const[niveles,setNiveles]=useState({}) 
@@ -657,7 +740,7 @@ const Cobranzas = () => {
 
     const abrirCerrarModalRegPago= (alumno,caso)=>{
       alumnoAgregado(alumno);
-      cargarCuotasA();
+      cargarCuotasA(alumno.id_alumno);
       (caso === "Pagar")&&abrirCerrarModalPagar();
       cargarDatos(alumno);
 
