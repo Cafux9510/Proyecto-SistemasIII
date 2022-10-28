@@ -5,75 +5,31 @@ import { Dialog } from 'primereact/dialog';
 import {Button} from "primereact/button";
 import {Modal,TextField} from "@material-ui/core"
 import { InputText } from 'primereact/inputtext';
-import {makeStyles} from "@material-ui/core/styles"
-import { amber } from "@material-ui/core/colors";
 import swal from "sweetalert";
 import styled from '@emotion/styled'
 import { Link } from "react-router-dom";
 import {DataTable} from "primereact/datatable";
 import { Column } from 'primereact/column';
 import {Dropdown} from "primereact/dropdown";
-import createPalette from "@material-ui/core/styles/createPalette";
 
-const Label = styled.label`
-    flex: 0 0 100px;
-    text-align:center;
 
-`;
+
 const Main = styled.div `
   margin-top: 4%;
   width:70em;
 `;
 
-const Select = styled.select`
-    display:block;
-    width:100%;
-    padding: 1rem;
-    border: 1px solid #e1e1e1;
-    -webkit-appearance:none;
-`
-
-const Campo= styled.div`
-    display:flex;
-    margin-bottom: 1rem;
-    align-items:center;
-`;
-
-const Error = styled.div`
-    background-color: red;
-    color: white;
-    padding: 1rem;
-    width:100%;
-    text-align: center;
-    margin-bottom: 2rem;
-`;
-
-
-
-const useStyles = makeStyles((theme)=>({
-  modal:{
-    position:"absolute",
-    width:400,
-    backgroundColor: theme.palette.background.paper,
-    border: "2px solid #000",
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2,4,3),
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)" 
-  },
-  iconos:{
-    cursor: "pointer"
-  },
-  inputMaterial:{
-    width: "100%"
-  }
-
-}))
-
-
 
 const Comprobantes = () => {
+  useEffect(()=>{
+    buscarTotales()
+    funcion();
+    datos();
+    dato();
+    lineaComprobante();
+  },[])
+
+  
     //Statest
     const [data,setData]=useState([])
     const[modal,insertarModal]=useState(false)
@@ -81,6 +37,7 @@ const Comprobantes = () => {
     const[dialog,setDialog]=useState(false)
     const[dialogFactura,setDialogFactura]=useState(false)
     const[comprobante,setComprobante]=useState({
+        id_comprobante:null,
         tipo_comprobante:'',
         proveedor_comprobante:'',
         tipo_movimiento:'',
@@ -94,11 +51,12 @@ const Comprobantes = () => {
       id_articulo:"",
       cantidad_articulo:"",
       precio_unitario:"",
-      total:""
+      SubTotal:null
     })
     const [ error, guardarError ] = useState(false);
     const[totales,setTotales]=useState(0)
-    let{cantidad_articulo,precio_unitario,total}=detalle;
+    let{cantidad_articulo,precio_unitario,SubTotal}=detalle;
+    const{id_comprobante,tipo_comprobante,proveedor_comprobante,tipo_movimiento,numero_comprobante,fecha_emision,total_comprobante,link_archivo}=comprobante;
   
     //Funciones que tienen datos desde una api
     const funcion = async()=>{
@@ -114,32 +72,90 @@ const Comprobantes = () => {
            )
          `)
            .eq("isHabilitado_comprobante",true)
+           .order("id_comprobante",{ascending:true})
            setData(result.data)
         } catch (error) {
             console.log(error)
         }
     }
-    const update = async(id_comprobante)=>{
+    const eliminarComprobante = async(id_comprobante)=>{
       try {
         const result= await supabase.from("comprobantes")
         .update({isHabilitado_comprobante:false})
         .eq("id_comprobante",id_comprobante)
 
-
+        const arrayComprobantes=data.filter(comprobante=>comprobante.id_comprobante !== id_comprobante);
+        setData(arrayComprobantes)
        
       } catch (error) {
         console.log(error)
       }
     }
-
-    const{tipo_comprobante,proveedor_comprobante,tipo_movimiento,numero_comprobante,fecha_emision,total_comprobante,link_archivo}=comprobante;
-
-    const update2=async(id_comprobante)=>{
+    const generarId = () => {
+      const random = Math.random().toString(36).substr(2);
+      const fecha = Date.now().toString(36)
+      return random + fecha
+  }
+    const submit = async()=>{
       try {
+        if(comprobante.id_comprobante){
+            const avatarFile = document.getElementById('selectArchivo').files[0];
+            const  foto = await supabase.storage
+            .from('archivos-subidos')
+            .upload('archivos-comprobantes/'+(generarId()), avatarFile, {
+              cacheControl: '3600',
+              upsert: false,
+            })
+
+            const principio_cadena = 'https://nnlzmdwuqwxgdrnutujk.supabase.co/storage/v1/object/public/';
+            const final_cadena = foto.data.Key
+            const link_archivo= principio_cadena + final_cadena
+          
+          
+          const result= await supabase.from("comprobantes")
+          .update({tipo_comprobante,proveedor_comprobante,tipo_movimiento,numero_comprobante,fecha_emision,total_comprobante,link_archivo})
+          .eq("id_comprobante",id_comprobante)
+          funcion()
+
+          const arrayComprobantes=data.map(comprobantee=>{
+            if(comprobantee.id_comprobante === id_comprobante){
+              return{
+                ...comprobantee,
+                tipo_comprobante,
+                proveedor_comprobante,
+                tipo_movimiento,
+                numero_comprobante,
+                fecha_emision,
+                total_comprobante,
+                link_archivo
+              }
+            }
+            return comprobantee
+          })
+
+          const resultado = await supabase.from("comprobantes")
+          .select('id_comprobante')
+          .eq("numero_comprobante",numero_comprobante)
+
+          const valor=resultado.data[0].id_comprobante
+
+
+          detalles.map( async(deta)=>{
+              const dato = await supabase.from("lineasComprobantes").insert({
+                id_comprobante:valor,
+                id_articulo:deta.id_articulo,
+                cantidad_articulo:deta.cantidad_articulo,
+                precio_unitario:deta.precio_unitario
+              })
+            })
+
+          setDialog(false)
+          setData(arrayComprobantes)
+        }else{
           const avatarFile = document.getElementById('selectArchivo').files[0];
           const  foto = await supabase.storage
           .from('archivos-subidos')
-          .upload('archivos-comprobantes/'+parseInt(avatarFile.lastModified/avatarFile.size), avatarFile, {
+          .upload('archivos-comprobantes/'+(generarId()), avatarFile, {
             cacheControl: '3600',
             upsert: false,
           })
@@ -147,71 +163,38 @@ const Comprobantes = () => {
           const principio_cadena = 'https://nnlzmdwuqwxgdrnutujk.supabase.co/storage/v1/object/public/';
           const final_cadena = foto.data.Key
           const link_archivo= principio_cadena + final_cadena
-        
-        
-        const result= await supabase.from("comprobantes")
-        .update({tipo_comprobante,proveedor_comprobante,tipo_movimiento,numero_comprobante,fecha_emision,total_comprobante,link_archivo})
-        .eq("id_comprobante",id_comprobante)
-        
-        console.log(result)
-        abrirCerrarModalEditar();
-        window.location.reload(); 
-       } catch (error) {
-        console.log(error)
-      }
-    }
 
-    const generarId = () => {
-      const random = Math.random().toString(36).substr(2);
-      const fecha = Date.now().toString(36)
-      return random + fecha
-  }
-  
-    const submit = async()=>{
-
-      try {
-        const avatarFile = document.getElementById('selectArchivo').files[0];
-        const  foto = await supabase.storage
-        .from('archivos-subidos')
-        .upload('archivos-comprobantes/'+(generarId()), avatarFile, {
-          cacheControl: '3600',
-          upsert: false,
-        })
-
-        const principio_cadena = 'https://nnlzmdwuqwxgdrnutujk.supabase.co/storage/v1/object/public/';
-        const final_cadena = foto.data.Key
-        const link_archivo= principio_cadena + final_cadena
-
-        const {error,result}= await supabase.from("comprobantes").insert({
-          tipo_comprobante,
-          proveedor_comprobante,
-          tipo_movimiento,
-          numero_comprobante,
-          fecha_emision,
-          total_comprobante,
-          link_archivo
-        });
-
-        const resultado = await supabase.from("comprobantes")
-        .select('id_comprobante')
-        .eq("numero_comprobante",numero_comprobante)
-
-        const valor=resultado.data[0].id_comprobante
-
-
-        detalles.map( async(deta)=>{
-            const dato = await supabase.from("lineasComprobantes").insert({
-              id_comprobante:valor,
-              id_articulo:deta.id_articulo,
-              cantidad_articulo:deta.cantidad_articulo,
-              precio_unitario:deta.precio_unitario
-            })
-          })
-
+          const {error,result}= await supabase.from("comprobantes").insert({
+            tipo_comprobante,
+            proveedor_comprobante,
+            tipo_movimiento,
+            numero_comprobante,
+            fecha_emision,
+            total_comprobante,
+            link_archivo
+          });
+          funcion()
           setDialog(false)
-          location.reload();
+
+          const resultado = await supabase.from("comprobantes")
+          .select('id_comprobante')
+          .eq("numero_comprobante",numero_comprobante)
+
+          const valor=resultado.data[0].id_comprobante
+
+
+          detalles.map( async(deta)=>{
+              const dato = await supabase.from("lineasComprobantes").insert({
+                id_comprobante:valor,
+                id_articulo:deta.id_articulo,
+                cantidad_articulo:deta.cantidad_articulo,
+                precio_unitario:deta.precio_unitario
+              })
+          })
           
-         
+          setData([...data,result.data[0]])
+          
+        }   
       } catch (error) {
         console.log(error)
       }
@@ -231,16 +214,11 @@ const Comprobantes = () => {
           swal("Registro eliminado con exito!", {
             icon: "success",
           });
-          update(id_comprobante);
+          eliminarComprobante(id_comprobante);
         }
-        setTimeout(() => {
-          window.location.reload()
-        }, 2000);
       });
     }
-
     const[lineaComprobantes, setLineaComprobante]=useState([])
-
     const lineaComprobante= async()=>{
       const result= await supabase.from("lineasComprobantes")
       .select()
@@ -249,7 +227,7 @@ const Comprobantes = () => {
       setLineaComprobante(result.data)
     }
 
-    //Configuracion del {/*DEJO LOS PARAMETROS DEL VALUE, SINO ME CRASHEA */}
+    
     const columnas=[ 
         {title:"Id", field:"id_comprobante"},
         {title:"Tipo", field:"tipoComprobante.nombre_tipo"},
@@ -263,7 +241,6 @@ const Comprobantes = () => {
 
 
     //Estilos
-    const styles=useStyles();
     const actualizarState = e =>{
       setComprobante({
           ...comprobante,
@@ -323,19 +300,24 @@ const Comprobantes = () => {
   }
   const eliminarDialog=()=>{
     setDialog(false)
+    setComprobante({})
+    setDetalles([])
   }
 
+  const mostrarDialog=()=>{
+    setDialog(true)
+  }
   const volverAnterior=()=>{
     eliminarDialog()
     insertarModal(true)
   }
 
-    const bodyInsertar= (
+/*     const bodyInsertar= (
       <div className={styles.modal}>
         <h4>Agregar Nuevo Comprobante</h4>
         {error ? <Error>Todos los campos son obligatorios</Error>:null}
         <br/>
-        <Campo>
+        <Campo>Label
         <Label>Tipo Comprobante</Label>
           <Select
                     name='tipo_comprobante'
@@ -371,13 +353,13 @@ const Comprobantes = () => {
         <br/>
         <br/>
         <br/>
-        {/*<Label>Tipo Movimiento</Label>
+        <Label>Tipo Movimiento</Label>
         <Select name="tipo_movimiento" value={tipo_movimiento} onChange={actualizarState}>
           <option value="">--Seleccione--</option>
           <option value="Ingreso">Ingreso</option>
           <option value="Egreso">Egreso</option>
 
-        </Select>*/}
+        </Select>
         <br/>
         <br/>
         <TextField type="number" className={styles.inputMaterial} label="Monto Total" onChange={actualizarState} name="total_comprobante" value={total_comprobante} />
@@ -387,11 +369,9 @@ const Comprobantes = () => {
           <Button onClick={()=>abrirCerrarModalInsertar()}>Cancelar</Button>
         </div>
       </div>
-    )
+    ) */
 
-    const{id_comprobante}=comprobante;
-
-    const bodyEditar= (
+    /* const bodyEditar= (
       <div className={styles.modal}>
         <h4>Editar Comprobante</h4>
         <br/>
@@ -434,13 +414,13 @@ const Comprobantes = () => {
         <br/>
         <br/>
         <br/>
-        {/*<Label>Tipo Movimiento</Label>
+        <Label>Tipo Movimiento</Label>
         <Select name="tipo_movimiento" value={comprobante&&tipo_movimiento} onChange={actualizarState}>
           <option value="">--Seleccione--</option>
           <option value="Ingreso">Ingreso</option>
           <option value="Egreso">Egreso</option>
 
-        </Select>*/}
+        </Select>
         <br/>
         <br/>
         <input type="file"  name='input=file' id='selectArchivo'/>
@@ -456,7 +436,7 @@ const Comprobantes = () => {
           <Button onClick={()=>vaciarState()}>Cancelar</Button>
         </div>
       </div>
-    )
+    ) */
 
     //Nuevos states
     const vaciarState=()=>{
@@ -473,40 +453,36 @@ const Comprobantes = () => {
       setModalEditar(!modalEditar)
     }
 
-    const seleccionarProveedor = (id_comprobante,caso)=>{
-      setComprobante(id_comprobante);
-      (caso === "Editar")&&abrirCerrarModalEditar();
-    }
 
-    useEffect(()=>{
-        funcion();
-        datos();
-        dato();
-        lineaComprobante();
-        buscarTotales()
-    },[])
-   
     const productDialogFooter = (
-      <React.Fragment>
-          <Button label="Volver" icon="pi pi-times" className="p-button-text" onClick={volverAnterior} />
-          <Button label="Registrar Comprobante" icon="pi pi-check" className="p-button-text" onClick={submit}/>
-      </React.Fragment>
+        <React.Fragment>
+          <Button label="Cancelar" icon="pi pi-times" className="p-button-text" onClick={eliminarDialog} />
+          <Button label="Guardar" icon="pi pi-check" className="p-button-text" onClick={submit} />
+        </React.Fragment>
     );
 
     //Funciones para agregar datos a la tabla de detalles fiumba
 
     useEffect(()=>{
-      const variable=detalles.reduce((total,detalle)=>detalle.total+total,0)
-      console.log(Number(variable))
-      setTotales(Number(variable))
-
-     
+        const variable=detalles.reduce((total,detalle)=>detalle.SubTotal+total,0)
+        console.log(Number(variable))
+        setTotales(Number(variable))
     },[detalles])
 
+
+    const editProduct = (comprobante)=>{
+      const details= subTotal.filter(linea=> linea.id_comprobante === comprobante.id_comprobante);
+      setComprobante({...comprobante})
+      setDetalles([...details])
+      const variable=Number(details.reduce((total,detalle)=>detalle.SubTotal+total,0))
+      setTotales(variable)
+      setDialog(true)
+    }
+
     const crearDetalle=(de)=>{
-      total= Number(cantidad_articulo)*Number(precio_unitario);
-      console.log(total)
-      de.total=total
+      SubTotal= Number(cantidad_articulo)*Number(precio_unitario);
+      console.log(SubTotal)
+      de.SubTotal=SubTotal
       setDetalles([...detalles,de]);
     }
     const actualizarStateDetalle = e =>{
@@ -521,7 +497,7 @@ const Comprobantes = () => {
       id_articulo:"",
       cantidad_articulo:"",
       precio_unitario:"",
-      total:""
+      SubTotal:""
     })
   }
 
@@ -585,10 +561,7 @@ const mostrarFactura=(comprobante)=>{
   setDialogFactura(true)
 }
 
-const hideDialog= ()=>{
-  setDialogFactura(false)
-  setComprobante({})
-}
+
 
   return (
   
@@ -608,7 +581,7 @@ const hideDialog= ()=>{
                 {
                     icon:"edit",
                     tooltip:"Modificar",
-                    onClick: (event,rowData)=>seleccionarProveedor(rowData,"Editar")
+                    onClick: (event,rowData)=>editProduct(rowData)
                 },
                 {
                     icon:"delete",
@@ -644,87 +617,80 @@ const hideDialog= ()=>{
           open={modal}
           onClose={abrirCerrarModalInsertar}
         >
-          {bodyInsertar}
+          
         </Modal>
             
         <Modal
           open={modalEditar}
           onClose={abrirCerrarModalEditar}
         >
-          {bodyEditar}
+        
         </Modal>
         
 
         {/*MODAL DEL DETALLE AGREGADO ESTO ES NUEVO FRANCO PAAAA*/}
-        <Dialog visible={dialog} header="Detalle" style={{ width: '600px' }} modal className="p-fluid" onHide={eliminarDialog} footer={productDialogFooter}>
-          <div className="field mb-4">
-              <Dropdown name="id_articulo" optionLabel="nombre_producto" optionValue="id_producto" value={detalle.id_articulo || ""} options={articulos} onChange={seleccionArticulo} placeholder="Seleccione articulo"/>
-          </div>
-          <div className="field mb-4">
+        <Dialog header={comprobante["id_comprobante"] ? "Editar Datos Comprobantes":"Agregar Comprobante"} visible={dialog} style={{ width: '700px' }} modal className="p-fluid" footer={productDialogFooter}   onHide={eliminarDialog}>
+          <div className='grid'>
+            <div className='col'>
+                <div className='field flex gap-2 mb-4'>
+                <label className='flex-initial flex align-items-center'>Tipo Comprobante</label>
+                    <Dropdown name="tipo_comprobante" className='w-12 border-500' optionValue="id_tipo" onChange={actualizarState} value={comprobante.tipo_comprobante || ""} optionLabel="nombre_tipo" placeholder="Seleccione Comprobante" options={tipo}/>
+                </div>
+                
+                <div className='field flex gap-2 mb-4'>
+                <label className='flex-initial flex align-items-center'>Nombre Proveedor</label>
+                  <Dropdown name="proveedor_comprobante" className='w-12  border-500' optionValue="id_proveedor"  optionLabel="nombre_proveedor" onChange={actualizarState} value={comprobante.proveedor_comprobante} options={pro} placeholder="Seleccionar Proveedor"/>
+                </div>
+                <div className='field mb-4'>
+                  <InputText name="numero_comprobante" placeholder='N° Comprobante' value={comprobante.numero_comprobante || ""} onChange={actualizarState}  required autoFocus type="number"/>
+                </div>
+                <div className='field mb-4'>
+                  <InputText name="fecha_emision" placeholder='Fecha' value={comprobante.fecha_emision || ""} onChange={actualizarState} type="date"/>
+              </div>
+              <div className='field'>
+                <InputText name="total_comprobante" required placeholder='Monto Total' value={comprobante.total_comprobante || ""} onChange={actualizarState} autoFocus type="number"/>
+              </div>
+            </div>
+
+            <div className='col'>
+              <div className='field flex gap-2 mb-4'>
+                <Dropdown name="id_articulo" className='w-12  border-500' optionLabel="nombre_producto" optionValue="id_producto" value={detalle.id_articulo || ""} options={articulos} onChange={seleccionArticulo} placeholder="Seleccione articulo"/>
+              </div>
+
+              <div className='field flex gap-2 mb-4'>
                 <InputText name="cantidad_articulo" type="number"  value={detalle.cantidad_articulo || ""} onChange={actualizarStateDetalle} placeholder="Cantidad" required autoFocus />  
-          </div>
+              </div>
 
-            <div className="field mb-4">
+              <div className='field flex gap-2 mb-4'>
                 <InputText name="precio_unitario" value={detalle.precio_unitario || ""} type="number" onChange={actualizarStateDetalle} placeholder="precio unitario"  />  
+              </div>
+
+              <div className="field mb-4">
+                <InputText className='w-12' name='input=file' id='selectArchivo' type='file' />
+                {comprobante["id_comprobante"]? <a href={comprobante&&link_archivo} target="_blank"><b>Previsualización del Archivo Subido</b></a> :null}
+              </div>
+              <div className="field w-min mb-4 m-auto">
+                <Button className="w-15 "  onClick={agregarDatos}>Agregar</Button> 
+              </div>
             </div>
 
-            <div className="field mb-4">
-              <InputText   name='input=file' id='selectArchivo'  type='file' />
+              <div className="field m-auto">
+                <DataTable  value={detalles} showGridlines >
+                    <Column className='p-3' field="nombre_producto" header="Nombre Articulo"></Column>
+                    <Column className='p-3' field="cantidad_articulo" header="Cantidad"></Column>
+                    <Column className='p-3' field="precio_unitario" header="Precio Unitario"></Column>
+                    <Column className='p-3' field="SubTotal" header="Subtotal"></Column>
+                    <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
+                </DataTable>
             </div>
-            <div className="field w-min mb-4 ">
-                <Button onClick={agregarDatos} className="w-15 ">Agregar</Button> 
-            </div>
-          <DataTable value={detalles} showGridlines >
-              <Column field="nombre_producto" header="Nombre Articulo"></Column>
-              <Column field="cantidad_articulo" header="Cantidad"></Column>
-              <Column field="precio_unitario" header="Precio Unitario"></Column>
-              <Column field="SubTotal" header="Subtotal"></Column>
-              <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }} header="Acciones"></Column>
-          </DataTable>
-          <p>
-              <span>Total</span> {totales}
-          </p>
-        </Dialog>
-        <Dialog visible={dialogFactura} style={{ width: '600px' }} header="DETALLES" onHide={hideDialog}> 
-          <div className="grid">
-              <div className="col">
-                  <div className="field mb-4">
-                      <Label>Nombre Proveedor</Label>
-                      <InputText type="text" disabled value={comprobante.proveedor}/>
-                  </div>
-
-                <div className="field mb-4">
-                  <Label>Fecha Emision</Label>
-                  <InputText type="text" disabled value={comprobante.fecha_emision}/>
-                </div>
-              </div>
-              <div className="col">
-                <div className="field mb-4">
-                  <Label>Tipo Comprobante</Label>
-                  <InputText type="text" disabled value={comprobante.tipo_comprobante}/>
-                </div>
-                <div className="field mb-4">
-                  <Label>Numero Comprobante</Label>
-                  <InputText type="text" disabled value={comprobante.numero_comprobante}/>
-                </div>
-              </div>
           </div>
-          <div className="field mb-4 text-center">
-              <Label className="text-3xl font-semibold">Cliente:Colegio Americo Vespucio</Label>
-              <DataTable value={detalles} showGridlines >
-                  <Column field="nombre_producto" header="Nombre Articulo"></Column>
-                  <Column field="cantidad_articulo" header="Cantidad"></Column>
-                  <Column field="precio_unitario" header="Precio Unitario"></Column>
-                  <Column field="SubTotal" header="Subtotal"></Column>
-              </DataTable>
-          <p>
-              <span>Total: {totales}</span> 
-          </p>
+          <div>
+            <label className="text-2xl uppercase">Total: <span>{totales}</span></label>
           </div>
         </Dialog>
         <div className="contenedor">
           <br/>
-          <button className="bg-indigo-600 w-45 p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Comprobante</button>
+          <button className="bg-indigo-600 w-45 p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={mostrarDialog}>Registrar Nuevo Comprobante</button>
           <Link to='/CategoriasComprobantes'>
             <button className="bg-indigo-600 w-45 p-3 text-white uppercase font-bold hover:bg-slate-700 boton">Ver Tipos de Comprobantes</button>          
           </Link>
