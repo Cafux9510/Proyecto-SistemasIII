@@ -1,14 +1,8 @@
 const navLinksProfesores = [
-    
     {
-        path:"/Alumnos" ,
-        icon:"ri-user-2-line",
-        display:"Alumnos",
-    },
-    {
-        path:"/Materias" ,
+        path:"/Tareas" ,
         icon:"ri-filter-line",
-        display:"Materias",
+        display:"Tareas",
     },
     {
         path:"/GestionMateriasProfesor" ,
@@ -16,9 +10,9 @@ const navLinksProfesores = [
         display:"Gestion de Materia",
     },
     {
-        path:"/CargaTareas" ,
+        path:"/MateriaXProfesor" ,
         icon:"ri-filter-line",
-        display:"Cargas de Tareas",
+        display:"Materias por Profesor",
     }
 
 

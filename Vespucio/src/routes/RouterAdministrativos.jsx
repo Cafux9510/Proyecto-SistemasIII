@@ -13,21 +13,13 @@ import Alumnos from "../componentes/Alumnos";
 import AsignacionPersonal from '../componentes/AsignacionPersonal';
 import PersonalEducativo from '../componentes/PersonalEducativo';
 import Materias from '../componentes/Materias';
-import EstructuraEscolar from '../componentes/EstructuraEscolar';
-import { GestionMateriasProfesor } from '../componentes/GestionMateriasProfesor';
-import MateriaXProfesor from '../componentes/MateriaXProfesor';
-import RegistrarAsistencia from '../componentes/RegistrarAsistencia';
-import AsistenciaXCurso from '../componentes/AsistenciaXCurso';
 
-
-
-import Tareas from '../componentes/Tareas';
-import CargaTareas from '../componentes/CargaTareas';
 import Cobranzas from '../componentes/Cobranzas';
+
 /*HASTA ACA*/
 
 
-const Router = () => {
+const RouterAdministrativos = () => {
   return (
     <Routes>
     {/* <Route exact path="/" element={<Inicio/>}/> */}
@@ -43,21 +35,16 @@ const Router = () => {
     <Route exact path="/Alumnos" element={<Alumnos/>}/>
     <Route exact path="/PersonalEducativo" element={<PersonalEducativo/>}/>
     <Route exact path="/Materias" element={<Materias />} />
-    <Route exact path="/EstructuraEscolar" element={<EstructuraEscolar/>}/>
-   
-    <Route exact path="/GestionMateriasProfesor" element={<GestionMateriasProfesor/>}/>
-    <Route exact path="/MateriaXProfesor" element={<MateriaXProfesor/>}/>
-    <Route exact path="/RegistrarAsistencia" element={<RegistrarAsistencia/>}/>
-    <Route exact path="/AsistenciaXCurso" element={<AsistenciaXCurso/>}/>
+  
 
-    <Route exact path="/Cobranzas" element={<Cobranzas/>}/>
 
-    
-    <Route exact path="/Tareas" element={<Tareas/>}/>
-    <Route exact path="/CargaTareas" element={<CargaTareas/>}/>
+    <Route exact path="/Cobranzas" element={<Cobranzas/>}/>    
+
+
+
     {/*HASTA ACA*/}
   </Routes>
     )
 }
 
-export default Router
+export default RouterAdministrativos

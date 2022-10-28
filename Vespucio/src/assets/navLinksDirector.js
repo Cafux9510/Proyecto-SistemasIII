@@ -1,21 +1,11 @@
-const navLinksDirector = [
-   
-    {
-        path:"/PersonalEducativo" ,
-        icon:"ri-user-2-line",
-        display:"Personal Educativo",
-    },
-    {
-        path:"/Alumnos" ,
-        icon:"ri-user-2-line",
-        display:"Alumnos",
-    },
-    
+const navLinksDirector = [   
     {
         path:"/EstructuraEscolar" ,
         icon:"ri-filter-line",
         display:"Estructura Escolar",
-    },
+    }
+
+    // Falta el del Dashboard
 
 ]
 

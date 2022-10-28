@@ -53,9 +53,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Inicio = () => {
+const Inicio = ({setNumero}) => {
   //Statest
-
   const [alumnos, alumnoAgregado] = useState({
     id_anioEduc: "",
     nombre_alumno: "",
@@ -105,9 +104,9 @@ const Inicio = () => {
                 .from("usuarios")
                 .update({ isActivo: true })
                 .eq("id_usuario", userID);
-              
-              navigate('/Layout')
-              
+
+              setNumero(tipo_usuario);
+
               break;
             case 2:
               console.log("Profesor");
@@ -115,6 +114,9 @@ const Inicio = () => {
                 .from("usuarios")
                 .update({ isActivo: true })
                 .eq("id_usuario", userID);
+
+                setNumero(tipo_usuario);
+
               break;
             case 3:
               console.log("Administrativo");
@@ -122,6 +124,9 @@ const Inicio = () => {
                 .from("usuarios")
                 .update({ isActivo: true })
                 .eq("id_usuario", userID);
+
+              setNumero(tipo_usuario);
+
               break;
             case 4:
               console.log("Director");
@@ -129,6 +134,9 @@ const Inicio = () => {
                 .from("usuarios")
                 .update({ isActivo: true })
                 .eq("id_usuario", userID);
+
+                setNumero(tipo_usuario);
+
               break;
             case 5:
               console.log("Preceptor");
@@ -136,6 +144,9 @@ const Inicio = () => {
                 .from("usuarios")
                 .update({ isActivo: true })
                 .eq("id_usuario", userID);
+
+                setNumero(tipo_usuario);
+                
               break;
             default:
               console.log(
@@ -187,5 +198,7 @@ const Inicio = () => {
     </Main>
   );
 };
+
+
 
 export default Inicio;

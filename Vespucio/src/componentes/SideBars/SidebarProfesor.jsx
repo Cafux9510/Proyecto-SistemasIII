@@ -1,18 +1,12 @@
 import React, { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import 'remixicon/fonts/remixicon.css'
-import navLinksDirector from '../assets/navLinksDirector'
-import navLinksGeneric from '../assets/navLinksGeneric'
-import navLinksProfesores from '../assets/navLinksProfesores'
-import navLinksAdm from '../assets/navLinksAdm'
-import navLinksSecret from '../assets/navLinksSecret'
-import "../estilos/sidebar.css";
+import navLinksGeneric from '../../assets/navLinksGeneric'
+import navLinksProfesores from '../../assets/navLinksProfesores'
+import "../../estilos/sidebar.css";
 
-const Sidebar = () => {
+const SidebarProfesor = () => {
     const[open1, setOpen1]=useState(false)
-    const[open2, setOpen2]=useState(false)
-    const[open3, setOpen3]=useState(false)
-    const[open4, setOpen4]=useState(false)
 
   return (
     <div className="sidebar show">
@@ -40,12 +34,12 @@ const Sidebar = () => {
                     <li className={open1?"list__arrow arrow": "list__item"}>
                         <div className="list__button" onClick={()=>setOpen1(!open1)}>
                             <i className="ri-quill-pen-fill list__img"></i>
-                            <a href="#"  className='nav__link'>Director</a>
+                            <a href="#"  className='nav__link'>Profesores</a>
                             <i className="ri-arrow-right-line list__arrow"></i>
                         </div>
                         <ul className={open1? null: "list__show"}>
                             {
-                                navLinksDirector.map((item,index)=>(
+                                navLinksProfesores.map((item,index)=>(
                                     <li className="nav__item" key={index}>
                                         <NavLink to={item.path} className={navClass =>navClass.isActive ? 'nav__active nav__link':'nav__link'}>
                                         <i className={item.icon}></i>{item.display}</NavLink>
@@ -55,60 +49,6 @@ const Sidebar = () => {
                         </ul>
                     </li>
                    
-                    <li className={open2?"list__arrow arrow": "list__item"}>
-                        <div className="list__button" onClick={()=>setOpen2(!open2)}>
-                            <i className="ri-user-settings-fill list__img"></i>
-                            <a href="#"  className='nav__link'> Administrativo</a>
-                            <i className="ri-arrow-right-line list__arrow"></i>
-                        </div>
-                        <ul className={open2? null: "list__show"}>
-                        {
-                            navLinksAdm.map((item,index)=>(
-                                <li className="nav__item" key={index}>
-                                    <NavLink to={item.path} className={navClass =>navClass.isActive ? 'nav__active nav__link':'nav__link'}>
-                                    <i className={item.icon}></i>{item.display}</NavLink>
-                                </li>
-                            ))
-                        }
-                    
-                        </ul>
-                    </li>
-                    <li className={open3?"list__arrow arrow": "list__item"}>
-                        <div className="list__button"  onClick={()=>setOpen3(!open3)}>
-                            <i className="ri-pencil-ruler-2-fill list__img"></i>
-                            <a href="#" className='nav__link'> Profesores</a>
-                            <i className="ri-arrow-right-line list__arrow"></i>
-                        </div>
-                        <ul className={open3? null: "list__show"}>
-                        {
-                            navLinksProfesores.map((item,index)=>(
-                                <li className="nav__item" key={index}>
-                                    <NavLink to={item.path} className={navClass =>navClass.isActive ? 'nav__active nav__link':'nav__link'}>
-                                    <i className={item.icon}></i>{item.display}</NavLink>
-                                </li>
-                            ))
-                        }
-                    
-                        </ul>
-                    </li>
-                    <li className={open4?"list__arrow arrow": "list__item"}>
-                        <div className="list__button"  onClick={()=>setOpen4(!open4)}>
-                            <i className="ri-pencil-ruler-2-fill list__img"></i>
-                            <a href="#" className='nav__link'> Preceptores</a>
-                            <i className="ri-arrow-right-line list__arrow"></i>
-                        </div>
-                        <ul className={open4? null: "list__show"}>
-                        {
-                            navLinksSecret.map((item,index)=>(
-                                <li className="nav__item" key={index}>
-                                    <NavLink to={item.path} className={navClass =>navClass.isActive ? 'nav__active nav__link':'nav__link'}>
-                                    <i className={item.icon}></i>{item.display}</NavLink>
-                                </li>
-                            ))
-                        }
-                    
-                        </ul>
-                    </li>
                 </ul>
             
             </div>
@@ -118,7 +58,7 @@ const Sidebar = () => {
   );
 }
 
-export default Sidebar
+export default SidebarProfesor
 
 
 // import React from 'react'
