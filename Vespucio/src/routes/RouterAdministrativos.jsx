@@ -35,7 +35,6 @@ const RouterAdministrativos = () => {
     <Route exact path="/Alumnos" element={<Alumnos/>}/>
     <Route exact path="/PersonalEducativo" element={<PersonalEducativo/>}/>
     <Route exact path="/Materias" element={<Materias />} />
-  
 
 
     <Route exact path="/Cobranzas" element={<Cobranzas/>}/>    

@@ -1,10 +1,11 @@
 import styled from '@emotion/styled'
-import React ,{useState} from 'react';
+import {React, useEffect, useState} from 'react';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import { Chart } from 'primereact/chart';
 import "../estilos/estilos.css";
 import {BarChart} from "./BarChart"
+import {supabase} from "../Backend/client";
 
 
 
@@ -49,8 +50,34 @@ const TituloCarta = styled.h1`
   color:#181b3a;
 `;
 
-
 function DashBoard() {
+
+  const [numeroAlumnos, setNumeroAlumnos] = useState(0);
+  const [numeroProfesores, setnumeroProfesores] = useState(0);
+  const [ingresos, setIngresos] = useState(0);
+
+  const cantidadDash = async()=>{
+  try {
+     const result= await supabase.from('dashBoardView')
+     .select()     
+    
+     setNumeroAlumnos(result.data[0].cant);
+
+     const result2= await supabase.from('dashBoardProfesView')
+     .select()     
+    
+     setnumeroProfesores(result2.data[0].cant);
+
+     const ingresosProy= await supabase.from('cuotasCobros')
+     .select("")
+    
+     setnumeroProfesores(result2.data[0].cant);
+
+
+  } catch (error) {
+      console.log(error)
+  }
+}
 
   const [chartData] = useState({
   labels: ['A', 'B', 'C'],
@@ -80,6 +107,11 @@ const [lightOptions] = useState({
       }
   }
 });
+
+useEffect(()=>{
+  cantidadDash();
+},[])
+
   return (
 
     <Main>
@@ -99,8 +131,8 @@ const [lightOptions] = useState({
       >
         <Paper elevation={3}> <TituloCarta>Ingresos</TituloCarta> <Detalle>numero</Detalle></Paper> 
         <Paper elevation={3}> <TituloCarta>Egresos</TituloCarta> <Detalle>numero</Detalle></Paper> 
-        <Paper elevation={3}> <TituloCarta>Total Alumnos</TituloCarta> <Detalle>numero</Detalle></Paper> 
-        <Paper elevation={3}> <TituloCarta>Total Profesores</TituloCarta> <Detalle>numero</Detalle></Paper> 
+        <Paper elevation={3}> <TituloCarta>Total Alumnos</TituloCarta> <Detalle>{numeroAlumnos}</Detalle></Paper> 
+        <Paper elevation={3}> <TituloCarta>Total Profesores</TituloCarta> <Detalle>{numeroProfesores}</Detalle></Paper> 
 
       </Box>
       <Graficos>
