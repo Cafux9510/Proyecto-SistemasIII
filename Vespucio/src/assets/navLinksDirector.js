@@ -16,6 +16,12 @@ const navLinksDirector = [
         icon:"ri-filter-line",
         display:"Estructura Escolar",
     },
+    {
+        path:"/Dashboard" ,
+        icon:"ri-filter-line",
+        display:"Toma de Decisiones",
+    },
+
 
 ]
 

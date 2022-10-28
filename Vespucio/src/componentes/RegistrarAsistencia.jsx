@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 import "../estilos/gestionMateriaXProfesor.css";
@@ -14,6 +14,9 @@ const Contenedor=styled.div`
 `
 
 const RegistrarAsistencia = () => {
+    
+    const [curso, setCurso] = useState(null);
+
 
     const navigate=useNavigate();
 
@@ -24,6 +27,9 @@ const RegistrarAsistencia = () => {
         {label: '5° A', value: '5a'},
         {label: '2° A', value: '2A'}
     ];
+    const onCursoChange = (e) => {
+        setCurso(e.value);
+    }
   return (
         
     <div className="grid grid-nogutter  text-800 contenedorGestion">
@@ -32,8 +38,10 @@ const RegistrarAsistencia = () => {
                     <section className='selectorGestion'>
                         <span className="block text-6xl font-bold mb-1 spanTituloGestion">Registro de asistencia</span>
                         <div className="text-2xl font-bold mb-3 subtituloGestion">Seleccione la Materia</div>
-
-                        <Dropdown value={"materia"} options={cursos} onChange={(e) => setCity(e.value)} placeholder="Seleccione Materia"/>
+                            <Dropdown value={curso} options={cursos} onChange={onCursoChange} optionLabel="name" placeholder="selecciona Materia" />
+                        <br/>
+                        <br/>
+                        <br/>
         
                         <Button label="Seleccionar" type="button" className="mr-3 p-button-raised botonSubmitGestion" onClick={()=>navigate('/AsistenciaXCurso')}/>
                     </section>
