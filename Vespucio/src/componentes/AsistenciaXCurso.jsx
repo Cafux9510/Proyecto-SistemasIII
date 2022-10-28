@@ -26,11 +26,11 @@ import RegistrarAsistencia from "./RegistrarAsistencia";
 
 
 const Main = styled.div `
-  margin-top:0;
-  margin-left:0;
+  margin-top:6%;
+  margin-left:1%;
   background-color:white;
-  width:60vw;
-  height:auto;
+  width:80vw;
+  height:100vh;
   
    `;
  const Datos= styled.div`
@@ -139,7 +139,7 @@ export default function AsistenciaXCurso() {
       <List
         sx={{
           width: 200,
-          height: 230,
+          height: 430,
           bgcolor: 'background.paper',
           overflow: 'auto',
         }}
