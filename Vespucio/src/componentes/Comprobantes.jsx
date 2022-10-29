@@ -170,7 +170,7 @@ const Comprobantes = () => {
             tipo_movimiento,
             numero_comprobante,
             fecha_emision,
-            total_comprobante,
+            totales,
             link_archivo
           });
           funcion()
@@ -455,10 +455,10 @@ const Comprobantes = () => {
 
 
     const productDialogFooter = (
-        <React.Fragment>
+        <>
           <Button label="Cancelar" icon="pi pi-times" className="p-button-text" onClick={eliminarDialog} />
           <Button label="Guardar" icon="pi pi-check" className="p-button-text" onClick={submit} />
-        </React.Fragment>
+        </>
     );
 
     //Funciones para agregar datos a la tabla de detalles fiumba
@@ -530,9 +530,9 @@ const eliminarDetalle=id=>{
 
 const actionBodyTemplate = (rowData) => {
   return (
-      <React.Fragment>
+      <>
           <Button icon="pi pi-trash" className="p-button-rounded p-button-warning" onClick={()=>eliminarDetalle(rowData.id_articulo)} />
-      </React.Fragment>
+      </>
   );
 }
 
@@ -647,9 +647,9 @@ const mostrarFactura=(comprobante)=>{
                 <div className='field mb-4'>
                   <InputText name="fecha_emision" placeholder='Fecha' value={comprobante.fecha_emision || ""} onChange={actualizarState} type="date"/>
               </div>
-              <div className='field'>
+              {/* <div className='field'>
                 <InputText name="total_comprobante" required placeholder='Monto Total' value={comprobante.total_comprobante || ""} onChange={actualizarState} autoFocus type="number"/>
-              </div>
+              </div> */}
             </div>
 
             <div className='col'>
@@ -685,6 +685,7 @@ const mostrarFactura=(comprobante)=>{
             </div>
           </div>
           <div>
+            <br/>
             <label className="text-2xl uppercase">Total: <span>{totales}</span></label>
           </div>
         </Dialog>

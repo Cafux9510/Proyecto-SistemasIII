@@ -83,7 +83,7 @@ body {
 
 /* Nuevo del login */
 #bg {
-  background-image: url('img/fondoescolar.jpg');
+  background-image: url('assets/imagenes/pizarronnegro.jpg');
   background-size: auto;
   position: fixed;
   left: 0;
@@ -122,13 +122,13 @@ form .form-field::before {
   background-repeat: no-repeat;
 }
 form .form-field:nth-child(1)::before {
-  background-image: url(img/user-icon.png);
+  background-image: url(/src/assets/imagenes/user-icon.png);
   width: 20px;
   height: 20px;
   top: 15px;
 }
 form .form-field:nth-child(2)::before {
-  background-image: url(img/lock-icon.png);
+  background-image: url(assets/imagenes/lock-icon.png);
   width: 16px;
   height: 16px;
 }

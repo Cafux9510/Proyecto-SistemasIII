@@ -200,7 +200,7 @@ export default function AsistenciaXCurso() {
         <TextField
           id="outlined-read-only-input"
           label="Fecha"
-          defaultValue="La de hoy ah"
+          defaultValue="La de hoy"
           InputProps={{
             readOnly: true,
           }}

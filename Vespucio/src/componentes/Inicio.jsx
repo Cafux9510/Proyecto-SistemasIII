@@ -68,6 +68,14 @@ const Inicio = ({setNumero}) => {
 
   const navigate = useNavigate();
 
+  function guardarEnLocalStorage(tipo_usuario) {
+
+    let isSesionActiva = true;
+    localStorage.setItem( "sesionActiva", isSesionActiva )
+    localStorage.setItem( "tipoUsuario", tipo_usuario )
+    
+  }
+
 
   async function verificarIngreso() {
     try {
@@ -105,7 +113,7 @@ const Inicio = ({setNumero}) => {
                 .update({ isActivo: true })
                 .eq("id_usuario", userID);
 
-              setNumero(tipo_usuario);
+              guardarEnLocalStorage(tipo_usuario);
 
               break;
             case 2:
@@ -115,7 +123,8 @@ const Inicio = ({setNumero}) => {
                 .update({ isActivo: true })
                 .eq("id_usuario", userID);
 
-                setNumero(tipo_usuario);
+              guardarEnLocalStorage(tipo_usuario);
+
 
               break;
             case 3:
@@ -125,7 +134,7 @@ const Inicio = ({setNumero}) => {
                 .update({ isActivo: true })
                 .eq("id_usuario", userID);
 
-              setNumero(tipo_usuario);
+              guardarEnLocalStorage(tipo_usuario);
 
               break;
             case 4:
@@ -135,7 +144,7 @@ const Inicio = ({setNumero}) => {
                 .update({ isActivo: true })
                 .eq("id_usuario", userID);
 
-                setNumero(tipo_usuario);
+              guardarEnLocalStorage(tipo_usuario);
 
               break;
             case 5:
@@ -145,7 +154,7 @@ const Inicio = ({setNumero}) => {
                 .update({ isActivo: true })
                 .eq("id_usuario", userID);
 
-                setNumero(tipo_usuario);
+              guardarEnLocalStorage(tipo_usuario);
                 
               break;
             default:
@@ -175,11 +184,11 @@ const Inicio = ({setNumero}) => {
       <div>
         <div id="bg"></div>
         <form>
-          <div class="form-field">
+          <div className="form-field">
             <input id="user" type="text" placeholder="Usuario" required />
           </div>
 
-          <div class="form-field">
+          <div className="form-field">
             <input
               id="pass"
               type="password"

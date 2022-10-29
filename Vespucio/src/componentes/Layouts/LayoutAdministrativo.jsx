@@ -1,6 +1,6 @@
 import React from 'react'
-import RouterAdministrativos from '../../routes/RouterAlumnos'
-import SidebarAdministrativo from '../SideBars/SidebarAlumno'
+import RouterAdministrativos from '../../routes/RouterAdministrativos'
+import SidebarAdministrativo from '../SideBars/SidebarAdministrativo'
 import TopNav from '../TopNav'
 import "../../estilos/estilos.css";
 import "../../estilos/sidebar.css";

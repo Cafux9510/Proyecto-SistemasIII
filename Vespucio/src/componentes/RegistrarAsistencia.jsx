@@ -37,8 +37,8 @@ const RegistrarAsistencia = () => {
             <div className=" md:col-6 p-6 text-center md:text-left flex align-items-center infoInputGestion">
                     <section className='selectorGestion'>
                         <span className="block text-6xl font-bold mb-1 spanTituloGestion">Registro de asistencia</span>
-                        <div className="text-2xl font-bold mb-3 subtituloGestion">Seleccione la Materia</div>
-                            <Dropdown value={curso} options={cursos} onChange={onCursoChange} optionLabel="name" placeholder="selecciona Materia" />
+                        <div className="text-2xl font-bold mb-3 subtituloGestion">Seleccione un Curso Asignado</div>
+                            <Dropdown value={curso} options={cursos} onChange={onCursoChange} optionLabel="name" placeholder="--Seleccione--" />
                         <br/>
                         <br/>
                         <br/>

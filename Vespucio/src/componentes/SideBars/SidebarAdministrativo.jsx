@@ -35,7 +35,7 @@ const SidebarAdministrativo = () => {
                     <li className={open1?"list__arrow arrow": "list__item"}>
                         <div className="list__button" onClick={()=>setOpen1(!open1)}>
                             <i className="ri-quill-pen-fill list__img"></i>
-                            <a href="#"  className='nav__link'>Alumnado</a>
+                            <a href="#"  className='nav__link'>Administrativos</a>
                             <i className="ri-arrow-right-line list__arrow"></i>
                         </div>
                         <ul className={open1? null: "list__show"}>

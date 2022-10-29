@@ -11,34 +11,48 @@ function App() {
 
   const[numero,setNumero] = useState(0)
 
-  // let variable=1;
-// alumno(1), profesor(2), administrativo(3), director(4), preceptor(5)
-  if (numero === 0) {
+  console.log(localStorage.getItem( "sesionActiva" ))
+
+  if (localStorage.getItem( "sesionActiva" )) {
+
+    //alumno(1), profesor(2), administrativo(3), director(4), preceptor(5)
+    console.log("Pase el primer if")
+
+    if(localStorage.getItem( "tipoUsuario" ) === 1){
+      
+      return(
+        <LayoutAlumno/>
+      )
+    }else if(localStorage.getItem( "tipoUsuario" ) === 2){
+      return(
+        <LayoutProfesor/>
+      )
+    }else if(localStorage.getItem( "tipoUsuario" ) === 3){
+      return(
+        <LayoutAdministrativo/>
+      )
+    }else if(localStorage.getItem( "tipoUsuario" ) === 4){
+      return(
+        <LayoutDirector/>
+      )
+    }else if(localStorage.getItem( "tipoUsuario" ) === 5){
+      console.log("Entre a prece")
+      return(
+        <LayoutPreceptor/>
+      )
+    }
+    
+  }else{
     return(
       <Inicio setNumero = {setNumero}/>
       // <Inicio nombre1 = {setNumero} nombre2 = {variable}/>
     )
-  }else if(numero === 1){
-    return(
-      <LayoutAlumno/>
-    )
-  }else if(numero === 2){
-    return(
-      <LayoutProfesor/>
-    )
-  }else if(numero === 3){
-    return(
-      <LayoutAdministrativo/>
-    )
-  }else if(numero === 4){
-    return(
-      <LayoutDirector/>
-    )
-  }else if(numero === 5){
-    return(
-      <LayoutPreceptor/>
-    )
   }
+
+
+
+    
+   
   
 }
 

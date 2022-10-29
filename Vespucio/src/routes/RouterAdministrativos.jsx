@@ -22,7 +22,7 @@ import Cobranzas from '../componentes/Cobranzas';
 const RouterAdministrativos = () => {
   return (
     <Routes>
-    {/* <Route exact path="/" element={<Inicio/>}/> */}
+    <Route exact path="/"/>
     <Route exact path="/comprobantes" element={<Comprobantes/>}/>
     <Route exact path="/insumos" element={<Insumos/>}/>
     <Route exact path="/TablaProveedores" element={<TablaProveedores/>}/>
