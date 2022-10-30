@@ -9,7 +9,7 @@ import {BarChart} from "./BarChart"
 
 
 const Main = styled.div `
-  margin-top:7%;
+  margin-top:8vh;
   margin-left:0;
   background-color:white;
   width:80vw;
@@ -23,7 +23,7 @@ const Detalle = styled.span`
 
 `;
 const Titulo = styled.h1`
-   margin-left:20%;
+   margin-left:22vw;
 
 `;
 const SubTitulo = styled.span`
@@ -53,7 +53,25 @@ const TituloCarta = styled.h1`
 function DashBoard() {
 
   const [chartData] = useState({
-  labels: ['A', 'B', 'C'],
+  labels: ['Cuotas', 'Matricula', 'Municipio'],
+  datasets: [
+      {
+          data: [300, 50, 100],
+          backgroundColor: [
+              "#42A5F5",
+              "#66BB6A",
+              "#FFA726"
+          ],
+          hoverBackgroundColor: [
+              "#64B5F6",
+              "#81C784",
+              "#FFB74D"
+          ]
+      }
+  ]
+});
+const [chartDataEgresos] = useState({
+  labels: ['Sueldos', 'Insumos', 'Otros'],
   datasets: [
       {
           data: [300, 50, 100],
@@ -105,16 +123,16 @@ const [lightOptions] = useState({
       </Box>
       <Graficos>
         <Mes>
-          <SubTitulo>Graficos Ingresos/Egresos</SubTitulo>
+          <SubTitulo>Ingresos</SubTitulo>
           <div className=" flex justify-content-center"> 
             <Chart type="pie" data={chartData} options={lightOptions} style={{ position: 'center', width: '50%' }} />
           </div>
 
         </Mes>
         <ComparacionAnual>
-          <SubTitulo> Grafico Ingresos/Egresos Anuales</SubTitulo>
+          <SubTitulo> Egresos</SubTitulo>
           <div className=" flex justify-content-center">
-            <Chart type="pie" data={chartData} options={lightOptions} style={{ position: 'center', width: '50%' }} />
+            <Chart type="pie" data={chartDataEgresos} options={lightOptions} style={{ position: 'center', width: '50%' }} />
           </div>
 
         </ComparacionAnual>

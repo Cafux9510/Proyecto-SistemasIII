@@ -16,8 +16,9 @@ const Label = styled.label`
 
 const Main = styled.div `
   margin-top: 0;
-  width:65em;
-  margin-left:1%;
+  width:80vw;
+  height:75vh;
+  margin-left:17vw;
 
 `;
 const Titulo = styled.label `

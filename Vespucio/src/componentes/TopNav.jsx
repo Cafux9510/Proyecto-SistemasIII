@@ -10,6 +10,7 @@ import Tooltip from '@mui/material/Tooltip';
 import PersonAdd from '@mui/icons-material/PersonAdd';
 import Logout from '@mui/icons-material/Logout';
 
+
 import "../estilos/top-nav.css"
 
 import styled from '@emotion/styled'
@@ -18,7 +19,17 @@ const Desplegable = styled.div`
   display:flex;
   flex-direction:column;
   column-gap:2px;
-`
+`;
+const TopTitle = styled.h2`
+  display:flex;
+  width:57vw;
+  margin-top:2vh;
+  margin-left:23vw;
+  color: white;
+
+
+`;
+
 const TopNav = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -31,14 +42,16 @@ const TopNav = () => {
   return (
     <div className="top__nav">
       <div className="top__nav-wrapper">
-        <div className="search__box">
+        {/* <div className="search__box">
           <input type="text" placeholder='Buscar...' />
           <span><i className="ri-search-line"></i></span>
-        </div>
+        </div> */}
+        <TopTitle> Bienvenido de Nuevo</TopTitle>
         <div className="top__nav-right">
          
 
         {/* prueba avatar */}
+
 
     <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
@@ -95,9 +108,7 @@ const TopNav = () => {
         <MenuItem>
           <Avatar /> Perfil
         </MenuItem>
-        {/* <MenuItem>
-          <Avatar /> My account
-        </MenuItem> */}
+     
         <Divider />
         <MenuItem>
           <ListItemIcon>
@@ -105,12 +116,7 @@ const TopNav = () => {
           </ListItemIcon>
           Editar Mi Perfil
         </MenuItem>
-        {/* <MenuItem>
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          Settings
-        </MenuItem> */}
+        
         <MenuItem>
           <ListItemIcon>
             <Logout fontSize="small" />
@@ -121,12 +127,6 @@ const TopNav = () => {
       </Desplegable>
     </React.Fragment>
 
-
-          {/* <div className="profile">
-            <Link to="/inicio">
-              <img src={profileImg} alt="" />
-            </Link>
-          </div> */}
         </div>
       </div>
     </div>
