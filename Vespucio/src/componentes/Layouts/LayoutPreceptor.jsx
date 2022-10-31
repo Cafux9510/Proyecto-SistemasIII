@@ -7,12 +7,12 @@ import "../../estilos/sidebar.css";
 
 
 
-const LayoutPreceptor = () => {
+const LayoutPreceptor = (props) => {
   return (
     <div className='layout'>
       <SidebarPreceptor/>
       <div className="main__layout">
-            <TopNav/>
+            <TopNav user={props} />
             <div className="content">
                 <RouterPreceptores/>
             </div>

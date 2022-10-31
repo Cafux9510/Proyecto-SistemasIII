@@ -162,16 +162,17 @@ const Alumnos = () => {
 
         const {errorr,usuarioT}= await supabase.from("usuarios").insert([{
           nombre_usuario:usuario,
-          contrasenia_usuario:dni_alumno
+          contrasenia_usuario:dni_alumno,
+          tipo_usuario:1
         }]);
 
-      const user_id = await supabase.from('usuarios')
-      .select('id_usuario')
-      .eq("nombre_usuario",usuario);
+        const user_id = await supabase.from('usuarios')
+        .select('id_usuario')
+        .eq("nombre_usuario",usuario);
 
-      const valor=user_id.data[0].id_usuario
-    
-      console.log(valor)
+        const valor=user_id.data[0].id_usuario
+      
+        console.log(valor)
 
         const {error,result}= await supabase.from("alumnos").insert([{
             id_anioEduc,

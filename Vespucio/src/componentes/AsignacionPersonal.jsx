@@ -156,6 +156,7 @@ const AsignacionPersonal = () => {
     }
     const update = async(id_docAnio)=>{
       try {
+        console.log(id_docAnio)
         const result= await supabase.from("personalPorAnio")
         .update({isHabilitado_asignacion:false})
         .eq("id_docAnio",id_docAnio)
@@ -208,8 +209,6 @@ const AsignacionPersonal = () => {
 
         const valor=resultado.data[0].id_cargo
 
-        console.log(valor)
-
         const result= await supabase.from("personalPorAnio").insert([{
           id_cargo:valor,
           id_personal,
@@ -218,6 +217,53 @@ const AsignacionPersonal = () => {
         
         }]);
 
+        const iD = await supabase.from("personalEducativo")
+        .select('id_usuario')
+        .eq("id_personal",id_personal)
+
+        let userID = iD.data[0].id_usuario;
+
+        let tipoPersonal = parseInt(id_tipo_personal);
+
+        switch (tipoPersonal) {
+          case 1:
+
+            const {resultad1,erroor1}= await supabase.from("usuarios")
+            .update({"tipo_usuario":4})
+            .eq("id_usuario",userID)
+
+            break;
+          case 2:
+           
+            const {resultad2,erroor2}= await supabase.from("usuarios")
+            .update({"tipo_usuario":2})
+            .eq("id_usuario",userID)
+
+            break;
+          case 3:
+            const {resultad3,erroor3}= await supabase.from("usuarios")
+            .update({"tipo_usuario":3})
+            .eq("id_usuario",userID)
+
+            break;
+          case 4:
+            const {resultad4,erroor4}= await supabase.from("usuarios")
+            .update({"tipo_usuario":5})
+            .eq("id_usuario",userID)
+
+            break;
+          case 5:
+            const {resultad5,erroor5}= await supabase.from("usuarios")
+            .update({"tipo_usuario":2})
+            .eq("id_usuario",userID)
+
+            break;
+          default:
+            console.log(
+              "Seria raro que id_tipo_usuario no tenga uno de estos valores"
+            );
+            break;
+        }
         
         window.location.reload()
         setData({
@@ -1021,7 +1067,7 @@ const AsignacionPersonal = () => {
                   {
                       icon:"delete",
                       tooltip:"Eliminar",
-                      onClick: (event,rowData)=>handleEliminar(rowData.id_personal)
+                      onClick: (event,rowData)=>handleEliminar(rowData.id_docAnio)
                   }
                   
               ]}

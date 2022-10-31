@@ -19,7 +19,7 @@ const Desplegable = styled.div`
   flex-direction:column;
   column-gap:2px;
 `
-const TopNav = () => {
+const TopNav = (props) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -28,6 +28,18 @@ const TopNav = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+
+  function cerrarSesion() {
+    //no lo agregue, pero en teoria ya esta el metodo para cerrar sesion
+    document.getElementById("cajaLayout").style.display = "none";
+    document.getElementById("formLogin").style.display = "block";
+    document.getElementById("user").value = "";
+    document.getElementById("pass").value = "";
+    document.getElementById("user").focus();
+
+  }
+
   return (
     <div className="top__nav">
       <div className="top__nav-wrapper">
@@ -93,7 +105,7 @@ const TopNav = () => {
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
         <MenuItem>
-          <Avatar /> Perfil
+          <Avatar /> {props.user.usu}
         </MenuItem>
         {/* <MenuItem>
           <Avatar /> My account
@@ -113,7 +125,7 @@ const TopNav = () => {
         </MenuItem> */}
         <MenuItem>
           <ListItemIcon>
-            <Logout fontSize="small" />
+            <Logout fontSize="small"/>
           </ListItemIcon>
           Cerrar sesion
         </MenuItem>

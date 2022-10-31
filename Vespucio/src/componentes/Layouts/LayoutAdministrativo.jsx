@@ -7,12 +7,12 @@ import "../../estilos/sidebar.css";
 
 
 
-const LayoutAdministrativo = () => {
+const LayoutAdministrativo = (props) => {
   return (
     <div className='layout'>
       <SidebarAdministrativo/>
       <div className="main__layout">
-            <TopNav/>
+            <TopNav user={props} />
             <div className="content">
                 <RouterAdministrativos/>
             </div>

@@ -75,10 +75,6 @@ const PersonalEducativo = () => {
     //Funciones que tienen datos desde una api
     const funcion = async()=>{
         try {
-           /* const result= await supabase.from('proveedores')
-           .select()
-           .eq("isHabilitado_proveedor",true)
-           setData(result.data) */
            const { data: personal, error } = await supabase
             .from('personalEducativo')
             .select(`*`)
@@ -140,19 +136,41 @@ const PersonalEducativo = () => {
 
     const submit = async()=>{
       try {
-        const result= await supabase.from("personalEducativo").insert({
-            nombre_personal,
-            telefono_personal,
-            mail_personal,
-            domicilio_personal,
-            apellido_personal,
-            dni_personal
-        });
-        funcion()
 
-        const resultado=result.data[0]
-        setData([...data,resultado])
-        abrirCerrarModalInsertar();
+        let primerN = (nombre_personal.substring(0,1)).toLowerCase();
+        let tresA = (apellido_personal.substring(0,3)).toLowerCase();
+        let dni = parseInt(dni_personal);
+        let numA = (Math.floor(Math.random() * (dni - 1000) + 1000)).toString()
+        let tresUltN = numA.substring(numA.length-3);
+        let usuario = primerN + tresA + tresUltN;
+
+        const {errorr,usuarioT}= await supabase.from("usuarios").insert([{
+          nombre_usuario:usuario,
+          contrasenia_usuario:dni_personal
+        }]);
+
+      const user_id = await supabase.from('usuarios')
+      .select('id_usuario')
+      .eq("nombre_usuario",usuario);
+
+      const valor=user_id.data[0].id_usuario
+    
+      console.log(valor)
+
+      const result= await supabase.from("personalEducativo").insert({
+          nombre_personal,
+          telefono_personal,
+          mail_personal,
+          domicilio_personal,
+          apellido_personal,
+          dni_personal,
+          id_usuario:valor
+      });
+      funcion()
+
+      window.location.reload()
+
+      abrirCerrarModalInsertar();
        
       } catch (error) {
         console.log(error)

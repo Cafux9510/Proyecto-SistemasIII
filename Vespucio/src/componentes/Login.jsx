@@ -1,123 +1,364 @@
-import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Paper from '@mui/material/Paper';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useEffect, useState } from "react";
+import { supabase } from "../Backend/client";
+import { makeStyles } from "@material-ui/core/styles";
+import styled from "@emotion/styled";
 
-function Copyright(props) {
+import LayoutAlumno from "./Layouts/LayoutAlumno";
+import LayoutProfesor from "./Layouts/LayoutProfesor";
+import LayoutAdministrativo from "./Layouts/LayoutAdministrativo";
+import LayoutDirector from "./Layouts/LayoutDirector";
+import LayoutPreceptor from "./Layouts/LayoutPreceptor";
+
+const Login = () => {
+
+  const[miLogin, setMiLogin] = useState("false");
+  const[usu, setUsu] = useState("");
+  const[pas, setPas] = useState("");
+  const[tipoUsuario, setTipoUsuario] = useState(0);
+
+  async function verificarIngreso(e) {
+    e.preventDefault();
+
+    let usuario = document.getElementById("user").value;
+    let password = document.getElementById("pass").value;
+
+    if(usuario.length===0 || password.length===0){
+      alert("Complete los datos faltantes!");
+    }else{
+        try {
+          const user_id = await supabase
+            .from("usuarios")
+            .select()
+            .eq("nombre_usuario", usuario)
+            .eq("contrasenia_usuario", password);
+
+            //Ahora preguntamos si el tipo de usuario corresponde a un
+            // alumno(1), profesor(2), administrativo(3), director(4), preceptor(5)
+
+          if (user_id.data.length !== 0) {
+
+            let tipo_usuario = user_id.data[0].tipo_usuario;
+            setTipoUsuario(tipo_usuario);
+            let userID = user_id.data[0].id_usuario;    
+            let isSesionActiva;
+
+            if (tipo_usuario === 1) {
+
+              const idAlumno = await supabase
+              .from("alumnos")
+              .select("id_alumno")
+              .eq("id_usuario", userID)
+
+              let id = idAlumno.data[0].id_alumno;
+
+              localStorage.setItem( "idUsuario", id )
+
+              
+            }else{
+
+              const idPersonal = await supabase
+              .from("personalEducativo")
+              .select("id_personal")
+              .eq("id_usuario", userID)
+
+              let id = idPersonal.data[0].id_personal;
+
+              localStorage.setItem( "idUsuario", id )
+
+            }
+
+
+            switch (tipo_usuario) {
+              case 1:
+                console.log("Alumno");
+                /*Aca cambia el estado de la sesion a activo,
+                cosa de saber que esta logeado en todo momento y movernos con este atributo,
+                hasta que cierre sesión, cambiando ese atributo a false cuando lo haga*/
+                const { resultAl, errorA } = await supabase
+                  .from("usuarios")
+                  .update({ isActivo: true })
+                  .eq("id_usuario", userID);
+
+                isSesionActiva = true;
+                localStorage.setItem( "sesionActiva", isSesionActiva )
+                localStorage.setItem( "tipoUsuario", tipo_usuario )
+
+                setMiLogin("true");
+                document.getElementById("formLogin").style.display = "none";
+
+                break;
+              case 2:
+                console.log("Profesor");
+                const { resultPr, errorPro } = await supabase
+                  .from("usuarios")
+                  .update({ isActivo: true })
+                  .eq("id_usuario", userID);
+
+                isSesionActiva = true;
+                localStorage.setItem( "sesionActiva", isSesionActiva )
+                localStorage.setItem( "tipoUsuario", tipo_usuario )
+
+                setMiLogin("true");
+                document.getElementById("formLogin").style.display = "none";
+
+                break;
+              case 3:
+                console.log("Administrativo");
+                const { resultAd, errorAd } = await supabase
+                  .from("usuarios")
+                  .update({ isActivo: true })
+                  .eq("id_usuario", userID);
+
+                isSesionActiva = true;
+                localStorage.setItem( "sesionActiva", isSesionActiva )
+                localStorage.setItem( "tipoUsuario", tipo_usuario )
+
+                setMiLogin("true");
+                document.getElementById("formLogin").style.display = "none";
+
+                break;
+              case 4:
+                console.log("Director");
+                const { resultD, errorD } = await supabase
+                  .from("usuarios")
+                  .update({ isActivo: true })
+                  .eq("id_usuario", userID);
+
+                isSesionActiva = true;
+                localStorage.setItem( "sesionActiva", isSesionActiva )
+                localStorage.setItem( "tipoUsuario", tipo_usuario )
+
+                setMiLogin("true");
+                document.getElementById("formLogin").style.display = "none";
+
+                break;
+              case 5:
+                console.log("Preceptor");
+                const { resultPre, errorPre } = await supabase
+                  .from("usuarios")
+                  .update({ isActivo: true })
+                  .eq("id_usuario", userID);
+
+                isSesionActiva = true;
+                localStorage.setItem( "sesionActiva", isSesionActiva )
+                localStorage.setItem( "tipoUsuario", tipo_usuario )
+
+                setMiLogin("true");
+                document.getElementById("formLogin").style.display = "none";
+                  
+                break;
+              default:
+                console.log(
+                  "Seria raro ingresar acá pero bueno, che no tenes un tipo de usuario valido"
+                );
+                break;
+            }
+
+          }else{
+            setMiLogin("false");
+            alert("Error de Usuario y/o Contraseña");
+            document.getElementById("user").value = "";
+            document.getElementById("pass").value = "";
+            document.getElementById("user").focus();
+          }
+        } catch (errorLogin) {
+          console.log(errorLogin);
+        }
+
+      }
+
+  }
+
+
+    // try {
+    //   let usuario = document.getElementById("user");
+    //   let valorUsuario = usuario.value;
+    //   let password = document.getElementById("pass");
+    //   let valorPass = password.value;
+
+    //   console.log("Ingresando al Cielo");
+
+    //   try {
+    //     const user_id = await supabase
+    //       .from("usuarios")
+    //       .select()
+    //       .eq("nombre_usuario", valorUsuario)
+    //       .eq("contrasenia_usuario", valorPass);
+
+    //     if (user_id.data.length !== 0) {
+    //       console.log("Bienvenido al Valhala");
+
+    //       //Ahora preguntamos si el tipo de usuario corresponde a un
+    //       // alumno(1), profesor(2), administrativo(3), director(4), preceptor(5)
+
+    //       let tipo_usuario = user_id.data[0].tipo_usuario;
+    //       let userID = user_id.data[0].id_usuario;    
+    //       let isSesionActiva;      
+
+    //       switch (tipo_usuario) {
+    //         case 1:
+    //           console.log("Alumno");
+    //           /*Aca cambia el estado de la sesion a activo,
+    //           cosa de saber que esta logeado en todo momento y movernos con este atributo,
+    //           hasta que cierre sesión, cambiando ese atributo a false cuando lo haga*/
+    //           const { resultAl, errorA } = await supabase
+    //             .from("usuarios")
+    //             .update({ isActivo: true })
+    //             .eq("id_usuario", userID);
+
+    //           isSesionActiva = true;
+    //           localStorage.setItem( "sesionActiva", isSesionActiva )
+    //           localStorage.setItem( "tipoUsuario", tipo_usuario )
+
+    //           break;
+    //         case 2:
+    //           console.log("Profesor");
+    //           const { resultPr, errorPro } = await supabase
+    //             .from("usuarios")
+    //             .update({ isActivo: true })
+    //             .eq("id_usuario", userID);
+
+    //           isSesionActiva = true;
+    //           localStorage.setItem( "sesionActiva", isSesionActiva )
+    //           localStorage.setItem( "tipoUsuario", tipo_usuario )
+
+
+    //           break;
+    //         case 3:
+    //           console.log("Administrativo");
+    //           const { resultAd, errorAd } = await supabase
+    //             .from("usuarios")
+    //             .update({ isActivo: true })
+    //             .eq("id_usuario", userID);
+
+    //           isSesionActiva = true;
+    //           localStorage.setItem( "sesionActiva", isSesionActiva )
+    //           localStorage.setItem( "tipoUsuario", tipo_usuario )
+
+
+    //           break;
+    //         case 4:
+    //           console.log("Director");
+    //           const { resultD, errorD } = await supabase
+    //             .from("usuarios")
+    //             .update({ isActivo: true })
+    //             .eq("id_usuario", userID);
+
+    //           isSesionActiva = true;
+    //           localStorage.setItem( "sesionActiva", isSesionActiva )
+    //           localStorage.setItem( "tipoUsuario", tipo_usuario )
+
+
+    //           break;
+    //         case 5:
+    //           console.log("Preceptor");
+    //           const { resultPre, errorPre } = await supabase
+    //             .from("usuarios")
+    //             .update({ isActivo: true })
+    //             .eq("id_usuario", userID);
+
+    //           isSesionActiva = true;
+    //           localStorage.setItem( "sesionActiva", isSesionActiva )
+    //           localStorage.setItem( "tipoUsuario", tipo_usuario )
+
+                
+    //           break;
+    //         default:
+    //           console.log(
+    //             "Seria raro ingresar acá pero bueno, che no tenes un tipo de usuario valido"
+    //           );
+    //           break;
+    //       }
+
+    //       /*setTimeout(function() {
+    //             location.reload();
+    //             }, 3000);*/
+    //     } else {
+    //       console.log("Amigo no estas registrado");
+    //     }
+    //   } catch (errorLogin) {
+    //     console.log(errorLogin);
+    //   }
+    // } catch (errorDatos) {
+    //   console.log(errorDatos);
+    //   console.log("Amigo completa los datos");
+    // }
+
+  // const RenderLayout = () =>{
+  //   //alumno(1), profesor(2), administrativo(3), director(4), preceptor(5)
+  
+  //   if(localStorage.getItem( "tipoUsuario" ) === 1){
+        
+  //     return(
+  //       <LayoutAlumno/>                  
+  //     )
+  //   }else if(localStorage.getItem( "tipoUsuario" ) === 2){
+  //     return(
+  //       <LayoutProfesor/>
+  //     )
+  //   }else if(localStorage.getItem( "tipoUsuario" ) === 3){
+  //     return(
+  //       <LayoutAdministrativo/>
+  //     )
+  //   }else if(localStorage.getItem( "tipoUsuario" ) === 4){
+  //     return(
+  //       <LayoutDirector/>
+  //     )
+  //   }else if(localStorage.getItem( "tipoUsuario" ) === 5){
+  //     console.log("Entre a prece")
+  //     return(
+  //       <LayoutPreceptor/>
+  //     )
+  //   }
+
+  // }
+
+
   return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
+    <div>
+      <div id="formLogin">
+
+      <div id="bg"></div>
+      <form>
+        <div className="form-field">
+          <input
+            id="user"
+            type="text"
+            placeholder="Usuario"
+            onChange={(e) => setUsu(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="form-field">
+          <input
+            id="pass"
+            type="password"
+            placeholder="Contraseña"
+            onChange={(e) => setPas(e.target.value)}
+            required
+          />{" "}
+        </div>
+
+        <div class="form-field">
+          <button class="btn" type="button" onClick={verificarIngreso}>
+            Log in
+          </button>
+        </div>
+      </form>
+
+      </div>
+      
+      { ((miLogin === "true") && (tipoUsuario===1)) && <LayoutAlumno usu={usu} />  }
+      { ((miLogin === "true") && (tipoUsuario===2)) && <LayoutProfesor usu={usu} />  }
+      { ((miLogin === "true") && (tipoUsuario===3)) && <LayoutAdministrativo usu={usu} />  }
+      { ((miLogin === "true") && (tipoUsuario===4)) && <LayoutDirector usu={usu} />  }
+      { ((miLogin === "true") && (tipoUsuario===5)) && <LayoutPreceptor usu={usu} />  }
+
+    </div>
   );
+  
 }
 
-const theme = createTheme();
 
-export default function Login() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-  };
-
-  return (
-    <ThemeProvider theme={theme}>
-      <Grid container component="main" sx={{ height: '100vh' }}>
-        <CssBaseline />
-        <Grid
-          item
-          xs={false}
-          sm={4}
-          md={7}
-          sx={{
-            backgroundImage: 'url(https://cdn.pixabay.com/photo/2014/08/13/20/16/school-417612_960_720.jpg)',
-            backgroundRepeat: 'no-repeat',
-            backgroundColor: (t) =>
-              t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        />
-        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-          <Box
-            sx={{
-              my: 8,
-              mx: 4,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
-            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-              <LockOutlinedIcon />
-            </Avatar>
-            <Typography component="h1" variant="h5">
-              Iniciar Sesión
-            </Typography>
-            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="user"
-                label="Usuario"
-                name="user"
-                autoComplete="user"
-                autoFocus
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Contraseña"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-              />
-              <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Recuerdame"
-              />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-                
-              >
-                Iniciar Sesión
-              </Button>
-              <Grid container>
-                <Grid item xs>
-                  <Link href="#" variant="body2">
-                    Olvidaste tu contraseña?
-                  </Link>
-                </Grid>
-                
-              </Grid>
-            </Box>
-          </Box>
-        </Grid>
-      </Grid>
-    </ThemeProvider>
-  );
-}
+export default Login

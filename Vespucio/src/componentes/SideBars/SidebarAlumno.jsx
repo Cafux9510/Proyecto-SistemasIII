@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import 'remixicon/fonts/remixicon.css'
 import navLinksGeneric from '../../assets/navLinksGeneric'
-import navLinksAlum from '../../assets/navLinksAdm'
+import navLinksAlum from '../../assets/navLinksAlum'
 import "../../estilos/sidebar.css";
 
 const SidebarAdministrativo = () => {
@@ -34,7 +34,7 @@ const SidebarAdministrativo = () => {
                     <li className={open1?"list__arrow arrow": "list__item"}>
                         <div className="list__button" onClick={()=>setOpen1(!open1)}>
                             <i className="ri-quill-pen-fill list__img"></i>
-                            <a href="#"  className='nav__link'>Administrativos</a>
+                            <a href="#"  className='nav__link'>Alumnado</a>
                             <i className="ri-arrow-right-line list__arrow"></i>
                         </div>
                         <ul className={open1? null: "list__show"}>

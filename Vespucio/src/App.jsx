@@ -1,57 +1,75 @@
-import LayoutAlumno from "./componentes/Layouts/LayoutAlumno";
-import LayoutProfesor from "./componentes/Layouts/LayoutProfesor";
-import LayoutAdministrativo from "./componentes/Layouts/LayoutAdministrativo";
-import LayoutDirector from "./componentes/Layouts/LayoutDirector";
-import LayoutPreceptor from "./componentes/Layouts/LayoutPreceptor";
 import React, { useState, useEffect } from 'react';
 import "./estilos/estilos.css";
-import Inicio from "./componentes/Inicio";
+
+import Login from "./componentes/Login";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import LayoutDirector from "../src/componentes/Layouts/LayoutDirector";
+import LayoutAlumno from "../src/componentes/Layouts/LayoutAlumno";
+import LayoutProfesor from "../src/componentes/Layouts/LayoutProfesor";
+import LayoutAdministrativo from "../src/componentes/Layouts/LayoutAdministrativo";
+import LayoutPreceptor from "../src/componentes/Layouts/LayoutPreceptor";
+
 
 function App() {
 
-  const[numero,setNumero] = useState(0)
+  // let tipo = localStorage.getItem( "tipoUsuario" )
+  // let tipoInt = parseInt(tipo)
+  // console.log(typeof tipoInt)
 
-  console.log(localStorage.getItem( "sesionActiva" ))
+  let isSesionActiva = localStorage.getItem( "sesionActiva" )
 
-  if (localStorage.getItem( "sesionActiva" )) {
+  let tipoUsuario = parseInt(localStorage.getItem( "tipoUsuario" ))
 
-    //alumno(1), profesor(2), administrativo(3), director(4), preceptor(5)
-    console.log("Pase el primer if")
+  return(
+    <div>
+      { (localStorage.getItem( "sesionActiva" ) === null) && <Login/>  }
+      { ((isSesionActiva !== null) && (tipoUsuario===1)) && <LayoutAlumno/>  }
+      { ((isSesionActiva !== null) && (tipoUsuario===2)) && <LayoutProfesor/>  }
+      { ((isSesionActiva !== null) && (tipoUsuario===3)) && <LayoutAdministrativo/>  }
+      { ((isSesionActiva !== null) && (tipoUsuario===4)) && <LayoutDirector/>  }
+      { ((isSesionActiva !== null) && (tipoUsuario===5)) && <LayoutPreceptor/>  }
+    </div>
 
-    if(localStorage.getItem( "tipoUsuario" ) === 1){
-      
-      return(
-        <LayoutAlumno/>
-      )
-    }else if(localStorage.getItem( "tipoUsuario" ) === 2){
-      return(
-        <LayoutProfesor/>
-      )
-    }else if(localStorage.getItem( "tipoUsuario" ) === 3){
-      return(
-        <LayoutAdministrativo/>
-      )
-    }else if(localStorage.getItem( "tipoUsuario" ) === 4){
-      return(
-        <LayoutDirector/>
-      )
-    }else if(localStorage.getItem( "tipoUsuario" ) === 5){
-      console.log("Entre a prece")
-      return(
-        <LayoutPreceptor/>
-      )
-    }
-    
-  }else{
-    return(
-      <Inicio setNumero = {setNumero}/>
+  )
+  
+  
+      // Para mandar algo mas, lo puedo pasar asi.
       // <Inicio nombre1 = {setNumero} nombre2 = {variable}/>
-    )
-  }
+  
 
+  // if (localStorage.getItem( "sesionActiva" )) {
 
+  //   //alumno(1), profesor(2), administrativo(3), director(4), preceptor(5)
+  //   console.log("Pase el primer if")
 
+  //   if(localStorage.getItem( "tipoUsuario" ) === 1){
+      
+  //     return(
+  //       <LayoutAlumno/>
+  //     )
+  //   }else if(localStorage.getItem( "tipoUsuario" ) === 2){
+  //     return(
+  //       <LayoutProfesor/>
+  //     )
+  //   }else if(localStorage.getItem( "tipoUsuario" ) === 3){
+  //     return(
+  //       <LayoutAdministrativo/>
+  //     )
+  //   }else if(localStorage.getItem( "tipoUsuario" ) === 4){
+  //     return(
+  //       <LayoutDirector/>
+  //     )
+  //   }else if(localStorage.getItem( "tipoUsuario" ) === 5){
+  //     console.log("Entre a prece")
+  //     return(
+  //       <LayoutPreceptor/>
+  //     )
+  //   }
     
+  // }else{
+
+  // }
+
    
   
 }

@@ -7,12 +7,12 @@ import "../../estilos/sidebar.css";
 
 
 
-const LayoutAlumno = () => {
+const LayoutProfesor = (props) => {
   return (
     <div className='layout'>
       <SidebarProfesor/>
       <div className="main__layout">
-            <TopNav/>
+            <TopNav user={props} />
             <div className="content">
                 <RouterProfesores/>
             </div>
@@ -21,4 +21,4 @@ const LayoutAlumno = () => {
   )
 }
 
-export default LayoutAlumno
+export default LayoutProfesor
