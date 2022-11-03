@@ -70,12 +70,12 @@ function union(a, b) {
 }
 
 export default function AsistenciaXCurso() {
+
     const navigate = useNavigate();
 
-
   const [checked, setChecked] = React.useState([]);
-  const [left, setLeft] = React.useState([0, 1, 2, 3]);
-  const [right, setRight] = React.useState([4, 5, 6, 7]);
+  const [left, setLeft] = React.useState([0, 1, 2, 3,4, 5, 6, 7]);//aca agregariamos el id
+  const [right, setRight] = React.useState([]);
 
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);
@@ -92,7 +92,14 @@ export default function AsistenciaXCurso() {
 
     setChecked(newChecked);
   };
-
+  var listaPresentes=[];
+  const registrarAsistencia =()=> {
+    
+    listaPresentes=right.map(alumno=>{
+      return alumno
+    });
+    console.log(listaPresentes);
+  }
   const numberOfChecked = (items) => intersection(checked, items).length;
 
   const handleToggleAll = (items) => () => {
@@ -240,7 +247,7 @@ export default function AsistenciaXCurso() {
                 </Grid>
             </TablaLista>
             <Botones>
-                <Button className="itemBoton" variant="contained" startIcon={<MenuBookIcon />}>
+                <Button className="itemBoton" onClick={registrarAsistencia} variant="contained" startIcon={<MenuBookIcon />}>
                     Registrar Asistencia
                 </Button>
                 
