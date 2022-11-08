@@ -69,7 +69,6 @@ function union(a, b) {
 export default function AsistenciaXCurso() {
   const navigate = useNavigate();
 
-
   const [checked, setChecked] = React.useState([]);
   const [alumnos, setAlumnos] = useState([]);
 
@@ -172,7 +171,14 @@ export default function AsistenciaXCurso() {
 
     setChecked(newChecked);
   };
-
+  var listaPresentes=[];
+  const registrarAsistencia =()=> {
+    
+    listaPresentes=right.map(alumno=>{
+      return alumno
+    });
+    console.log(listaPresentes);
+  }
   const numberOfChecked = (items) => intersection(checked, items).length;
 
   const handleToggleAll = (items) => () => {
