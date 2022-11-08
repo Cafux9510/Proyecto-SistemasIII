@@ -129,26 +129,8 @@ const AsignacionPersonal = () => {
     const funcion = async()=>{
         try {
            const { data: personalEducativo, error } = await supabase
-            .from('personalPorAnio')
-            .select(`
-              *,
-              cargoFuncion(
-                anioEducativo(
-                  nombre_anioEduc
-                ),
-                materias(
-                  nombre_materia
-                ),
-                tipoPersonal(
-                  nombre_tipo_personal
-                )
-              ),
-              personalEducativo(
-                nombre_personal,
-                apellido_personal
-              )
-            `)
-            .eq("isHabilitado_asignacion",true)
+            .from('personalPorAnioView')
+            .select()
             setData(personalEducativo)
         } catch (error) {
             console.log(error)
@@ -213,7 +195,8 @@ const AsignacionPersonal = () => {
           id_cargo:valor,
           id_personal,
           periodo_lectivo,
-          id_anio:id_anioEduc
+          id_anio:id_anioEduc,
+          id_grado
         
         }]);
 
@@ -307,15 +290,12 @@ const AsignacionPersonal = () => {
 
     //Configuracion del 
     const columnas=[
-        {title:"Tipo de Personal", field:"cargoFuncion.tipoPersonal.nombre_tipo_personal" /*, lookup:{1:"Directivo",2:"Profesor",3:"Administrativo Educativo",4:"Preceptor",5:"Horas Cátedra"}*/},
-        {title:"Categoría de Cargo", field:"cargoFuncion.anioEducativo.nombre_anioEduc", filtering:false},
-        {title:"Nombre", field:"personalEducativo.nombre_personal", filtering:false},
-        {title:"Apellido", field:"personalEducativo.apellido_personal", filtering:false},
-        {title:"Periodo Lectivo", field:"periodo_lectivo", filtering:false},
-        {title:"Materia Asignada",field:"cargoFuncion.materias.nombre_materia", filtering:false}
+        {title: "Nivel Educativo", field: "nombre_nivel", filtering: false },
+        {title:"Grado", field:"nombre_grado", filtering:false},  
+        {title: "Cargo / Curso Asignado", field: "concatenadoMat", filtering: false },
+        {title: "Apellido y Nombre", field: "concatenado", filtering: false },
+        {title:"Periodo Lectivo", field:"periodo_lectivo", filtering:false}
       ]
-
-      
 
     //Estilos
     const styles=useStyles();
@@ -364,13 +344,23 @@ const AsignacionPersonal = () => {
     setMaterias(result.data)
   }
 
-  const[grados,setGrados]=useState({}) 
+  const[grados,setGrados]=useState({})
   const datosGrados=async()=>{
     const result = await supabase.from('grados')
     .select()
     .eq("isHabilitado_grado",true)
     .eq("nivelEduc",id_nivel)
     setGrados(result.data)
+  }
+
+  const[datosPrece,setdatosPrece]=useState({})
+  const datosss=async()=>{
+    const result = await supabase.from('grados')
+    .select()
+    .eq("isHabilitado_grado",true)
+    .eq("nivelEduc",id_nivel)
+    setdatosPrece(result.data)
+    console.log(result.data)
   }
 
   const[anioCargo,setAnioCargo]=useState({})
@@ -762,6 +752,9 @@ const AsignacionPersonal = () => {
 
         var divDirec = document.getElementById("divPersonalNotProfe");
         divDirec.style.display = '';
+
+        var divPrece = document.getElementById("divPrece");
+        divPrece.style.display = '';
   
         var listaDesp = document.getElementById("id_anioEduc");
         listaDesp.style.display = 'none';
@@ -774,7 +767,8 @@ const AsignacionPersonal = () => {
           id_nivel,
           id_personal:personal,
           id_tipo_personal:valor,
-          periodo_lectivo
+          periodo_lectivo,
+          id_grado
         })
 
       }
@@ -782,6 +776,7 @@ const AsignacionPersonal = () => {
       div.style.display = 'none';
 
       datos();
+      datosss();
     }else if(valor == 4 && id_nivel == 2){
       const datos=async()=>{
         const result = await supabase.from('anioEducativo')
@@ -799,6 +794,9 @@ const AsignacionPersonal = () => {
 
         var divDirec = document.getElementById("divPersonalNotProfe");
         divDirec.style.display = '';
+
+        var divPrece = document.getElementById("divPrece");
+        divPrece.style.display = '';
   
         var listaDesp = document.getElementById("id_anioEduc");
         listaDesp.style.display = 'none';
@@ -811,7 +809,8 @@ const AsignacionPersonal = () => {
           id_nivel,
           id_personal:personal,
           id_tipo_personal:valor,
-          periodo_lectivo
+          periodo_lectivo,
+          id_grado
         })
 
       }
@@ -819,6 +818,7 @@ const AsignacionPersonal = () => {
       div.style.display = 'none';
 
       datos();
+      datosss();
     }else if(valor == 4 && id_nivel == 3){
       const datos=async()=>{
         const result = await supabase.from('anioEducativo')
@@ -836,6 +836,9 @@ const AsignacionPersonal = () => {
 
         var divDirec = document.getElementById("divPersonalNotProfe");
         divDirec.style.display = '';
+
+        var divPrece = document.getElementById("divPrece");
+        divPrece.style.display = '';
   
         var listaDesp = document.getElementById("id_anioEduc");
         listaDesp.style.display = 'none';
@@ -848,7 +851,8 @@ const AsignacionPersonal = () => {
           id_nivel,
           id_personal:personal,
           id_tipo_personal:valor,
-          periodo_lectivo
+          periodo_lectivo,
+          id_grado
         })
 
       }
@@ -856,6 +860,7 @@ const AsignacionPersonal = () => {
       div.style.display = 'none';
 
       datos();
+      datosss();
     }else if(valor == 5 && id_nivel == 3){
       const datos=async()=>{
         const result = await supabase.from('anioEducativo')
@@ -1051,7 +1056,8 @@ const AsignacionPersonal = () => {
     useEffect(()=>{
         funcion();
         datosNiveles();
-        datosPersonalE();
+      datosPersonalE();
+      datosss();
 
     },[])
 
@@ -1160,7 +1166,28 @@ const AsignacionPersonal = () => {
                             
                       </Select>
                   </Campo>
-                  <div id="divMateria" name="divMateria" onChange={datosGrados} style={{display: "none"}}>
+                  <div id="divPrece" name="divPrece" onChange={datosMaterias} style={{display: "none"}}>
+                    <Label><b>Grados para Asignar</b></Label>
+                    <br/>
+                    <Campo>
+                    <Select
+                              name='id_grado'
+                              id='id_grado'
+                              value={id_grado}
+                              onChange={actualizarState}
+                          >
+                              <option value="">--Seleccione--</option>
+                              {Object.values(datosPrece).map(pr=>(
+                                <option key={pr.id_grado} value={pr.id_grado}>{pr.nombre_grado}</option>
+                              ))}
+                          
+                              
+                            
+                      </Select>
+                  </Campo>
+                    <br/>
+                  </div>
+                  <div id="divMateria" name="divMateria" onChange={datosss} style={{display: "none"}}>
                     <Label><b>Grado de la Materia</b></Label>
                     <br/>
                     <br/>

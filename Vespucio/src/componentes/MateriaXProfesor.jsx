@@ -93,112 +93,34 @@ const MateriaXProfesor = () => {
   const navigate=useNavigate();
     //Statest
     const [data,setData]=useState([])
-    const[modal,insertarModal]=useState(false)
-    const [modalEditar, setModalEditar]= useState(false);
-    const[personal,personalAgregado]=useState({
-        nombre_personal:'',
-        telefono_personal:'',
-        mail_personal:'',
-        domicilio_personal:'',
-        apellido_personal:'',
-        dni_personal:'',
-    })
-    const toast = useRef(null);
 
+    const [titulo, setTitulo] = useState([])
+    
+    let tiempoTranscurrido = Date.now();
+    let hoy = (new Date(tiempoTranscurrido)).toLocaleDateString();
+    console.log(hoy)
    
     //Funciones que tienen datos desde una api
     const funcion = async()=>{
-        try {
-           /* const result= await supabase.from('proveedores')
-           .select()
-           .eq("isHabilitado_proveedor",true)
-           setData(result.data) */
-           const { data: personal, error } = await supabase
-            .from('personalEducativo')
-            .select(`*`)
-            .eq("isHabilitado_personal",true)
-            .order("id_personal",{ascending:true})
+      try {
+
+        let idMateria = localStorage.getItem("idMateria")
+          
+        const result = await supabase.from('materiasProfesView')
+          .select("concatenado")
+          .eq("id_materia",idMateria);
         
-            setData(personal)
+        setTitulo(result.data[0].concatenado)
+          
         } catch (error) {
             console.log(error)
         }
     }
-    const update = async(id_personal)=>{
-      try {
-        const result= await supabase.from("personalEducativo")
-        .update({isHabilitado_personal:false})
-        .eq("id_personal",id_personal)
-
-        const arrayProveedores = data.filter(provee=>provee.id_personal !==id_personal)
-        setData(arrayProveedores)
-
-      } catch (error) {
-        console.log(error)
-      }
-    }
-
-    const{nombre_personal,telefono_personal,mail_personal,domicilio_personal,apellido_personal,dni_personal}=personal;
-
-    const update2=async(id_personal)=>{
-      try {
-        const {result,error}= await supabase.from("personalEducativo")
-        .update({nombre_personal,telefono_personal,mail_personal,domicilio_personal,apellido_personal,dni_personal})
-        .eq("id_personal",id_personal)
-        funcion()
-
-        const arrayProveedores = data.map((prove)=>{
-          if(prove.id_personal === id_personal ){
-            return{
-              ...prove,
-              cuit_proveedor,
-              nombre_proveedor,
-              direccion_proveedor,
-              localidad_proveedor,
-              telefono_proveedor,
-              email_proveedor,
-              id_categoria_proveedor
-            }
-          }
-          return prove
-        })
-
-        setData(arrayProveedores)
-        abrirCerrarModalEditar();
-        toast.current.show({ severity: 'success', summary: 'Exito!', detail: 'Registro Modificado', life: 3000 });    
-       } catch (error) {
-        console.log(error)
-      }
-    }
-
-    const submit = async()=>{
-      try {
-        const result= await supabase.from("personalEducativo").insert({
-            nombre_personal,
-            telefono_personal,
-            mail_personal,
-            domicilio_personal,
-            apellido_personal,
-            dni_personal
-        });
-        funcion()
-
-        const resultado=result.data[0]
-        setData([...data,resultado])
-        abrirCerrarModalInsertar();
-       
-      } catch (error) {
-        console.log(error)
-      }
-    }
 
     //Configuracion del 
     const columnas=[
-        {title:"Nombre", field:"nombre_personal"},
-        {title:"Apellido", field:"apellido_personal"},
-        {title:"Email", field:"mail_personal"},
-        {title:"TPs Entregados", field:"mail_personal"},
-        {title:"Porcentaje de Asistencia", field:"mail_personal"},
+        {title:"Título de la Tarea", field:"nombre_tarea"},
+        {title:"Cantidad de Tareas Entregadas", field:"cantidad_tareas"}
       ]
 
 
@@ -209,28 +131,19 @@ const MateriaXProfesor = () => {
           ...personal,
           [e.target.name]: e.target.value
       })
-  }
-
-
+    }
     
-
-    const {id_personal}=personal;
-
+    useEffect(() => {
+        funcion();
+    },[])
     //Funciones
 
     return (
-    <Main>
-        <Titulo>Gestión de Curso</Titulo>
+      <Main>
+        <br />
+        <Titulo>{ titulo }</Titulo>
         <br />
         <Datos>
-        <TextField
-          id="outlined-read-only-input"
-          label="Curso"
-          defaultValue="5° A"
-          InputProps={{
-            readOnly: true,
-          }}
-        />
         <TextField
           id="outlined-read-only-input"
           label="Ciclo Lectivo"
@@ -242,7 +155,7 @@ const MateriaXProfesor = () => {
         <TextField
           id="outlined-read-only-input"
           label="Fecha"
-          defaultValue="La de hoy ah"
+          defaultValue={hoy}
           InputProps={{
             readOnly: true,
           }}
@@ -253,7 +166,7 @@ const MateriaXProfesor = () => {
         <Container>
             <Tabla>
                 <MaterialTable
-                    title="Listado de Alumnos"
+                    title="Listado de Trabajos Prácticos"
                     columns={columnas}
                     data={data}
                             

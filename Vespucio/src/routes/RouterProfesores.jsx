@@ -14,7 +14,7 @@ const RouterProfesores = () => {
     <Routes>   
       <Route exact path="/GestionMateriasProfesor" element={<GestionMateriasProfesor/>}/>
       <Route exact path="/MateriaXProfesor" element={<MateriaXProfesor/>}/>
-      <Route exact path="/Tareas" element={<Tareas/>}/>
+      {/* <Route exact path="/Tareas" element={<Tareas/>}/> */}
     </Routes>
     )
 }

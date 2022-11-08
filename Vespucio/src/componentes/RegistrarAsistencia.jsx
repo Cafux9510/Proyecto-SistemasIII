@@ -4,6 +4,7 @@ import { Dropdown } from 'primereact/dropdown';
 import "../estilos/gestionMateriaXProfesor.css";
 import{Routes, Route, useNavigate} from "react-router-dom";
 import styled from '@emotion/styled'
+import {supabase} from "../Backend/client";
 
 const Contenedor=styled.div`
     background-color:white;
@@ -17,19 +18,47 @@ const RegistrarAsistencia = () => {
     
     const [curso, setCurso] = useState(null);
 
+    const [cursosPrece, setCursosPrece] = useState(null);
+
 
     const navigate=useNavigate();
 
-    const cursos = [
-        {label: '1°Año A', value: '1a'},
-        {label: '1°Año B', value: '1b'},
-        {label: '7° A', value: '7a'},
-        {label: '5° A', value: '5a'},
-        {label: '2° A', value: '2A'}
-    ];
+    const cursosAsignados = async () => {
+        
+        let idDelStorage = localStorage.getItem( "idUsuario" )
+
+      const grado = await supabase.from('personalPorAnio')
+          .select(`
+          id_grado`)
+          .eq("id_personal",idDelStorage)
+          .eq("isHabilitado_asignacion",true);
+
+        let gradillo = grado.data[0].id_grado
+
+      const cursosGrado = await supabase.from('anioEducativo')
+          .select(`
+          id_anioEduc,
+          nombre_anioEduc`)
+          .eq("id_grado",gradillo)
+          .eq("isHabilitado_anio",true);
+
+        setCursosPrece(cursosGrado.data);
+    }
+
     const onCursoChange = (e) => {
         setCurso(e.value);
     }
+
+    async function boton() {
+        localStorage.setItem("idCurso", curso.id_anioEduc)
+        localStorage.setItem( "nombreCurso", curso.nombre_anioEduc )
+        navigate('/AsistenciaXCurso')
+    }
+
+    useEffect(()=>{
+        cursosAsignados();
+    },[])
+
   return (
         
     <div className="grid grid-nogutter  text-800 contenedorGestion">
@@ -38,12 +67,12 @@ const RegistrarAsistencia = () => {
                     <section className='selectorGestion'>
                         <span className="block text-6xl font-bold mb-1 spanTituloGestion">Registro de asistencia</span>
                         <div className="text-2xl font-bold mb-3 subtituloGestion">Seleccione un Curso Asignado</div>
-                            <Dropdown value={curso} options={cursos} onChange={onCursoChange} optionLabel="name" placeholder="--Seleccione--" />
+                            <Dropdown value={curso} options={cursosPrece} onChange={onCursoChange} optionLabel="nombre_anioEduc" placeholder="--Seleccione--" />
                         <br/>
                         <br/>
                         <br/>
         
-                        <Button label="Seleccionar" type="button" className="mr-3 p-button-raised botonSubmitGestion" onClick={()=>navigate('/AsistenciaXCurso')}/>
+                        <Button label="Seleccionar" type="button" className="mr-3 p-button-raised botonSubmitGestion" onClick={boton}/>
                     </section>
             </div>
         </Contenedor>

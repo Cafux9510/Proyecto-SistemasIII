@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 import "../estilos/gestionMateriaXProfesor.css";
 import{useNavigate} from "react-router-dom";
-
+import {supabase} from "../Backend/client";
 import styled from '@emotion/styled'
 
 
@@ -15,14 +15,87 @@ const Contenedor=styled.div`
 `
 
 export const GestionMateriasProfesor = () => {
-    const navigate = useNavigate();
-    const materias = [
-        {label: 'Matematicas', value: 'Mat'},
-        {label: 'Lengua', value: 'Leng'},
-        {label: 'Fisica', value: 'Fis'},
-        {label: 'Educacion Fisica', value: 'PE'},
-        {label: 'Historia', value: 'Hist'}
-    ];
+    
+    const [materia, setMateria] = useState({
+        id_materia: '',
+        nombre_materia: ''
+    });
+
+    const [materiasProfe, setMateriasProfe] = useState('');
+
+    const navigate=useNavigate();
+
+    const materiasAsignados = async () => {
+
+        try {
+
+        let idDelStorage = localStorage.getItem("idUsuario")
+        
+            const materias = await supabase.from('materiasProfesView')
+                .select(`
+                nombre_materia,
+                id_materia,
+                concatenado,
+                id_anio
+            `)
+                .eq("id_personal", idDelStorage);
+            
+            console.log(materias.data)
+
+        // const cargos = await supabase.from('personalPorAnio')
+        //     .select(`
+        //   id_cargo`)
+        //     .eq("id_personal", idDelStorage)
+        //     .eq("isHabilitado_asignacion", true);
+    
+        // let mats = [];
+
+        // for (const mate of cargos.data) {
+        //   const m = await buscarMateria(mate)
+        //   mats.push(m)
+        // }
+        
+        // console.log(mats)
+
+        setMateriasProfe(materias.data);
+        console.log(materiasProfe);
+            
+        } catch (error) {
+            console.log(error)
+        }
+
+    }
+    
+    // const buscarMateria = async(mate) => {
+    //     const dato = await supabase.from("cargoFuncion")
+    //             .select(`
+    //                 materias(
+    //                     id_materia,
+    //                     nombre_materia,
+    //                     id_grado
+    //                 )
+    //             `)
+    //         .eq("id_cargo", mate.id_cargo)
+        
+    //     return dato.data[0].materias
+    // }
+
+    async function boton() {
+        localStorage.setItem("idMateria", materia.id_materia)
+        navigate('/MateriaXProfesor')
+    }
+    
+    const actualizarState = e =>{
+      setMateria({
+          ...materia,
+          [e.target.name]: e.target.value
+      })
+  }
+
+    useEffect(() => {
+        materiasAsignados();
+    },[])
+
   return (
         
     <div className="grid grid-nogutter text-800 contenedorGestion">
@@ -32,10 +105,11 @@ export const GestionMateriasProfesor = () => {
                     <span className="block text-6xl font-bold mb-1 spanTituloGestion" >Gestione sus Materias</span>
                     <div className="text-4xl font-bold mb-3 subtituloGestion">Seleccione la Materia</div>
 
-                    <Dropdown value={"materia"} options={materias} onChange={(e) => setCity(e.value)} placeholder="Seleccione Materia"/>
+                    <Dropdown name="id_materia" className='w-12 border-500' optionValue="id_materia" onChange={actualizarState} value={materia.id_materia || ""} optionLabel="concatenado" placeholder="Seleccione Materia" options={materiasProfe}/>
+
                     <br />
                     <br />
-                    <Button label="Seleccionar" onClick={()=>navigate('/MateriaXProfesor')} type="button" className="mr-3 p-button-raised botonSubmitGestion" />
+                    <Button label="Seleccionar" onClick={boton} type="button" className="mr-3 p-button-raised botonSubmitGestion" />
                 </section>
             </div>
         </Contenedor>

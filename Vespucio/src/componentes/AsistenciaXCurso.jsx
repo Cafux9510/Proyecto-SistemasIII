@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect, useRef } from 'react'
 import Grid from '@mui/material/Grid';
 import List from '@mui/material/List';
 import Card from '@mui/material/Card';
@@ -9,7 +9,9 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
-import styled from '@emotion/styled'
+import styled from '@emotion/styled';
+
+import {supabase} from "../Backend/client";
 
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -18,11 +20,6 @@ import MenuBookIcon from '@mui/icons-material/MenuBook';
 
 import{Routes, Route, useNavigate} from "react-router-dom";
 import RegistrarAsistencia from "./RegistrarAsistencia";
-
-
-
-
-
 
 
 const Main = styled.div `
@@ -70,16 +67,99 @@ function union(a, b) {
 }
 
 export default function AsistenciaXCurso() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
 
   const [checked, setChecked] = React.useState([]);
-  const [left, setLeft] = React.useState([0, 1, 2, 3]);
-  const [right, setRight] = React.useState([4, 5, 6, 7]);
+  const [alumnos, setAlumnos] = useState([]);
 
-  const leftChecked = intersection(checked, left);
-  const rightChecked = intersection(checked, right);
+  let tiempoTranscurrido = Date.now();
+  let hoy = (new Date(tiempoTranscurrido)).toLocaleDateString();
+  console.log(hoy)
 
+  let curso = localStorage.getItem( "nombreCurso" )
+
+
+  const funcion = async()=>{
+    try {
+
+//aca tendria que traer solo los que no tome asistencia todavia
+      //osea es hacer teoria de conjuntos entre todos - los que ya tome
+
+      let idCurso = localStorage.getItem("idCurso");
+      
+      //Este te trae todos los alumnos de un curso
+      const result = await supabase.from('alumnosPorAnioView')
+      .select("id_alumno, concatenado")
+      .eq("idAnio",idCurso)
+
+      //Este te trae todos los alumnos presentes
+      const result2 = await supabase.from('asistenciaAlumno')
+        .select("id_alumno")
+        .eq("id_anioEduc", idCurso)
+        .eq("fecha_asistencia",hoy)
+ 
+      // setAlumnos(result.data)
+      // setChecked(result.data)
+
+      let todos = result.data
+      let presentes = result2.data
+      console.log(todos);
+      console.log(presentes);
+
+      var ausentes=[];
+      todos.forEach(i => {
+        var existe = false;
+        var igual = false;
+        presentes.forEach(j => {
+          !igual && i.id_alumno== j.id_alumno&& (existe= true);
+        });
+        !existe && ausentes.push(i);
+      });
+
+      console.log(ausentes);
+      setAlumnos(ausentes);
+      setChecked(ausentes);
+      
+      // setAlumnos(value);
+        // setChecked(value);
+      //console.log(ausentes);
+      // setAlumnos(ausentes);
+      // setChecked(ausentes);
+
+
+        } catch (error) {
+            console.log(error)
+        }
+  }
+
+  const submit = async()=>{
+    try {
+
+        let idCurso = localStorage.getItem("idCurso");
+
+        checked.map(async(element) =>{
+        
+          const veriAsis  = await supabase.from("asistenciaAlumno")
+          .select()
+          .eq("id_alumno", element.id_alumno)
+          .eq("fecha_asistencia", hoy)
+                
+        if (veriAsis.data.length === 0) {
+          let id = element.id_alumno;
+          const resultado = await supabase.from("asistenciaAlumno").insert({
+            id_alumno: id,
+            fecha_asistencia: hoy,
+            id_anioEduc:idCurso
+          });
+        window.location.reload()
+        }        
+      });
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  
   const handleToggle = (value) => () => {
     const currentIndex = checked.indexOf(value);
     const newChecked = [...checked];
@@ -103,22 +183,10 @@ export default function AsistenciaXCurso() {
     }
   };
 
-  const handleCheckedRight = () => {
-    setRight(right.concat(leftChecked));
-    setLeft(not(left, leftChecked));
-    setChecked(not(checked, leftChecked));
-  };
-
-  const handleCheckedLeft = () => {
-    setLeft(left.concat(rightChecked));
-    setRight(not(right, rightChecked));
-    setChecked(not(checked, rightChecked));
-  };
-
   const customList = (title, items) => (
     <Card>
       <CardHeader
-        sx={{ px: 2, py: 1 }}
+        sx={{ px: 13, py: 3 }}
         avatar={
           <Checkbox
             onClick={handleToggleAll(items)}
@@ -133,7 +201,7 @@ export default function AsistenciaXCurso() {
           />
         }
         title={title}
-        subheader={`${numberOfChecked(items)}/${items.length} selected`}
+        subheader={`${numberOfChecked(items)}/${items.length} seleccionados`}
       />
       <Divider />
       <List
@@ -167,7 +235,7 @@ export default function AsistenciaXCurso() {
                   }}
                 />
               </ListItemIcon>
-              <ListItemText id={labelId} primary={`List item ${value + 1}`} />
+              <ListItemText id={alumnos.id_alumno} primary={value.concatenado} />
             </ListItem>
           );
         })}
@@ -175,6 +243,12 @@ export default function AsistenciaXCurso() {
       </List>
     </Card>
   );
+
+  useEffect(()=>{
+    funcion();
+  }, [])
+  
+  console.log(curso)
 
   return (
     <Main>
@@ -184,7 +258,7 @@ export default function AsistenciaXCurso() {
         <TextField
           id="outlined-read-only-input"
           label="Curso"
-          defaultValue="5° A"
+          defaultValue={curso}
           InputProps={{
             readOnly: true,
           }}
@@ -200,7 +274,7 @@ export default function AsistenciaXCurso() {
         <TextField
           id="outlined-read-only-input"
           label="Fecha"
-          defaultValue="La de hoy"
+          defaultValue={hoy}
           InputProps={{
             readOnly: true,
           }}
@@ -211,8 +285,8 @@ export default function AsistenciaXCurso() {
         <Contenido>
             <TablaLista>
                 <Grid container spacing={2} justifyContent="center" alignItems="center">
-                <Grid item>{customList('Totales', left)}</Grid>
-                <Grid item>
+                <Grid item>{customList('Alumnos del Curso', alumnos)}</Grid>
+                {/* <Grid item>
                     <Grid container direction="column" alignItems="center">
                     <Button
                         sx={{ my: 0.5 }}
@@ -235,12 +309,12 @@ export default function AsistenciaXCurso() {
                         &lt;
                     </Button>
                     </Grid>
-                </Grid>
-                <Grid item>{customList('Presentes', right)}</Grid>
+                </Grid> */}
+                {/* <Grid item>{customList('Presentes', right)}</Grid> */}
                 </Grid>
             </TablaLista>
             <Botones>
-                <Button className="itemBoton" variant="contained" startIcon={<MenuBookIcon />}>
+                <Button className="itemBoton" variant="contained" onClick={submit} startIcon={<MenuBookIcon />}>
                     Registrar Asistencia
                 </Button>
                 
