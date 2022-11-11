@@ -7,17 +7,17 @@ export class BarChart extends Component {
         super(props);
 
         this.basicData = {
-            labels: ['Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre','Octubre','Noviembre'],
+            labels: ['Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre','Octubre'],
             datasets: [
                 {
                     label: 'Ingresos',
                     backgroundColor: '#42A5F5',
-                    data: [65, 59, 80, 81, 56, 55, 40, 55, 40]
+                    data: [65531, 59586, 80475, 81147, 56256, 55140, 60256, 55968]
                 },
                 {
                     label: 'Egresos',
                     backgroundColor: '#FFA726',
-                    data: [28, 48, 40, 19, 86, 27, 90, 55, 40]
+                    data: [28145, 48111, 70584, 69362, 60200, 60500, 55050, 55996]
                 }
             ]
         };

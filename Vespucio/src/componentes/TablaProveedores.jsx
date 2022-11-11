@@ -155,12 +155,13 @@ const TablaProveedores = () => {
           id_categoria_proveedor,
         });
         funcion()
-
+        window.location.reload()
         const resultado=result.data[0]
         console.log(resultado)
         setData([...data,resultado])
         abrirCerrarModalInsertar();
-       
+
+
       } catch (error) {
         console.log(error)
       }

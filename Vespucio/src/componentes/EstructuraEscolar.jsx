@@ -16,7 +16,7 @@ const Label = styled.label`
 
 const Main = styled.div `
   margin-top: 0;
-  width:80vw;
+  width:55vw;
   height:75vh;
   margin-left:17vw;
 
@@ -112,18 +112,16 @@ const EstructuraEscolar = () => {
     const funcionA = async()=>{
         try {
            const { data: alumnos, error } = await supabase
-            .from('alumnosPorAnio')
+            .from('alumnos')
             .select(`
-              alumnos(
                 nombre_alumno,
                 apellido_alumno,
                 telefono_alumno,
                 dni_alumno
-              )
             `)
-          .eq("isHabilitado_asignacion",true)
+          .eq("isHabilitado_alumno",true)
           .eq("id_anioEduc",id_anioEduc)
-          console.log(alumnos.data)
+
             setDataA(alumnos)
         } catch (error) {
             console.log(error)
@@ -163,10 +161,10 @@ const EstructuraEscolar = () => {
     //Nombre Columnas
     //MODIFICAR EL FIELD
     const columnas=[
-        {title:"Nombre", field:"alumnos.nombre_alumno"},
-        {title:"Apellido", field:"alumnos.apellido_alumno"},
-        {title:"DNI", field:"alumnos.dni_alumno"},
-        {title:"Telefono", field:"alumnos.telefono_alumno"},
+        {title:"Nombre", field:"nombre_alumno"},
+        {title:"Apellido", field:"apellido_alumno"},
+        {title:"DNI", field:"dni_alumno"},
+        {title:"Telefono", field:"telefono_alumno"},
 
     ]
 

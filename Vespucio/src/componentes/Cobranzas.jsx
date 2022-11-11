@@ -109,7 +109,9 @@ const Cobranzas = () => {
   const [cuotasAdeudadas, setCuotasAdeudadas] = useState([]);
   const [selectedCuotas, setselectedCuotas] = useState(null);
   
-  const cargarCuotasA = async(idAl)=>{
+  const cargarCuotasA = async (idAl) => {
+    
+        console.log(idAl)
         try {
            const { data: cuotas, error } = await supabase
             .from('cuotasCobros')
@@ -120,7 +122,10 @@ const Cobranzas = () => {
              *`)
              .eq("isPagada_cuota",false)
              .eq("id_alumno",idAl)
-             .order("id_cuotaC", {ascending: true});
+            .order("id_cuotaC", { ascending: true });
+        
+          console.log(cuotas)
+          
           setCuotasAdeudadas(cuotas)
         } catch (error) {
             console.log(error)
@@ -175,7 +180,17 @@ const Cobranzas = () => {
       .update({
         saldoActual_cuotaC:nuevoSaldo
       })
-      .eq("id_cuotaC",mayorC)
+        .eq("id_cuotaC", mayorC)
+      
+     const {error,result3}= await supabase.from("cuotasCobros").insert([{
+            periodoLectivo_cuotaC:2022,
+            mes_cuotaC:11,
+            vencimiento_cuotaC:"11/11",
+            concepto_cuotaC:"Cuota",
+            valor_cuotaC:4000,
+            saldoActual_cuotaC:0,
+            id_alumno:21
+        }]);
       
       window.location.reload();
     }
@@ -511,9 +526,6 @@ const Cobranzas = () => {
         .select("nombre_cuota")
         .eq("id_nivel",idNivel);
 
-      var selection = document.getElementById("cuotaNivel");
-      selection.value = result2.data[0].nombre_cuota;
-
       //A partir de aca voy a buscar el valor de la cuota
 
       const result3 = await supabase
@@ -675,58 +687,6 @@ const Cobranzas = () => {
               <Button onClick={()=>abrirCerrarModalPagar()}>Cancelar</Button>
           </div>
         </div>
-        {/* <h4>Registrar Pago Alumno</h4>
-        <br />
-        <div className="controlesHorizontales">
-          <label className="controlIzq"><b>Nombre del Alumno</b></label>
-          <br/>
-          <label className="controlDer"><b>Apellido del Alumno</b></label>
-        </div>
-        <br/>
-        <div className="controlesHorizontales">
-          <TextField id="textfieldIzq" className={styles.inputMaterial} disabled onChange={actualizarState} name="nombre_alumno" value={alumnos && nombre_alumno} />
-          <TextField id="textfieldDer" className={styles.inputMaterial} disabled onChange={actualizarState} name="apellido_alumno" value={alumnos && apellido_alumno} />  
-        </div> 
-        <label><b>DNI del Alumno</b></label>
-        <br/>
-        <TextField type="text" className={styles.inputMaterial} disabled onChange={actualizarState} name="dni_alumno" value={alumnos&&dni_alumno} />
-        <br/>
-        <br/>
-        <label><b>Tipo de Cuota</b></label>
-        <br/>
-        <TextField className={styles.inputMaterial} disabled onChange={actualizarState} id="cuotaNivel" name="cuotaNivel"/>     
-        <br/><br/>
-        <label><b>Mes Disponible a Pagar</b></label>
-        <TextField className={styles.inputMaterial} disabled onChange={actualizarState} id="cuotaDisponible" name="cuotaDisponible"/>     
-        <br/><br/>
-        <label><b>Metodo de Pago</b></label>
-        <Campo>
-          <Select
-                    name='metodoPago_cuota'
-                    value={metodoPago_cuota}
-                    onChange={actualizarState}
-                >
-                    <option value="0">--Seleccione--</option>
-                    <option value="Transferencia">Transferencia</option>
-                    <option value="Debito">Debito</option>
-                    <option value="Efectivo">Efectivo</option>               
-          </Select>
-        </Campo>
-     
-        <p><b>Periodo Lectivo Actual</b></p>
-                  <input type="number" style={{textAlign: "center"}} disabled value={year}/>
-                  <br/>
-        <br/><br/>
-
-        <div align="right">
-          <div id="botReg">
-            <Button onClick={()=>registrarPago()} color='primary'>Registrar Cobro</Button>
-          </div>
-          <br/>
-          <div>
-            <Button onClick={()=>abrirCerrarModalPagar()}>Cancelar</Button>
-          </div>
-        </div> */}
       </div>
     )
 
@@ -759,47 +719,10 @@ const Cobranzas = () => {
     <Main>
     <Titulo>Gestión de Cobranzas</Titulo>
         <br />
-        <Datos>
-            <TextField
-            id="outlined-read-only-input"
-            label="Cantidad de Alumnos"
-            defaultValue="400"
-            InputProps={{
-                readOnly: true,
-            }}
-            />
-            <TextField
-            id="outlined-read-only-input"
-            label="Cant. Alumnos que adeudan"
-            defaultValue="40"
-            InputProps={{
-                readOnly: true,
-            }}
-            />
-            <TextField
-            id="outlined-read-only-input"
-            label="Dinero a Recaudar"
-            defaultValue="$50000"
-            InputProps={{
-                readOnly: true,
-            }}
-            />
-        </Datos> 
-        <br />
-        <Datos> 
-            <Button className="itemBoton" color="primary" startIcon={<MonetizationOnIcon />} variant="contained" >
-                Costos de Cuota
-            </Button>
-            <Button className="itemBoton" variant="contained" color="primary" startIcon={<UpgradeIcon />}>
-                Actualizar Costos
-            </Button>
-            <Button className="itemBoton" variant="contained" color="primary" startIcon={<NotificationImportantIcon />}>
-                Ver Alumnos Deudores
-            </Button>
-        </Datos> 
+        
       <div>
           <MaterialTable
-              title="Alumnos"
+              title="Deuda de Alumnos"
               columns={columnas}
               data={data}
               actions={[

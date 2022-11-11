@@ -1,4 +1,5 @@
-import { useEffect, useState,useRef } from "react";
+import { useEffect, useState, useRef } from "react";
+import { Dialog } from 'primereact/dialog';
 import {supabase} from "../Backend/client";
 import MaterialTable from "@material-table/core";
 import { Button } from "@material-ui/core";
@@ -68,9 +69,27 @@ const PersonalEducativo = () => {
         apellido_personal:'',
         dni_personal:'',
     })
-    const toast = useRef(null);
+  const toast = useRef(null);
+  
+  const [displayBasic, setDisplayBasic] = useState(false);
 
+const dialogFuncMap = {
+    'displayBasic': setDisplayBasic
+  }
+  function cambiarConstrasenia() {
+    onClick('displayBasic');
+  }
+  const onClick = (name, position) => {
+        dialogFuncMap[`${name}`](true);
 
+        if (position) {
+            setPosition(position);
+        }
+    }
+
+    const onHide = (name) => {
+        dialogFuncMap[`${name}`](false);
+    }
    
     //Funciones que tienen datos desde una api
     const funcion = async()=>{
@@ -85,7 +104,8 @@ const PersonalEducativo = () => {
         } catch (error) {
             console.log(error)
         }
-    }
+  }
+  
     const update = async(id_personal)=>{
       try {
         const result= await supabase.from("personalEducativo")
@@ -114,13 +134,12 @@ const PersonalEducativo = () => {
           if(prove.id_personal === id_personal ){
             return{
               ...prove,
-              cuit_proveedor,
-              nombre_proveedor,
-              direccion_proveedor,
-              localidad_proveedor,
-              telefono_proveedor,
-              email_proveedor,
-              id_categoria_proveedor
+              nombre_personal,
+              telefono_personal,
+              mail_personal,
+              domicilio_personal,
+              apellido_personal,
+              dni_personal
             }
           }
           return prove
@@ -133,48 +152,84 @@ const PersonalEducativo = () => {
         console.log(error)
       }
     }
+    
+    const validarEmail = async(valor)=>{
+      let emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
+      if (emailRegex.test(valor)) {
+        
+        const resultad = await supabase.from('personalEducativo')
+        .select()
+          .eq("dni_personal", parseInt(dni_personal))
+          .eq("isHabilitado_personal", true);
+      
+        if (resultad.data.length === 0) {
+        
+            let primerN = (nombre_personal.substring(0,1)).toLowerCase();
+            let tresA = (apellido_personal.substring(0,3)).toLowerCase();
+            let dni = parseInt(dni_personal);
+            let numA = (Math.floor(Math.random() * (dni - 1000) + 1000)).toString()
+            let tresUltN = numA.substring(numA.length-3);
+            let usuario = primerN + tresA + tresUltN;
+
+            const {errorr,usuarioT}= await supabase.from("usuarios").insert([{
+              nombre_usuario:usuario,
+              contrasenia_usuario:dni_personal
+            }]);
+
+            const user_id = await supabase.from('usuarios')
+            .select('id_usuario')
+            .eq("nombre_usuario",usuario);
+
+            const valor=user_id.data[0].id_usuario
+          
+            console.log(valor)
+
+            const result= await supabase.from("personalEducativo").insert({
+                nombre_personal,
+                telefono_personal,
+                mail_personal,
+                domicilio_personal,
+                apellido_personal,
+                dni_personal,
+                id_usuario:valor
+            });
+
+            localStorage.setItem("usu", usuario)
+            localStorage.setItem( "pass", dni )
+
+            abrirCerrarModalInsertar();
+
+            onClick('displayBasic')
+            
+        } else {
+          alert("Ya se encuentra registrado un personal educativo con ese DNI.");
+        }
+      } else {
+        alert("La dirección de email es incorrecta.");
+      }
+    }
 
     const submit = async()=>{
       try {
 
-        let primerN = (nombre_personal.substring(0,1)).toLowerCase();
-        let tresA = (apellido_personal.substring(0,3)).toLowerCase();
-        let dni = parseInt(dni_personal);
-        let numA = (Math.floor(Math.random() * (dni - 1000) + 1000)).toString()
-        let tresUltN = numA.substring(numA.length-3);
-        let usuario = primerN + tresA + tresUltN;
+        var input = document.getElementById("textfieldMail");
+        validarEmail(input.value);
 
-        const {errorr,usuarioT}= await supabase.from("usuarios").insert([{
-          nombre_usuario:usuario,
-          contrasenia_usuario:dni_personal
-        }]);
 
-      const user_id = await supabase.from('usuarios')
-      .select('id_usuario')
-      .eq("nombre_usuario",usuario);
-
-      const valor=user_id.data[0].id_usuario
-    
-      console.log(valor)
-
-      const result= await supabase.from("personalEducativo").insert({
-          nombre_personal,
-          telefono_personal,
-          mail_personal,
-          domicilio_personal,
-          apellido_personal,
-          dni_personal,
-          id_usuario:valor
-      });
-      funcion()
-
-      window.location.reload()
-
-      abrirCerrarModalInsertar();
        
       } catch (error) {
         console.log(error)
       }
+  }
+  
+    function Aceptar() {
+      
+      funcion()
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 5000);
+      
     }
 
     const handleEliminar=(id_personal)=>{
@@ -196,11 +251,18 @@ const PersonalEducativo = () => {
           window.location.reload()
         }, 1000);  */
       });
+  }
+  
+      const renderFooter = (name) => {
+        return (
+            <div>
+                <Button label="Aceptar" icon="pi pi-check" className="p-button-text" onClick={Aceptar} />
+            </div>
+        );
     }
 
     //Configuracion del 
     const columnas=[
-        {title:"Identificador", field:"id_personal"},
         {title:"Nombre", field:"nombre_personal"},
         {title:"Apellido", field:"apellido_personal"},
         {title:"DNI", field:"dni_personal"},
@@ -238,7 +300,7 @@ const PersonalEducativo = () => {
         <TextField type="number" className={styles.inputMaterial} label="Telefono" onChange={actualizarState} name="telefono_personal" value={telefono_personal} />
         <br/>
         <br/>
-        <TextField type="email" className={styles.inputMaterial} label="Email" onChange={actualizarState} name="mail_personal" value={mail_personal} />
+        <TextField id="textfieldMail" type="email" className={styles.inputMaterial} label="Email" onChange={actualizarState} name="mail_personal" value={mail_personal} />
         <br/>
         <br/>
         <TextField className={styles.inputMaterial} label="Domicilio" onChange={actualizarState} name="domicilio_personal" value={domicilio_personal}/>
@@ -374,7 +436,16 @@ const PersonalEducativo = () => {
           onClose={abrirCerrarModalEditar}
         >
           {bodyEditar}
-        </Modal>
+      </Modal>
+      
+          <Dialog header="Credenciales" visible={displayBasic} style={{ width: '50vw' }} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
+            <center><p><strong>Las credenciales del nuevo personal educativo son:</strong></p></center>
+            <br />
+            <center><h6>Usuario: <b>{ localStorage.getItem( "usu" ) }</b></h6></center>
+            <br /><br />
+            <center><h6>Contraseña: <b>{ localStorage.getItem( "pass" ) }</b></h6></center>
+          </Dialog>
+
     </Main>
   )
 }

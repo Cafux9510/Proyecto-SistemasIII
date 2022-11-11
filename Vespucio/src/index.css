@@ -8,7 +8,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
- 
+
 }
 
 .contenedor {
@@ -16,7 +16,7 @@ body {
   justify-content: center;
 }
 
-.c{
+.c {
   width: 100%;
 }
 
@@ -30,7 +30,9 @@ body {
 }
 
 .p-3 {
-  padding: 0.75rem/* 12px */;
+  padding: 0.75rem
+    /* 12px */
+  ;
 }
 
 .text-white {
@@ -41,6 +43,7 @@ body {
 .uppercase {
   text-transform: uppercase;
 }
+
 .font-bold {
   font-weight: 700;
 }
@@ -50,7 +53,7 @@ body {
   background-color: rgb(51 65 85 / var(--tw-bg-opacity));
 }
 
-.boton{
+.boton {
   background-color: var(--buttom-color);
   color: var(--small-text-color);
   border-radius: 10px;
@@ -65,7 +68,23 @@ body {
   margin-right: 10px;
 }
 
-.boton2{
+.boton1 {
+  background-color: #121492dd;
+  color: white;
+  font-weight: bold;
+  border-radius: 10px;
+  width: 260px;
+  height: 65px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 100px;
+  margin-top: 50px;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  margin-right: 10px;
+}
+
+.boton2 {
   background-color: var(--buttom-color);
   color: var(--small-text-color);
   border-radius: 10px;
@@ -78,7 +97,7 @@ body {
   font-family: "Roboto", "Helvetica", "Arial", sans-serif;
   margin-right: 10px;
   padding: 0;
-  
+
 }
 
 /* Nuevo del login */
@@ -110,6 +129,7 @@ form {
   width: 350px;
   position: relative;
 }
+
 form .form-field::before {
   font-size: 20px;
   position: absolute;
@@ -121,17 +141,20 @@ form .form-field::before {
   background-size: cover;
   background-repeat: no-repeat;
 }
+
 form .form-field:nth-child(1)::before {
   background-image: url(/src/assets/imagenes/user-icon.png);
   width: 20px;
   height: 20px;
   top: 15px;
 }
+
 form .form-field:nth-child(2)::before {
   background-image: url(assets/imagenes/lock-icon.png);
   width: 16px;
   height: 16px;
 }
+
 form .form-field {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -145,6 +168,7 @@ form .form-field {
   margin-bottom: 1rem;
   position: relative;
 }
+
 form input {
   font-family: inherit;
   width: 100%;
@@ -159,6 +183,7 @@ form input {
   color: #4A4A4A;
   text-indent: 40px;
 }
+
 form .btn {
   outline: none;
   border: none;
@@ -181,19 +206,19 @@ form .btn {
 
 /* Track */
 ::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 5px rgb(0, 0, 0); 
+  box-shadow: inset 0 0 5px rgb(0, 0, 0);
   border-radius: 10px;
 }
- 
+
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: var(--small-text-color); 
+  background: var(--small-text-color);
   border-radius: 50%;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #ffffff; 
+  background: #ffffff;
 }
 
 .custom-input-file {
@@ -212,16 +237,16 @@ form .btn {
 }
 
 .custom-input-file .input-file {
- border: 10000px solid transparent;
- cursor: pointer;
- font-size: 10000px;
- margin: 0;
- opacity: 0;
- outline: 0 none;
- padding: 0;
- position: absolute;
- right: -1000px;
- top: -1000px;
+  border: 10000px solid transparent;
+  cursor: pointer;
+  font-size: 10000px;
+  margin: 0;
+  opacity: 0;
+  outline: 0 none;
+  padding: 0;
+  position: absolute;
+  right: -1000px;
+  top: -1000px;
 }
 
 .button {
@@ -237,7 +262,7 @@ form .btn {
   cursor: pointer;
 }
 
-#cargoPersonal{
+#cargoPersonal {
   width: 350px;
   text-align: center;
 }
@@ -320,10 +345,10 @@ form .btn {
   grid-area: boton_cancelar;
 }
 
-#inputCentrado{
-    text-align: center;
-  }
+#inputCentrado {
+  text-align: center;
+}
 
-#inputTotalCuotas{
-    text-align: center;
+#inputTotalCuotas {
+  text-align: center;
 }

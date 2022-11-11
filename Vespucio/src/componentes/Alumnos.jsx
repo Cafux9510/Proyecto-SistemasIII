@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-import {supabase} from "../Backend/client";
+import { useEffect, useState, useRef } from "react";
+import { supabase } from "../Backend/client";
+import { Dialog } from 'primereact/dialog';
 import MaterialTable from "@material-table/core";
 import { Button } from "@material-ui/core";
 import {Modal,TextField} from "@material-ui/core"
@@ -84,6 +85,28 @@ const Alumnos = () => {
         numMes_cuota:'',
         periodo_lectivo:year,
     })
+  
+    const toast = useRef(null);
+  
+  const [displayBasic, setDisplayBasic] = useState(false);
+
+const dialogFuncMap = {
+    'displayBasic': setDisplayBasic
+  }
+  function cambiarConstrasenia() {
+    onClick('displayBasic');
+  }
+  const onClick = (name, position) => {
+        dialogFuncMap[`${name}`](true);
+
+        if (position) {
+            setPosition(position);
+        }
+    }
+
+    const onHide = (name) => {
+        dialogFuncMap[`${name}`](false);
+    }
  
     //Funciones que tienen datos desde una api
     const funcion = async()=>{
@@ -149,50 +172,97 @@ const Alumnos = () => {
        } catch (error) {
         console.log(error)
       }
+  }
+  
+  const validarEmail = async(valor)=>{
+      let emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
+    if (emailRegex.test(valor)) {
+        
+      const resultad = await supabase.from('alumnos')
+        .select()
+        .eq("dni_alumno", parseInt(dni_alumno))
+        .eq("isHabilitado_alumno", true);
+      
+        if (resultad.data.length === 0) {
+          let primerN = (nombre_alumno.substring(0,1)).toLowerCase();
+          let tresA = (apellido_alumno.substring(0,3)).toLowerCase();
+          let dni = parseInt(dni_alumno);
+          let numA = (Math.floor(Math.random() * (dni - 1000) + 1000)).toString()
+          let tresUltN = numA.substring(numA.length-3);
+          let usuario = primerN + tresA + tresUltN;
+
+          const {errorr,usuarioT}= await supabase.from("usuarios").insert([{
+            nombre_usuario:usuario,
+            contrasenia_usuario:dni_alumno,
+            tipo_usuario:1
+          }]);
+
+          const user_id = await supabase.from('usuarios')
+          .select('id_usuario')
+          .eq("nombre_usuario",usuario);
+
+          const valor=user_id.data[0].id_usuario
+        
+          console.log(valor)
+
+          const result = await supabase.from("alumnos").insert([{
+              id_anioEduc,
+              nombre_alumno,
+              telefono_alumno,
+              mail_alumno,
+              domicilio_alumno,
+              dni_alumno,
+              apellido_alumno,
+              id_usuario:valor
+          }]);
+
+          const { idAl } = await supabase.from('alumnos')
+          .select('id_alumno')
+            .eq("id_usuario", valor);
+          
+          console.log(idAl)
+
+          const {errorrr,result22}= await supabase.from("cuotasCobros").insert([{
+              periodoLectivo_cuotaC:2022,
+              mes_cuotaC:13,
+              vencimiento_cuotaC:"10/2",
+              concepto_cuotaC:"Inscripcion",
+              valor_cuotaC:8000,
+              saldoActual_cuotaC:8000,
+              id_alumno:idAl.data[0].id_alumno
+          }]);
+
+          console.log(result22)
+          
+
+          localStorage.setItem("usu", usuario)
+          localStorage.setItem( "pass", dni )
+
+          abrirCerrarModalInsertar();
+
+          onClick('displayBasic')
+        
+        } else {
+          alert("Ya se encuentra registrado un alumno con ese DNI.");
+        }
+  
+        
+
+      } else {
+        alert("La dirección de email es incorrecta.");
+      }
     }
 
 
     const submit = async()=>{
       try {
 
-        let primerN = (nombre_alumno.substring(0,1)).toLowerCase();
-        let tresA = (apellido_alumno.substring(0,3)).toLowerCase();
-        let dni = parseInt(dni_alumno);
-        let numA = (Math.floor(Math.random() * (dni - 1000) + 1000)).toString()
-        let tresUltN = numA.substring(numA.length-3);
-        let usuario = primerN + tresA + tresUltN;
+        var input = document.getElementById("textfieldMail");
+        validarEmail(input.value);
+        
 
-        const {errorr,usuarioT}= await supabase.from("usuarios").insert([{
-          nombre_usuario:usuario,
-          contrasenia_usuario:dni_alumno,
-          tipo_usuario:1
-        }]);
-
-        const user_id = await supabase.from('usuarios')
-        .select('id_usuario')
-        .eq("nombre_usuario",usuario);
-
-        const valor=user_id.data[0].id_usuario
-      
-        console.log(valor)
-
-        const {error,result}= await supabase.from("alumnos").insert([{
-            id_anioEduc,
-            nombre_alumno,
-            telefono_alumno,
-            mail_alumno,
-            domicilio_alumno,
-            dni_alumno,
-            apellido_alumno,
-            id_usuario:valor
-        }]);
-
-        abrirCerrarModalInsertar();
-        window.location.reload()
-        setData({
-          ...data,
-          result
-        })
+        // abrirCerrarModalInsertar();
+        // window.location.reload()
        
       } catch (error) {
         console.log(error)
@@ -219,7 +289,25 @@ const Alumnos = () => {
         }, 1000); 
       });
     }
+    
+    function Aceptar() {
+      
+      funcion()
 
+      setTimeout(() => {
+        window.location.reload();
+      }, 5000);
+      
+    }
+
+    const renderFooter = (name) => {
+        return (
+            <div>
+                <Button label="Aceptar" icon="pi pi-check" className="p-button-text" onClick={Aceptar} />
+            </div>
+        );
+    }
+  
     //Configuracion del 
     const columnas=[
         {title:"Nivel Educativo", field:"anioEducativo.id_nivel.nombre_nivel"},
@@ -467,7 +555,7 @@ const Alumnos = () => {
         <TextField type="number" className={styles.inputMaterial} label="Telefono" onChange={actualizarState} name="telefono_alumno" value={telefono_alumno} />
         <br/>
         <br/>
-        <TextField type="email" className={styles.inputMaterial} label="Email" onChange={actualizarState} name="mail_alumno" value={mail_alumno} />
+        <TextField id="textfieldMail" type="email" className={styles.inputMaterial} label="Email" onChange={actualizarState} name="mail_alumno" value={mail_alumno} />
         <br/>
         <br/>
         <TextField className={styles.inputMaterial} label="Direccion" onChange={actualizarState} name="domicilio_alumno" value={domicilio_alumno}/>
@@ -498,46 +586,10 @@ const Alumnos = () => {
         <TextField className={styles.inputMaterial} label="DNI" onChange={actualizarState} name="dni_alumno" value={alumnos&&dni_alumno} />
         <br/>
         <br/>
-        <Label>Nivel Educativo</Label>
-        <Campo>
-          <Select
-                    name='id_nivel'
-                    id='id_nivel'
-                    value={alumnos&&id_nivel}
-                    onChange={filtrarAnios}
-                >
-                    <option value="">--Seleccione--</option>
-                    {Object.values(niveles).map(pr=>(
-                      <option key={pr.id_nivel} value={pr.id_nivel}>{pr.nombre_nivel}</option>
-                    ))}
-                
-                    
-                  
-            </Select>
-        </Campo>
-        <br/>
-        <Label>Año a Cursar</Label>
-        <br/>
-        <Campo>
-          <Select
-                    name='id_anioEduc'
-                    value={alumnos&&id_anioEduc}
-                    onChange={actualizarState}
-                >
-                    <option value="">--Seleccione--</option>
-                    {Object.values(categorias).map(pr=>(
-                      <option key={pr.id_anioEduc} value={pr.id_anioEduc}>{pr.nombre_anioEduc}</option>
-                    ))}
-                
-                    
-                  
-            </Select>
-        </Campo>
-        <br/>
         <TextField type="number" className={styles.inputMaterial} label="Telefono" onChange={actualizarState} name="telefono_alumno" value={alumnos&&telefono_alumno} />
         <br/>
         <br/>
-        <TextField type="email" className={styles.inputMaterial} label="Email" onChange={actualizarState} name="mail_alumno" value={alumnos&&mail_alumno} />
+        <TextField id="textfieldMail" type="email" className={styles.inputMaterial} label="Email" onChange={actualizarState} name="mail_alumno" value={alumnos&&mail_alumno} />
         <br/>
         <br/>
         <TextField className={styles.inputMaterial} label="Direccion" onChange={actualizarState} name="domicilio_alumno" value={alumnos&&domicilio_alumno}/>
@@ -661,12 +713,6 @@ const Alumnos = () => {
                       icon:"delete",
                       tooltip:"Eliminar",
                       onClick: (event,rowData)=>handleEliminar(rowData.id_alumno)
-                  },
-                  //**AGREGUE LA ACCION PARA REGISTRAR PAGO */
-                  {
-                    icon: ()=> <MonetizationOnIcon/>,
-                    tooltip:"Registrar Pago",
-                    onClick: (event,rowData)=>abrirCerrarModalRegPago(rowData,"Pagar")
                   }
                   
               ]}
@@ -714,7 +760,16 @@ const Alumnos = () => {
             onClose={abrirCerrarModalRegPago}
           >
                 {bodyRegistrarPago}
-          </Modal>
+        </Modal>
+        
+        <Dialog header="Credenciales" visible={displayBasic} style={{ width: '50vw' }} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
+            <center><p><strong>Las credenciales del nuevo alumno son:</strong></p></center>
+            <br />
+            <center><h6>Usuario: <b>{ localStorage.getItem( "usu" ) }</b></h6></center>
+            <br /><br />
+            <center><h6>Contraseña: <b>{ localStorage.getItem( "pass" ) }</b></h6></center>
+          </Dialog>
+
       </div>
     </Main>
   )

@@ -149,7 +149,6 @@ const CategoriasInsumos = () => {
 
     //Configuracion del {/*DEJO LOS PARAMETROS DEL VALUE, SINO ME CRASHEA */}
     const columnas=[ 
-        {title:"N°", field:"id_categoria"},
         {title:"Nombre", field:"nombre_categoria"},
         {title:"Descripcion", field:"descripcion_categoria"}
       ]

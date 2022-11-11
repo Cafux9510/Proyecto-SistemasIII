@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import {DataTable} from "primereact/datatable";
 import { Column } from 'primereact/column';
 import {Dropdown} from "primereact/dropdown";
+import { borderRadius } from "@mui/system";
 
 
 
@@ -22,7 +23,7 @@ const Main = styled.div `
 
 const Comprobantes = () => {
   useEffect(()=>{
-    buscarTotales()
+    buscarTotales();
     funcion();
     datos();
     dato();
@@ -86,7 +87,8 @@ const Comprobantes = () => {
 
         const arrayComprobantes=data.filter(comprobante=>comprobante.id_comprobante !== id_comprobante);
         setData(arrayComprobantes)
-       
+        window.location.reload();
+
       } catch (error) {
         console.log(error)
       }
@@ -99,21 +101,9 @@ const Comprobantes = () => {
     const submit = async()=>{
       try {
         if(comprobante.id_comprobante){
-            const avatarFile = document.getElementById('selectArchivo').files[0];
-            const  foto = await supabase.storage
-            .from('archivos-subidos')
-            .upload('archivos-comprobantes/'+(generarId()), avatarFile, {
-              cacheControl: '3600',
-              upsert: false,
-            })
-
-            const principio_cadena = 'https://nnlzmdwuqwxgdrnutujk.supabase.co/storage/v1/object/public/';
-            const final_cadena = foto.data.Key
-            const link_archivo= principio_cadena + final_cadena
-          
-          
+             
           const result= await supabase.from("comprobantes")
-          .update({tipo_comprobante,proveedor_comprobante,tipo_movimiento,numero_comprobante,fecha_emision,total_comprobante,link_archivo})
+          .update({tipo_comprobante,proveedor_comprobante,tipo_movimiento,numero_comprobante,fecha_emision,total_comprobante})
           .eq("id_comprobante",id_comprobante)
           funcion()
 
@@ -126,8 +116,8 @@ const Comprobantes = () => {
                 tipo_movimiento,
                 numero_comprobante,
                 fecha_emision,
-                total_comprobante,
-                link_archivo
+                total_comprobante
+              
               }
             }
             return comprobantee
@@ -141,7 +131,7 @@ const Comprobantes = () => {
 
 
           detalles.map( async(deta)=>{
-              const dato = await supabase.from("lineasComprobantes").insert({
+              const dato = await supabase.from("lineasComprobantes").update({
                 id_comprobante:valor,
                 id_articulo:deta.id_articulo,
                 cantidad_articulo:deta.cantidad_articulo,
@@ -152,17 +142,6 @@ const Comprobantes = () => {
           setDialog(false)
           setData(arrayComprobantes)
         }else{
-          const avatarFile = document.getElementById('selectArchivo').files[0];
-          const  foto = await supabase.storage
-          .from('archivos-subidos')
-          .upload('archivos-comprobantes/'+(generarId()), avatarFile, {
-            cacheControl: '3600',
-            upsert: false,
-          })
-
-          const principio_cadena = 'https://nnlzmdwuqwxgdrnutujk.supabase.co/storage/v1/object/public/';
-          const final_cadena = foto.data.Key
-          const link_archivo= principio_cadena + final_cadena
 
           const {error,result}= await supabase.from("comprobantes").insert({
             tipo_comprobante,
@@ -170,11 +149,13 @@ const Comprobantes = () => {
             tipo_movimiento,
             numero_comprobante,
             fecha_emision,
-            totales,
-            link_archivo
+            total_comprobante:totales
+            
           });
           funcion()
           setDialog(false)
+
+          console.log(error)
 
           const resultado = await supabase.from("comprobantes")
           .select('id_comprobante')
@@ -194,7 +175,11 @@ const Comprobantes = () => {
           
           setData([...data,result.data[0]])
           
-        }   
+        }
+        
+        window.location.reload();
+
+
       } catch (error) {
         console.log(error)
       }
@@ -215,6 +200,7 @@ const Comprobantes = () => {
             icon: "success",
           });
           eliminarComprobante(id_comprobante);
+
         }
       });
     }
@@ -229,13 +215,12 @@ const Comprobantes = () => {
 
     
     const columnas=[ 
-        {title:"Id", field:"id_comprobante"},
-        {title:"Tipo", field:"tipoComprobante.nombre_tipo"},
+        {title:"Tipo de Documento", field:"tipoComprobante.nombre_tipo"},
         {title:"Proveedor", field:"proveedores.nombre_proveedor"},
         /*{title:"Movimiento", field:"tipo_movimiento"},*/
-        {title:"Numero", field:"numero_comprobante"},
+        {title:"Numero de Comprobante", field:"numero_comprobante"},
         {title:"Fecha Emision",field:"fecha_emision"},
-        {title:"Valor total",field:"total_comprobante"},
+        {title:"Total del Comprobante",field:"total_comprobante"},
         
       ]
 
@@ -574,12 +559,7 @@ const mostrarFactura=(comprobante)=>{
             data={data}
             actions={[
                 {
-                  icon:"visibility",
-                  tooltip:"Visualizacion",
-                  onClick: (event,rowData)=>mostrarFactura(rowData)
-                },
-                {
-                    icon:"edit",
+                    icon:"visibility",
                     tooltip:"Modificar",
                     onClick: (event,rowData)=>editProduct(rowData)
                 },
@@ -629,7 +609,7 @@ const mostrarFactura=(comprobante)=>{
         
 
         {/*MODAL DEL DETALLE AGREGADO ESTO ES NUEVO FRANCO PAAAA*/}
-        <Dialog header={comprobante["id_comprobante"] ? "Editar Datos Comprobantes":"Agregar Comprobante"} visible={dialog} style={{ width: '700px' }} modal className="p-fluid" footer={productDialogFooter}   onHide={eliminarDialog}>
+      <Dialog header={comprobante["id_comprobante"] ? "Ver Datos de Comprobantes" : "Agregar Comprobante"} visible={dialog} style={{ width: '700px' }} modal className="p-fluid" footer={ comprobante["id_comprobante"] ? null : productDialogFooter }  onHide={eliminarDialog}>
           <div className='grid'>
             <div className='col'>
                 <div className='field flex gap-2 mb-4'>
@@ -652,27 +632,31 @@ const mostrarFactura=(comprobante)=>{
               </div> */}
             </div>
 
-            <div className='col'>
-              <div className='field flex gap-2 mb-4'>
-                <Dropdown name="id_articulo" className='w-12  border-500' optionLabel="nombre_producto" optionValue="id_producto" value={detalle.id_articulo || ""} options={articulos} onChange={seleccionArticulo} placeholder="Seleccione articulo"/>
-              </div>
+          <div className='col'>
+            
+            {comprobante["id_comprobante"] ? null : (
+                          <div style={{borderStyle: "outset"}}>
+                
+                <div className='field flex gap-2 mb-4'>
+                  <Dropdown name="id_articulo" className='w-12  border-500' optionLabel="nombre_producto" optionValue="id_producto" value={detalle.id_articulo || ""} options={articulos} onChange={seleccionArticulo} placeholder="Seleccione articulo"/>
+                </div>
 
-              <div className='field flex gap-2 mb-4'>
-                <InputText name="cantidad_articulo" type="number"  value={detalle.cantidad_articulo || ""} onChange={actualizarStateDetalle} placeholder="Cantidad" required autoFocus />  
-              </div>
+                <div className='field flex gap-2 mb-4'>
+                  <InputText name="cantidad_articulo" type="number"  value={detalle.cantidad_articulo || ""} onChange={actualizarStateDetalle} placeholder="Cantidad" required autoFocus />  
+                </div>
 
-              <div className='field flex gap-2 mb-4'>
-                <InputText name="precio_unitario" value={detalle.precio_unitario || ""} type="number" onChange={actualizarStateDetalle} placeholder="precio unitario"  />  
+                <div className='field flex gap-2 mb-4'>
+                  <InputText name="precio_unitario" value={detalle.precio_unitario || ""} type="number" onChange={actualizarStateDetalle} placeholder="precio unitario"  />  
+                </div>
+                
+                <div className="field w-min mb-4 m-auto">
+                  <Button className="w-15 "  onClick={agregarDatos}>Agregar</Button> 
+                </div>
+                
               </div>
-
-              <div className="field mb-4">
-                <InputText className='w-12' name='input=file' id='selectArchivo' type='file' />
-                {comprobante["id_comprobante"]? <a href={comprobante&&link_archivo} target="_blank"><b>Previsualización del Archivo Subido</b></a> :null}
-              </div>
-              <div className="field w-min mb-4 m-auto">
-                <Button className="w-15 "  onClick={agregarDatos}>Agregar</Button> 
-              </div>
-            </div>
+            ) }
+  
+          </div>
 
               <div className="field m-auto">
                 <DataTable  value={detalles} showGridlines >
@@ -680,7 +664,6 @@ const mostrarFactura=(comprobante)=>{
                     <Column className='p-3' field="cantidad_articulo" header="Cantidad"></Column>
                     <Column className='p-3' field="precio_unitario" header="Precio Unitario"></Column>
                     <Column className='p-3' field="SubTotal" header="Subtotal"></Column>
-                    <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
                 </DataTable>
             </div>
           </div>
@@ -692,9 +675,9 @@ const mostrarFactura=(comprobante)=>{
         <div className="contenedor">
           <br/>
           <button className="bg-indigo-600 w-45 p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={mostrarDialog}>Registrar Nuevo Comprobante</button>
-          <Link to='/CategoriasComprobantes'>
+          {/* <Link to='/CategoriasComprobantes'>
             <button className="bg-indigo-600 w-45 p-3 text-white uppercase font-bold hover:bg-slate-700 boton">Ver Tipos de Comprobantes</button>          
-          </Link>
+          </Link> */}
           <br/><br/>
         </div>
     </Main>

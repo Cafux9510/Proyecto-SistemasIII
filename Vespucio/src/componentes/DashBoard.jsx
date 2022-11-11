@@ -55,6 +55,7 @@ function DashBoard() {
   const [numeroAlumnos, setNumeroAlumnos] = useState(0);
   const [numeroProfesores, setnumeroProfesores] = useState(0);
   const [ingresos, setIngresos] = useState(0);
+  const [egresos, setEgresos] = useState(0);
 
   const cantidadDash = async()=>{
   try {
@@ -68,53 +69,23 @@ function DashBoard() {
     
      setnumeroProfesores(result2.data[0].cant);
 
-     const ingresosProy= await supabase.from('cuotasCobros')
-     .select("")
+     const ingresosProy= await supabase.from('dashBoardIngresos')
+      .select("ingresosProyectados")
     
-     setnumeroProfesores(result2.data[0].cant);
+    setIngresos(ingresosProy.data[0].ingresosProyectados);
+    
+         const egresosProy= await supabase.from('dashBoardEgresos')
+      .select("egresos")
+    
+     setEgresos(egresosProy.data[0].egresos);
+    
+
 
 
   } catch (error) {
       console.log(error)
   }
-}
-
-  const [chartData] = useState({
-  labels: ['Cuotas', 'Matricula', 'Municipio'],
-  datasets: [
-      {
-          data: [300, 50, 100],
-          backgroundColor: [
-              "#42A5F5",
-              "#66BB6A",
-              "#FFA726"
-          ],
-          hoverBackgroundColor: [
-              "#64B5F6",
-              "#81C784",
-              "#FFB74D"
-          ]
-      }
-  ]
-});
-const [chartDataEgresos] = useState({
-  labels: ['Sueldos', 'Insumos', 'Otros'],
-  datasets: [
-      {
-          data: [300, 50, 100],
-          backgroundColor: [
-              "#42A5F5",
-              "#66BB6A",
-              "#FFA726"
-          ],
-          hoverBackgroundColor: [
-              "#64B5F6",
-              "#81C784",
-              "#FFB74D"
-          ]
-      }
-  ]
-});
+  }
 
 const [lightOptions] = useState({
   plugins: {
@@ -147,31 +118,13 @@ useEffect(()=>{
           },
         }}
       >
-        <Paper elevation={3}> <TituloCarta>Ingresos</TituloCarta> <Detalle>numero</Detalle></Paper> 
-        <Paper elevation={3}> <TituloCarta>Egresos</TituloCarta> <Detalle>numero</Detalle></Paper> 
-        <Paper elevation={3}> <TituloCarta>Total Alumnos</TituloCarta> <Detalle>{numeroAlumnos}</Detalle></Paper> 
-        <Paper elevation={3}> <TituloCarta>Total Profesores</TituloCarta> <Detalle>{numeroProfesores}</Detalle></Paper> 
+        <Paper elevation={3}> <TituloCarta>Ingresos Actuales</TituloCarta><center><b><Detalle>{ingresos}</Detalle></b></center></Paper> 
+        <Paper elevation={3}> <TituloCarta>Egresos Actuales</TituloCarta><center><b><Detalle>{egresos}</Detalle></b></center></Paper> 
+        <Paper elevation={3}> <TituloCarta>Total Alumnos</TituloCarta><center><b><Detalle>{numeroAlumnos}</Detalle></b></center></Paper> 
+        <Paper elevation={3}> <TituloCarta>Total Profesores</TituloCarta><center><b><Detalle>{numeroProfesores}</Detalle></b></center></Paper> 
 
       </Box>
-      <Graficos>
-        <Mes>
-          <SubTitulo>Ingresos</SubTitulo>
-          <div className=" flex justify-content-center"> 
-            <Chart type="pie" data={chartData} options={lightOptions} style={{ position: 'center', width: '50%' }} />
-          </div>
 
-        </Mes>
-        <ComparacionAnual>
-          <SubTitulo> Egresos</SubTitulo>
-          <div className=" flex justify-content-center">
-            <Chart type="pie" data={chartDataEgresos} options={lightOptions} style={{ position: 'center', width: '50%' }} />
-          </div>
-
-        </ComparacionAnual>
-
-       
-
-      </Graficos>
         <br/>
       
         <BarChart/>

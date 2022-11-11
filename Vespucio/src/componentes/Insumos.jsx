@@ -160,7 +160,6 @@ const Insumos = () => {
 
     //Configuracion del {/*DEJO LOS PARAMETROS DEL VALUE, SINO ME CRASHEA */}
     const columnas=[ 
-        {title:"N°", field:"id_producto"},
         {title:"Nombre", field:"nombre_producto"},
         {title:"Categoria", field:"categoriasArticulos.nombre_categoria"},
         {title:"Descripcion", field:"descripcion_producto"}

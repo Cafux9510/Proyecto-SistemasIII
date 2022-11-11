@@ -150,7 +150,6 @@ const CategoriasProveedores = () => {
 
     //Configuracion del {/*DEJO LOS PARAMETROS DEL VALUE, SINO ME CRASHEA */}
     const columnas=[ 
-        {title:"N°", field:"id_categoria"},
         {title:"Nombre", field:"nombre_categoria"},
         {title:"Descripcion", field:"descripcion_categoria"}
       ]
@@ -233,7 +232,7 @@ const CategoriasProveedores = () => {
 
     return (
     <Main>
-       
+       <div style={{ maxHeight: '50%' }}>
         <MaterialTable
             title="Categorías de Proveedores"
             columns={columnas}
@@ -274,7 +273,7 @@ const CategoriasProveedores = () => {
               }}
               
         />
-
+          </div>
         <Modal
           open={modal}
           onClose={abrirCerrarModalInsertar}

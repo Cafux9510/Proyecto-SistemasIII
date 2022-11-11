@@ -16,7 +16,8 @@ const Label = styled.label`
 
 `;
 const Main = styled.div `
-  margin-top: 7%
+  margin-top: 7%;
+  height : 50%;
 `;
 const Select = styled.select`
     display:block;
@@ -231,7 +232,7 @@ const CategoriasComprobantes = () => {
 
     return (
     <Main>
-       
+       <div>
         <MaterialTable
             title="Tipos de Comprobantes"
             columns={columnas}
@@ -271,7 +272,8 @@ const CategoriasComprobantes = () => {
                 
               }}
               
-        />
+          />
+          </div>
 
         <Modal
           open={modal}

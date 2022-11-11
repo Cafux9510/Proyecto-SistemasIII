@@ -342,7 +342,7 @@ const Login = () => {
 
         <div class="form-field">
           <button class="btn" type="button" onClick={verificarIngreso}>
-            Log in
+            Iniciar Sesion
           </button>
         </div>
       </form>

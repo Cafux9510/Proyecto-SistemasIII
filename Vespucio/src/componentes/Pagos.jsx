@@ -81,11 +81,11 @@ const Pagos = () => {
     const [ error, guardarError ] = useState(false); 
     const[pagos,setPagos]=useState({
         numero_pago:'',
-        proveedor_pago:'',
         fecha_emision:'',
         total_pago:'',
-        link_archivo:'',
     })
+  
+    const[totales,setTotales]=useState(0)
 
     const[cobros,setCobros]=useState([])
     const[cobro,setCobro]=useState({
@@ -97,6 +97,9 @@ const Pagos = () => {
       fecha_emision:"",
       total_comprobante:""
     })
+  
+  const { proveedor_pago } = cobros;
+    
     //Funciones que tienen datos desde una api
     const funcion = async()=>{
         try {
@@ -117,16 +120,27 @@ const Pagos = () => {
       try {
         const result= await supabase.from("pagos")
         .update({isHabilitado_pago:false})
+          .eq("id_pago", id_pago)
+        
+        const result22= await supabase.from("lineasPagos")
+        .select("id_comprobante")
+        .eq("isHabilitado_linea",true)
         .eq("id_pago",id_pago)
+        
 
-        console.log(result)
+
+        const result2= await supabase.from("comprobantes")
+        .update({isPagado:false})
+        .eq("id_comprobante",result22.data[0].id_comprobante)
+
+        console.log(result2)
       } catch (error) {
         console.log(error)
       }
     }
 
 
-    const{proveedor_pago,numero_pago,fecha_emision,total_pago,id_comprobante,link_archivo}=pagos;
+    const{numero_pago,fecha_emision,total_pago,id_comprobante}=pagos;
 
     const update2=async(id_pago)=>{
       try {
@@ -161,32 +175,25 @@ const Pagos = () => {
   }
     const submit = async()=>{
       try {
-        const avatarFile = document.getElementById('selectArchivo').files[0];
-        const  foto = await supabase.storage
-        .from('archivos-subidos')
-        .upload('archivos-pagos/'+(generarId()), avatarFile, {
-          cacheControl: '3600',
-          upsert: false,
+        
+        cobros.map( async(cobr)=>{
+            
+          const pago = await supabase.from("pagos").insert({
+            proveedor_pago:cobr.proveedor_pago,
+            numero_pago,
+            fecha_emision,
+            total_pago:totales
+          });
+            
         })
-  
-        const principio_cadena = 'https://nnlzmdwuqwxgdrnutujk.supabase.co/storage/v1/object/public/';
-        const final_cadena = foto.data.Key
-        const link_archivo= principio_cadena + final_cadena
-  
-        const {error,result}= await supabase.from("pagos").insert({
-          proveedor_pago,
-          numero_pago,
-          fecha_emision,
-          total_pago,
-          link_archivo
-        });
-  
+        
         const resultado = await supabase.from("pagos")
         .select('id_pago')
         .eq("numero_pago",numero_pago)
   
         const valor=resultado.data[0].id_pago
   
+        console.log(cobros)
   
         cobros.map( async(cobr)=>{
             const dato = await supabase.from("lineasPagos").insert({
@@ -194,12 +201,22 @@ const Pagos = () => {
               id_comprobante:cobr.id_comprobante,
               modo_pago:cobr.modo_pago
             })
+          
+            console.log(dato)
+          
+            const ressult= await supabase.from("comprobantes")
+            .update({isPagado:true})
+            .eq("id_comprobante",cobr.id_comprobante)
 
-            console.log(dato.data)
-          })
+            console.log(ressult)
+        })
          
   
-          setDialog(false)
+        setDialog(false)
+        
+        setTimeout(() => {
+          window.location.reload()
+        }, 2000);
           
          
       } catch (error) {
@@ -230,7 +247,6 @@ const Pagos = () => {
 
     //Configuracion del {/*DEJO LOS PARAMETROS DEL VALUE, SINO ME CRASHEA */}
     const columnas=[ 
-        {title:"N°", field:"id_pago"},
         {title:"N° de Pago", field:"numero_pago"},
         {title:"Proveedor", field:"proveedores.nombre_proveedor"},
         {title:"Fecha Pago", field:"fecha_emision"},
@@ -260,6 +276,12 @@ const Pagos = () => {
     setCobros([...cobros,co]);
   }
 
+  useEffect(()=>{
+        const variable=cobros.reduce((total,cobro)=>cobro.total_comprobante+total,0)
+        console.log(Number(variable))
+        setTotales(Number(variable))
+    },[cobros])
+
   const agregarDatos=()=>{
     crearDetalle(cobro)
     setCobro({})
@@ -271,17 +293,16 @@ const Pagos = () => {
   }
 
     useEffect(()=>{
-        funcion();
-        pago();
-        dato();
+      funcion();
         compro();
+        dato();
+        pago();
    },[])
 
   const[comprobantes,setComprabantes]=useState([]);
   const compro= async()=>{
-    const result = await supabase.from('comprobantes')
-    .select()
-    .eq("isHabilitado_comprobante",true);
+    const result = await supabase.from('comprobantesPagarView')
+      .select();
 
     setComprabantes(result.data)
   }
@@ -476,12 +497,14 @@ const Pagos = () => {
   const seleccionaComprobante= (e)=>{
     let seleccionado=comprobantes.find(comprobante =>comprobante.id_comprobante===e.target.value );
     setCobro({
-      id_comprobante:seleccionado.id_comprobante
+      id_comprobante: seleccionado.id_comprobante,
+      concatenado: seleccionado.concatenado,
+      total_comprobante: seleccionado.total_comprobante,
+      proveedor_pago: seleccionado.proveedor_pago
     })
-    setComprobantes2({
-      fecha_emision:seleccionado.fecha_emision,
-      total_comprobante:seleccionado.total_comprobante
-    })
+
+    
+
   }
 
   const mostrarFactura= (pago)=>{
@@ -506,12 +529,7 @@ const Pagos = () => {
             data={data}
             actions={[
                 {
-                  icon:"visibility",
-                  tooltip:"Visualizacion",
-                  onClick: (event,rowData)=>mostrarFactura(rowData)
-                },
-                {
-                    icon:"edit",
+                    icon:"visibility",
                     tooltip:"Modificar",
                     onClick: (event,rowData)=>seleccionarPagos(rowData)
                 },
@@ -558,45 +576,27 @@ const Pagos = () => {
         
         </Modal>
 
-        <Dialog visible={dialog}  header={pagos.id_pago? "Editar Pago": "Registrar Pago"} style={{ width: '700px' }} modal className="p-fluid"  footer={productDialogFooter} onHide={eliminarDialog}>
+        <Dialog visible={dialog}  header={pagos.id_pago? "Ver Pago": "Registrar Pago"} style={{ width: '700px' }} modal className="p-fluid"  footer={productDialogFooter} onHide={eliminarDialog}>
           <div className="grid">
             <div className="col">
               <div className='field'>
                 <label>Numero de Pago</label>
-                <InputText value={pagos.numero_pago || ""} required autoFocus type="number"/>
+                <InputText name="numero_pago" value={pagos.numero_pago || ""} required autoFocus onChange={actualizarState} type="number"/>
               </div>
-              <div className='field flex gap-2'>
-                <label className='flex-initial flex align-items-center'>Nombre Proveedor</label>
-                  <Dropdown name="proveedor_pago" value={pagos.proveedor_pago || ""} className='w-12  border-500' optionValue="id_proveedor"  optionLabel="nombre_proveedor"  options={pro} placeholder="Seleccionar Proveedor"/>
-              </div>
+
               <div className="field mb-4">
-                <InputText name="fecha_emision" value={pagos.fecha_emision || ""}  type="date"/>
+                <InputText name="fecha_emision" value={pagos.fecha_emision || ""} onChange={actualizarState} type="date"/>
               </div>
-              <div className="field mb-4">
-                <label>Monto</label>
-                <InputText name="total_pago" value={pagos.total_pago || ""} type="number"/>
-              </div>
-              <div>
-                {pagos["id_pago"] ?<a href={pagos&&link_archivo} target="_blank"><b>Previsualización del Archivo Subido</b></a>:null}
-              </div>
+
             </div>
             <div className="col">
               <div className="field mb-4">
                 <label>Comprobantes</label>
-                <Dropdown name="id_comprobante" placeholder="Numero del Comprobante" optionValue="id_comprobante" optionLabel="numero_comprobante" value={cobro.id_comprobante || ""} onChange={seleccionaComprobante} options={comprobantes}/>
+                <Dropdown name="id_comprobante" placeholder="Numero del Comprobante" optionValue="id_comprobante" optionLabel="concatenado" value={cobro.id_comprobante || ""} onChange={seleccionaComprobante} options={comprobantes}/>
               </div>
-              <div className="field mb-4">
-                
-                <InputText  placeholder="Fecha del Comprobante" value={comprobantes2.fecha_emision || ""} disabled type="text"/>
-             </div>
-              <div className="field mb-4">
-                  <InputText  placeholder="Monto del Comprobante" value={comprobantes2.total_comprobante || ""} disabled type="text"/>
-              </div>
+        
               <div className="field mb-4">
                 <Dropdown name="modo_pago" placeholder="Modo de pago" onChange={actualizarStateDetalle} value={cobro.modo_pago || ""}  options={modosPago}/>
-              </div>
-              <div className="field mb-4">
-                <InputText   name='input=file' id='selectArchivo'  type='file' />
               </div>
               <div className="field w-min mb-4 m-auto">
                 <Button className="w-15 "  onClick={agregarDatos}>Agregar</Button> 
@@ -604,11 +604,15 @@ const Pagos = () => {
             </div>
             <div className="field m-auto">
               <DataTable value={cobros || ""} showGridlines>
-                <Column field="id_comprobante" header="Comprobantes"></Column>
+                <Column field="concatenado" header="Comprobantes"></Column>
                 <Column field="modo_pago" header="Modo de pago"></Column>
                 <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
               </DataTable>
-            </div>
+           </div>
+          <div>
+            <br />
+              <label className="text-2xl uppercase">Total: <span>{totales}</span></label>
+             </div>
           </div>
         </Dialog>
 
