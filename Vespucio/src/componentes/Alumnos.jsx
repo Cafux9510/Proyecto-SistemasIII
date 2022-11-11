@@ -216,7 +216,7 @@ const dialogFuncMap = {
               id_usuario:valor
           }]);
 
-          const { idAl } = await supabase.from('alumnos')
+          const idAl = await supabase.from('alumnos')
           .select('id_alumno')
             .eq("id_usuario", valor);
           

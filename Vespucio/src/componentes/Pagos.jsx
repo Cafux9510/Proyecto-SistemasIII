@@ -310,9 +310,8 @@ const Pagos = () => {
   const[lineaPago,setLineaPago]=useState([])
 
   const pago= async()=>{
-    const result= await supabase.from("lineasPagos")
+    const result= await supabase.from("lineasPagosView")
     .select()
-    .eq("isHabilitado_linea",true)
 
 
     setLineaPago(result.data)
@@ -576,21 +575,30 @@ const Pagos = () => {
         
         </Modal>
 
-        <Dialog visible={dialog}  header={pagos.id_pago? "Ver Pago": "Registrar Pago"} style={{ width: '700px' }} modal className="p-fluid"  footer={productDialogFooter} onHide={eliminarDialog}>
+        <Dialog visible={dialog}  header={pagos.id_pago? "Ver Pago": "Registrar Pago"} style={{ width: '700px' }} modal className="p-fluid"  footer={pagos["id_pago"] ? null : productDialogFooter} onHide={eliminarDialog}>
           <div className="grid">
             <div className="col">
-              <div className='field'>
+            {pagos["id_pago"] ? null : (<>
+            <div className='field'>
                 <label>Numero de Pago</label>
                 <InputText name="numero_pago" value={pagos.numero_pago || ""} required autoFocus onChange={actualizarState} type="number"/>
               </div>
 
               <div className="field mb-4">
                 <InputText name="fecha_emision" value={pagos.fecha_emision || ""} onChange={actualizarState} type="date"/>
-              </div>
+              </div></>)}
+              
 
             </div>
-            <div className="col">
-              <div className="field mb-4">
+          <div className="col">
+            {pagos["id_pago"] ? <div className="field m-auto">
+              <DataTable style={{ width: '400px' }} value={cobros || ""} showGridlines>
+                <Column field="numero_comprobante" header="N° de Comprobantes"></Column>
+                <Column field="modo_pago" header="Modo de pago"></Column>
+                <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
+              </DataTable>
+           </div> : (<>
+            <div className="field mb-4">
                 <label>Comprobantes</label>
                 <Dropdown name="id_comprobante" placeholder="Numero del Comprobante" optionValue="id_comprobante" optionLabel="concatenado" value={cobro.id_comprobante || ""} onChange={seleccionaComprobante} options={comprobantes}/>
               </div>
@@ -600,20 +608,18 @@ const Pagos = () => {
               </div>
               <div className="field w-min mb-4 m-auto">
                 <Button className="w-15 "  onClick={agregarDatos}>Agregar</Button> 
-              </div>
+              </div></>)}
+              
             </div>
-            <div className="field m-auto">
-              <DataTable value={cobros || ""} showGridlines>
-                <Column field="concatenado" header="Comprobantes"></Column>
-                <Column field="modo_pago" header="Modo de pago"></Column>
-                <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
-              </DataTable>
-           </div>
-          <div>
+          {pagos["id_pago"] ? null : (
+            <>
+            <div>
             <br />
               <label className="text-2xl uppercase">Total: <span>{totales}</span></label>
-             </div>
-          </div>
+             </div></>
+          )}
+          
+        </div>
         </Dialog>
 
 

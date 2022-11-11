@@ -136,8 +136,9 @@ const MateriaXProfesor = () => {
   }
 
   function irArchivo() {
-    console.log(selectedProduct5.link_archivo)
-    navigateTo(selectedProduct5.link_archivo)
+    let link = selectedProduct5.link_archivo;
+    console.log(link)
+    window.open(link, '_blank')
   }
 
   //Funciones que tienen datos desde una api

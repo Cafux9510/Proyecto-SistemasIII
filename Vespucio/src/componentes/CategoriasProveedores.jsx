@@ -232,7 +232,7 @@ const CategoriasProveedores = () => {
 
     return (
     <Main>
-       <div style={{ maxHeight: '50%' }}>
+       <div style={{ width: '100%' }}>
         <MaterialTable
             title="Categorías de Proveedores"
             columns={columnas}

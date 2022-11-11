@@ -142,62 +142,71 @@ const CargaTareas = () => {
         .eq("isCargada_tarea", true);
       
       if (result1.data.length !== 0) {
-
-        const avatarFile = document.getElementById("input-tarea").files[0];
-        const foto = await supabase.storage
-        .from("archivos-subidos")
-        .upload("archivos-tareas/" + generarId(), avatarFile, {
-          cacheControl: "3600",
-          upsert: false,
-        });
-
-        const principio_cadena =
-        "https://nnlzmdwuqwxgdrnutujk.supabase.co/storage/v1/object/public/";
-        const final_cadena = foto.data.path;
-        console.log(final_cadena)
-        const link_archivo = principio_cadena + final_cadena;
+          
+        
+        var file = document.getElementById("input-tarea").files[0] //the file
+        console.log(file)
+          var reader = new FileReader() //this for convert to Base64 
+          reader.readAsDataURL(file) //start conversion...
+          reader.onload = function (e) { //.. once finished..
+          var rawLog = reader.result.split(',')[1]; //extract only thee file data part
+          var dataSend = { dataReq: { data: rawLog, name: file.name, type: file.type }, fname: "uploadFilesToGoogleDrive" }; //preapre info to send to API
+          fetch('https://script.google.com/macros/s/AKfycbxYWJ90M6DGaAF8WdGjH94TTGBS-U37K41DASi0fq2uGU9Gh2x7h0jwgJY1U4Gi1EuW7w/exec', //your AppsScript URL
+            { method: "POST", body: JSON.stringify(dataSend) }) //send to Api
+            .then(res => res.json()).then((a) => {
+              console.log(a.url) //See response
+              localStorage.setItem("url", a.url)
+            }).catch(e => console.log(e)) // Or Error in console
+          }
 
         var dia  = new Date(Date.now()).getDate();
         var mes  = new Date(Date.now()).getMonth()+1;
         var anio = new Date(Date.now()).getFullYear();
  
-       var fecha = dia + "/" + mes + "/" + anio
+        var fecha = dia + "/" + mes + "/" + anio
+        
+        let linkesito = localStorage.getItem("url")
 
         const result= await supabase.from("cargaTareas")
           .update({
             updated_at:fecha,
-            link_archivo:link_archivo
+            link_archivo:linkesito
           })
           .eq("id_tarea", idTarea)
           .eq("id_alumno", idAlum)
           .eq("isCargada_tarea", true)
         
-        console.log(result)
+      //   console.log(result)
         
       } else {
-        const avatarFile = document.getElementById("input-tarea").files[0];
-        const foto = await supabase.storage
-        .from("archivos-subidos")
-        .upload("archivos-tareas/" + generarId(), avatarFile, {
-          cacheControl: "3600",
-          upsert: false,
-        });
+      var file = document.getElementById("input-tarea").files[0] //the file
+        console.log(file)
+          var reader = new FileReader() //this for convert to Base64 
+          reader.readAsDataURL(file) //start conversion...
+          reader.onload = function (e) { //.. once finished..
+          var rawLog = reader.result.split(',')[1]; //extract only thee file data part
+          var dataSend = { dataReq: { data: rawLog, name: file.name, type: file.type }, fname: "uploadFilesToGoogleDrive" }; //preapre info to send to API
+          fetch('https://script.google.com/macros/s/AKfycbxYWJ90M6DGaAF8WdGjH94TTGBS-U37K41DASi0fq2uGU9Gh2x7h0jwgJY1U4Gi1EuW7w/exec', //your AppsScript URL
+            { method: "POST", body: JSON.stringify(dataSend) }) //send to Api
+            .then(res => res.json()).then((a) => {
+              console.log(a.url) //See response
+              localStorage.setItem("url", a.url)
+            }).catch(e => console.log(e)) // Or Error in console
+          }
 
-        const principio_cadena =
-        "https://nnlzmdwuqwxgdrnutujk.supabase.co/storage/v1/object/public/";
-        const final_cadena = foto.data.path;
-        console.log(final_cadena)
-        const link_archivo = principio_cadena + final_cadena;
-
+        let linkesito = localStorage.getItem("url");
+        
         const { error, result } = await supabase.from("cargaTareas").insert({
           id_alumno:localStorage.getItem("idUsuario"),
           id_materia,
-          link_archivo: link_archivo,
+          link_archivo:linkesito,
           id_tarea:tareas.id_tarea
         });
 
       }
-      location.reload();
+      setTimeout(() => {
+          window.location.reload()
+        }, 10000); 
     } catch (error) {
       console.log(error);
     }

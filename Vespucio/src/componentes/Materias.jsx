@@ -109,7 +109,7 @@ const Materias = () => {
     const update2=async(id_materia)=>{
       try {
         const result= await supabase.from("materias")
-        .update({nombre_materia,descripcion_materia,id_grado})
+        .update({nombre_materia,descripcion_materia})
         .eq("id_materia",id_materia)
         
         abrirCerrarModalEditar();
@@ -138,7 +138,7 @@ const Materias = () => {
       }
     }
 
-    const handleEliminar=(id_materia)=>{
+  const handleEliminar = (id_materia) => {
       swal({
         title: "Estas seguro de eliminar este registro?",
         text: "Una vez eliminado, no podras recuperar el archivo de vuelta!",
@@ -161,7 +161,6 @@ const Materias = () => {
 
     //Configuracion del {/*DEJO LOS PARAMETROS DEL VALUE, SINO ME CRASHEA */}
     const columnas=[ 
-        {title:"N°", field:"id_materia"},
         {title:"Nombre", field:"nombre_materia"},
         {title:"Nivel", field:"grados.nivelesEducativos.nombre_nivel"},
         {title:"Grado", field:"grados.nombre_grado"},
@@ -313,46 +312,10 @@ const Materias = () => {
     const bodyEditar= (
         <div className={styles.modal}>
         <h3>Agregar Nuevo Insumo</h3> {/*DEJO LOS PARAMETROS DEL VALUE, SINO ME CRASHEA */}
+        <br/>
         <TextField className={styles.inputMaterial} label="Nombre Materia" onChange={actualizarState} name="nombre_materia" value={materias&&nombre_materia}/> 
-        <br/>
-        <br/>
-        <label>Indique el Nivel Educativo de la Materia</label>
-         <br/>
-         <br/>
-            <Campo>
-            <Select
-                        name='id_nivel'
-                        id='id_nivel'
-                        value={id_nivel}
-                        onChange={filtrarAnios}
-                    >
-                        <option value="">--Seleccione--</option>
-                        {Object.values(niveles).map(pr=>(
-                        <option key={pr.id_nivel} value={pr.id_nivel}>{pr.materias&&nombre_nivel}</option>
-                        ))}
-                    
-                        
-                    
-                </Select>
-            </Campo>
-         <br/>
-         <label>Indique el Grado de la Materia</label>
-         <br/>
-        <Campo>
-          <Select
-                    name='id_grado'
-                    value={id_grado}
-                    onChange={actualizarState}
-                >
-                    <option value="">--Seleccione--</option>
-                    {Object.values(gradosMaterias).map(pr=>(
-                      <option key={pr.id_grado} value={pr.id_grado}>{pr.materias&&nombre_grado}</option>
-                    ))}
-                
-                    
-                  
-            </Select>
-        </Campo>
+        <br/><br/>
+
         <br/>
         <label>Descripcion de la Materia</label>
         <br/>
@@ -363,7 +326,7 @@ const Materias = () => {
         <br/>
         <br/>
         <div align="right">
-          <Button color='primary' onClick={()=>submit()} >Insertar</Button>
+          <Button color='primary' onClick={()=>update2(materias&&id_materia)} >Editar</Button>
           <Button onClick={()=>abrirCerrarModalInsertar()}>Cancelar</Button>
         </div>
       </div>
@@ -479,7 +442,7 @@ const Materias = () => {
 
         <div className="contenedor">
           <br/>
-          <button className="bg-indigo-600 w-45 p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nuevo Insumo</button>
+          <button className="bg-indigo-600 w-45 p-3 text-white uppercase font-bold hover:bg-slate-700 boton" onClick={()=>abrirCerrarModalInsertar()}>Registrar Nueva Materia</button>
            
 
           <br/><br/>
